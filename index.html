@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Latihan CAT CPNS ASM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<style>
+/* Layout: ruang ujian CAT — kolom soal di kiri, papan nomor 10×10 di kanan, menumpuk di layar sempit */
+:root{
+  --paper:#EEF2F5; --surface:#FFFFFF; --ink:#13202B; --muted:#56636F; --line:#D3DBE2; --soft:#E3E9EE;
+  --accent:#B3261E; --accent-ink:#FFFFFF;
+  --twk:#B3261E; --tiu:#2C4DA0; --tkp:#0F7A5F; --ujian:#8A5A00;
+  --ok:#1C8A4C; --ok-soft:#DDF2E5; --bad:#C2362B; --bad-soft:#F8E0DD; --mid:#A86A12; --mid-soft:#F6EAD3;
+  --display:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0E151B; --surface:#16212A; --ink:#E6EDF2; --muted:#98A6B2; --line:#2A3946; --soft:#1D2A35;
+  --accent:#E5554B; --accent-ink:#1A0B0A;
+  --twk:#EE6A60; --tiu:#7C9BEA; --tkp:#3FBF98; --ujian:#E1A64A;
+  --ok:#4CC27F; --ok-soft:#163626; --bad:#EE6A60; --bad-soft:#3A1C1A; --mid:#E1A64A; --mid-soft:#3A2C14;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E151B; --surface:#16212A; --ink:#E6EDF2; --muted:#98A6B2; --line:#2A3946; --soft:#1D2A35;
+  --accent:#E5554B; --accent-ink:#1A0B0A;
+  --twk:#EE6A60; --tiu:#7C9BEA; --tkp:#3FBF98; --ujian:#E1A64A;
+  --ok:#4CC27F; --ok-soft:#163626; --bad:#EE6A60; --bad-soft:#3A1C1A; --mid:#E1A64A; --mid-soft:#3A2C14;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.2}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--tiu);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+/* bar atas */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:12px}
+.brand{display:flex;align-items:center;gap:10px}
+.flag{width:28px;height:20px;border-radius:3px;overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--line)}
+.flag i{flex:1}.flag i:first-child{background:#C8102E}.flag i:last-child{background:#FFFFFF}
+.brand h1{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.who{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.who b{color:var(--ink)}
+.btn{border:1.5px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;font-weight:600;font-size:14px}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn.primary:hover{opacity:.9}
+.btn.danger{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.small{padding:6px 10px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* layar nama */
+.namecard{max-width:520px;margin:6vh auto 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px;display:flex;flex-direction:column;gap:16px}
+.namecard h2{font-size:26px;font-weight:800}
+.namecard p{margin:0;color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:600;font-size:14px}
+.field input{font:inherit;font-size:17px;padding:12px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+.err{color:var(--bad);font-size:13px;min-height:1em}
+
+/* menu */
+.hello h2{font-size:28px;font-weight:800}
+.hello p{margin:4px 0 0;color:var(--muted);max-width:62ch}
+.cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.cat{text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
+.cat::before{content:"";position:absolute;inset:0 auto 0 0;width:6px;background:var(--c)}
+.cat:hover{border-color:var(--c)}
+.cat .code{font-family:var(--mono);font-weight:600;font-size:30px;color:var(--c);letter-spacing:.02em}
+.cat .nm{font-weight:700;font-size:16px}
+.cat .ds{color:var(--muted);font-size:14px}
+.cat .meta{display:flex;gap:14px;font-size:13px;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px;margin-top:auto}
+.menu-actions{display:flex;gap:10px;flex-wrap:wrap}
+.modes{display:flex;gap:8px;flex-wrap:wrap}
+.modes .btn[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+#rankBody.plain .medal{background:var(--soft);color:var(--ink)}
+.credit{border-top:1px solid var(--line);padding-top:14px;text-align:center;font-size:13px;color:var(--muted);letter-spacing:.02em}
+.cat.wide{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px 24px}
+.cat.wide .txt{display:flex;flex-direction:column;gap:6px;flex:1 1 320px;min-width:0}
+.cat.wide .meta{border-top:0;padding-top:0;margin-top:0;flex-wrap:wrap}
+.opt.chosen{border-color:var(--ink);background:var(--surface)}
+.opt.chosen .k{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.cell.ans{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.legend i.ans{background:var(--ink);border-color:var(--ink)}
+#qTimer{font-size:15px;font-weight:600;color:var(--ink);padding:4px 10px;border-radius:8px;background:var(--soft)}
+#qTimer.warn{background:var(--bad);color:#fff}
+.note{font-size:13px;color:var(--muted);max-width:75ch}
+
+/* kuis */
+.qhead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}
+.qhead .left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.06em;color:#fff;background:var(--c)}
+.progress{height:6px;background:var(--soft);border-radius:999px;overflow:hidden;width:100%}
+.progress i{display:block;height:100%;background:var(--c);width:0;transition:width .25s}
+.qgrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+.qpane{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.qnum{display:flex;align-items:baseline;gap:10px}
+.qnum .n{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--c)}
+.qnum .of{color:var(--muted);font-size:13px}
+.qtext{font-size:17px;line-height:1.6;white-space:pre-line;max-width:70ch}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;align-items:center;text-align:left;background:var(--paper);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px}
+.opt:hover:not(:disabled){border-color:var(--c)}
+.opt .k{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font-family:var(--mono);font-weight:600;background:var(--surface);border:1.5px solid var(--line)}
+.opt:disabled{cursor:default}
+.opt.correct{background:var(--ok-soft);border-color:var(--ok)}
+.opt.correct .k{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.opt.wrong .k{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt.picked{box-shadow:0 0 0 2px var(--ink) inset}
+.pt{font-family:var(--mono);font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted);white-space:nowrap}
+.explain{border-radius:10px;padding:14px 16px;border:1.5px solid var(--line);background:var(--paper);display:flex;flex-direction:column;gap:6px}
+.explain.ok{border-color:var(--ok);background:var(--ok-soft)}
+.explain.bad{border-color:var(--bad);background:var(--bad-soft)}
+.explain.mid{border-color:var(--mid);background:var(--mid-soft)}
+.explain h3{font-size:15px}
+.explain p{margin:0;max-width:70ch}
+.qnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+/* papan nomor */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+.panel h3{font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.counts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.counts div{background:var(--paper);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column}
+.counts span{font-size:12px;color:var(--muted)}
+.counts b{font-family:var(--mono);font-size:20px}
+.board{overflow-x:auto}
+.board table{border-collapse:separate;border-spacing:4px;width:100%;table-layout:fixed}
+.board td{padding:0}
+.cell{width:100%;aspect-ratio:1;max-width:100%;border-radius:6px;border:1.5px solid var(--line);background:var(--paper);font-family:var(--mono);font-size:11px;font-weight:600;padding:0;color:var(--muted)}
+.cell:hover{border-color:var(--ink)}
+.cell.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.cell.bad{background:var(--bad);border-color:var(--bad);color:#fff}
+.cell.mid{background:var(--mid);border-color:var(--mid);color:#fff}
+.cell.cur{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px;border:1.5px solid var(--line);background:var(--paper)}
+.legend i.ok{background:var(--ok);border-color:var(--ok)}.legend i.bad{background:var(--bad);border-color:var(--bad)}.legend i.mid{background:var(--mid);border-color:var(--mid)}
+.confirm{border:1.5px solid var(--accent);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--bad-soft);font-size:14px}
+.confirm .row{display:flex;gap:8px;flex-wrap:wrap}
+
+/* hasil */
+.result{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px;display:flex;flex-direction:column;gap:22px;max-width:820px;width:100%;margin:0 auto}
+.score{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.score .big{font-family:var(--mono);font-size:72px;font-weight:600;line-height:1;color:var(--c)}
+.score .max{font-family:var(--mono);color:var(--muted);font-size:20px;padding-bottom:8px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.stat{border-radius:10px;padding:14px;background:var(--paper);display:flex;flex-direction:column;gap:2px}
+.stat span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.stat b{font-family:var(--mono);font-size:28px}
+.stat.ok b{color:var(--ok)}.stat.bad b{color:var(--bad)}
+.bar{display:flex;height:12px;border-radius:999px;overflow:hidden;background:var(--soft)}
+.bar i{display:block;height:100%}
+.saved{font-size:13px;color:var(--muted)}
+
+/* ranking */
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-weight:700;font-family:var(--mono)}
+.tab[aria-selected="true"]{background:var(--c);border-color:var(--c);color:#fff}
+.rankbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tablewrap{overflow-x:auto}
+table.rank{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+table.rank th{text-align:left;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:12px 14px;border-bottom:1.5px solid var(--line);background:var(--paper)}
+table.rank td{padding:11px 14px;border-bottom:1px solid var(--line)}
+table.rank td.num,table.rank th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+table.rank tr.me td{background:var(--mid-soft)}
+.medal{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;font-family:var(--mono);font-weight:600;background:var(--soft)}
+tr:nth-child(1) .medal{background:#D4A72C;color:#1A1405}
+tr:nth-child(2) .medal{background:#A9B4BE;color:#141A1F}
+tr:nth-child(3) .medal{background:#B9774A;color:#1A0F07}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.status{font-size:13px;color:var(--muted)}
+
+@media (max-width:900px){.qgrid{grid-template-columns:minmax(0,1fr)}.panel{position:static}.cats{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.qpane{padding:18px}.score .big{font-size:56px}.namecard{padding:22px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="flag" aria-hidden="true"><i></i><i></i></span><h1>Latihan CAT CPNS ASM</h1></div>
+    <div class="who" id="who" hidden>Peserta: <b id="whoName"></b><button class="btn small" id="btnGanti" type="button">Keluar</button></div>
+  </header>
+
+  <!-- 1. Input nama -->
+  <section id="scrName" hidden>
+    <form class="namecard" id="nameForm" novalidate>
+      <span class="eyebrow">Sebelum mulai</span>
+      <h2>Masukkan nama Anda</h2>
+      <p>Nama ini tampil di ranking nilai untuk setiap kategori TWK, TIU, dan TKP.</p>
+      <div class="field">
+        <label for="nameInput">Nama peserta</label>
+        <input id="nameInput" maxlength="40" autocomplete="name" placeholder="contoh: Siti Rahmawati">
+        <span class="err" id="nameErr"></span>
+      </div>
+      <button class="btn primary" type="submit">Lanjut ke menu</button>
+    </form>
+  </section>
+
+  <!-- 2. Menu -->
+  <section id="scrMenu" hidden>
+    <div class="wrap" style="gap:20px">
+      <div class="hello">
+        <span class="eyebrow">Seleksi Kompetensi Dasar</span>
+        <h2 id="helloTitle">Pilih materi latihan</h2>
+        <p>Setiap kategori berisi 100 soal pilihan ganda yang diacak urutan soal dan pilihannya. Penjelasan muncul setelah Anda menjawab.</p>
+      </div>
+      <div class="cats">
+        <button class="cat" type="button" data-cat="TWK" style="--c:var(--twk)">
+          <span class="code">TWK</span><span class="nm">Tes Wawasan Kebangsaan</span>
+          <span class="ds">Pancasila, UUD 1945, sejarah, NKRI, Bhinneka Tunggal Ika, integritas.</span>
+          <span class="meta"><span>100 soal</span><span>Benar 5 · Salah 0</span></span>
+        </button>
+        <button class="cat" type="button" data-cat="TIU" style="--c:var(--tiu)">
+          <span class="code">TIU</span><span class="nm">Tes Intelegensia Umum</span>
+          <span class="ds">Verbal (sinonim, antonim, analogi, silogisme) dan numerik (deret, hitungan, soal cerita).</span>
+          <span class="meta"><span>100 soal</span><span>Benar 5 · Salah 0</span></span>
+        </button>
+        <button class="cat" type="button" data-cat="TKP" style="--c:var(--tkp)">
+          <span class="code">TKP</span><span class="nm">Tes Karakteristik Pribadi</span>
+          <span class="ds">Pelayanan publik, jejaring kerja, sosial budaya, TIK, profesionalisme, anti radikalisme.</span>
+          <span class="meta"><span>100 soal</span><span>Poin 5 · 4 · 3 · 1</span></span>
+        </button>
+        <button class="cat wide" type="button" data-cat="UJIAN" style="--c:var(--ujian)">
+          <span class="code">UJIAN</span>
+          <span class="txt"><span class="nm">Simulasi Ujian SKD</span>
+          <span class="ds">100 soal acak gabungan: 30 TWK, 35 TIU, 35 TKP. Seperti ujian sungguhan, tidak ada pembahasan selama mengerjakan dan jawaban masih bisa diganti. Setelah selesai, kunci dan penjelasan bisa dilihat lewat Tinjau jawaban.</span></span>
+          <span class="meta"><span>100 soal</span><span>90 menit</span><span>Nilai maks. 500</span></span>
+        </button>
+      </div>
+      <div class="menu-actions">
+        <button class="btn primary" type="button" id="btnRank">Lihat ranking nilai</button>
+      </div>
+      <p class="note">Menu TWK, TIU, dan TKP tidak dibatasi waktu, tetapi lama pengerjaan dicatat. Menu UJIAN dibatasi 90 menit; bila waktu habis, jawaban otomatis dikumpulkan. Nilai maksimal tiap menu 500 (100 soal × 5). Pada SKD sesungguhnya jumlah soal dan ambang batas ditetapkan oleh panitia seleksi setiap tahun.</p>
+      <footer class="credit">Copyright © Designed &amp; Developed by ASM 2026</footer>
+    </div>
+  </section>
+
+  <!-- 3. Kuis -->
+  <section id="scrQuiz" hidden>
+    <div class="wrap" style="gap:14px">
+      <div class="qhead">
+        <div class="left">
+          <button class="btn small" type="button" id="btnExit">← Menu</button>
+          <span class="chip" id="qChip">TWK</span>
+          <span class="mono" id="qTimer" aria-live="off">Sisa 90:00</span>
+        </div>
+        <button class="btn danger" type="button" id="btnFinish">Selesai &amp; lihat nilai</button>
+      </div>
+      <div class="progress"><i id="qProg"></i></div>
+      <div class="qgrid">
+        <article class="qpane" id="qPane" aria-live="polite">
+          <div class="qnum"><span class="n" id="qNo">1</span><span class="of">dari 100 soal</span><span class="pt" id="qKind" hidden></span></div>
+          <div class="qtext" id="qText"></div>
+          <div class="opts" id="qOpts"></div>
+          <div class="explain" id="qExplain" hidden></div>
+          <div class="qnav">
+            <button class="btn" type="button" id="btnPrev">← Sebelumnya</button>
+            <button class="btn primary" type="button" id="btnNext">Berikutnya →</button>
+          </div>
+        </article>
+        <aside class="panel" aria-label="Papan nomor soal">
+          <h3>Nomor soal</h3>
+          <div class="counts">
+            <div><span>Sudah dijawab</span><b id="cDone">0</b></div>
+            <div><span>Belum dijawab</span><b id="cTodo">100</b></div>
+          </div>
+          <div class="board"><table><tbody id="board"></tbody></table></div>
+          <div class="legend" id="legend"></div>
+          <div class="confirm" id="confirmBox" hidden>
+            <span id="confirmText"></span>
+            <div class="row">
+              <button class="btn danger small" type="button" id="btnConfirmYes">Ya, selesai</button>
+              <button class="btn small" type="button" id="btnConfirmNo">Lanjut mengerjakan</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Hasil -->
+  <section id="scrResult" hidden>
+    <div class="result" id="resultBox">
+      <div><span class="eyebrow" id="rCat">Hasil TWK</span><h2 id="rName" style="font-size:24px;margin-top:4px"></h2></div>
+      <div class="score"><span class="big" id="rScore">0</span><span class="max">/ 500</span></div>
+      <div class="bar" id="rBar"></div>
+      <div class="stats">
+        <div class="stat ok"><span>Benar</span><b id="rOk">0</b></div>
+        <div class="stat bad"><span>Salah</span><b id="rBad">0</b></div>
+        <div class="stat"><span>Tidak dijawab</span><b id="rEmpty">0</b></div>
+        <div class="stat"><span>Durasi</span><b id="rTime">0:00</b></div>
+      </div>
+      <p class="note" id="rNote"></p>
+      <p class="saved" id="rSaved"></p>
+      <div class="menu-actions">
+        <button class="btn primary" type="button" id="btnResRank">Lihat ranking</button>
+        <button class="btn" type="button" id="btnReview">Tinjau jawaban</button>
+        <button class="btn" type="button" id="btnRetry">Ulangi dengan soal acak baru</button>
+        <button class="btn" type="button" id="btnResMenu">Kembali ke menu</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Ranking -->
+  <section id="scrRank" hidden>
+    <div class="wrap" style="gap:16px">
+      <div class="qhead">
+        <div class="left"><button class="btn small" type="button" id="btnRankBack">← Menu</button><h2 style="font-size:24px" id="rankTitle">10 besar nilai tertinggi</h2></div>
+      </div>
+      <div class="tabs" role="tablist" id="rankTabs">
+        <button class="tab" role="tab" type="button" data-cat="TWK" style="--c:var(--twk)">TWK</button>
+        <button class="tab" role="tab" type="button" data-cat="TIU" style="--c:var(--tiu)">TIU</button>
+        <button class="tab" role="tab" type="button" data-cat="TKP" style="--c:var(--tkp)">TKP</button>
+        <button class="tab" role="tab" type="button" data-cat="UJIAN" style="--c:var(--ujian)">UJIAN</button>
+      </div>
+      <div class="modes" role="group" aria-label="Tampilan nilai">
+        <button class="btn small" type="button" data-mode="top" aria-pressed="true">10 Besar</button>
+        <button class="btn small" type="button" data-mode="all" aria-pressed="false">Semua Nilai Peserta</button>
+      </div>
+      <div class="rankbox">
+        <div class="tablewrap">
+          <table class="rank">
+            <thead><tr><th style="width:64px">#</th><th>Nama</th><th class="num">Nilai</th><th class="num">Benar</th><th class="num">Salah</th><th class="num">Durasi</th><th>Tanggal</th></tr></thead>
+            <tbody id="rankBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <p class="status" id="rankStatus"></p>
+      <p class="note" id="rankNote">Hanya 10 peserta dengan nilai tertinggi yang ditampilkan. Ranking memakai nilai terbaik tiap nama. Jika nilai sama, durasi yang lebih cepat di atas.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ================= UTIL ================= */
+const $ = id => document.getElementById(id);
+const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const fmt = n => Number(n).toLocaleString('id-ID');
+const rp = n => 'Rp' + fmt(n);
+function mmss(s){s=Math.max(0,Math.round(s));const m=Math.floor(s/60),r=s%60;return m+':'+String(r).padStart(2,'0')}
+function lsGet(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+/* angka pengecoh unik dan berbeda dari kunci */
+function numOpts(ans, cands, f){
+  f = f || (x=>fmt(x));
+  const seen=new Set([ans]); const out=[];
+  for(const c of cands){ if(out.length<3 && Number.isFinite(c) && c>0 && !seen.has(c)){seen.add(c);out.push(c)} }
+  let k=1; while(out.length<3){const c=ans+k*(k%2?1:-1)*Math.max(1,Math.round(Math.abs(ans)*0.07)); if(c>0&&!seen.has(c)){seen.add(c);out.push(c)} k++}
+  return [f(ans), ...out.map(f)];
+}
+
+/* ================= BANK TWK =================
+   format: [soal, [kunci, pengecoh1, pengecoh2, pengecoh3], penjelasan] */
+const TWK = [
+["Pancasila sebagai dasar negara secara resmi tercantum dalam ...",["Pembukaan UUD 1945 alinea keempat","Pembukaan UUD 1945 alinea pertama","Pasal 1 UUD 1945","Ketetapan MPR tentang P4"],"Rumusan lima sila Pancasila termuat dalam Pembukaan UUD 1945 alinea keempat, sehingga kedudukannya sebagai dasar negara melekat pada konstitusi."],
+["Pancasila dan UUD 1945 disahkan oleh PPKI pada tanggal ...",["18 Agustus 1945","17 Agustus 1945","22 Juni 1945","1 Juni 1945"],"Sehari setelah proklamasi, sidang PPKI 18 Agustus 1945 mengesahkan UUD 1945 yang di dalam pembukaannya memuat Pancasila, serta memilih presiden dan wakil presiden."],
+["Tokoh yang menyampaikan keberatan dari wakil Indonesia bagian timur dan mengusulkan perubahan rumusan sila pertama Piagam Jakarta adalah ...",["Mohammad Hatta","Soepomo","Muhammad Yamin","Achmad Soebardjo"],"Hatta menerima keberatan tersebut lalu bermusyawarah dengan tokoh-tokoh Islam, sehingga rumusan sila pertama diubah menjadi Ketuhanan Yang Maha Esa demi persatuan."],
+["Piagam Jakarta dirumuskan oleh ...",["Panitia Sembilan","PPKI","BPUPKI secara pleno","Panitia Kecil PPKI"],"Panitia Sembilan yang diketuai Soekarno merumuskan Piagam Jakarta pada 22 Juni 1945 sebagai rancangan pembukaan undang-undang dasar."],
+["Ketua BPUPKI adalah ...",["dr. K.R.T. Radjiman Wedyodiningrat","Ir. Soekarno","Drs. Mohammad Hatta","Prof. Dr. Soepomo"],"BPUPKI diketuai dr. Radjiman Wedyodiningrat. Soekarno kemudian menjadi ketua PPKI."],
+["Ketua Panitia Persiapan Kemerdekaan Indonesia (PPKI) adalah ...",["Ir. Soekarno","Drs. Mohammad Hatta","dr. Radjiman Wedyodiningrat","Ki Hajar Dewantara"],"PPKI dibentuk 7 Agustus 1945 dengan Soekarno sebagai ketua dan Hatta sebagai wakil ketua."],
+["Negara Indonesia adalah negara hukum. Ketentuan ini terdapat dalam UUD 1945 ...",["Pasal 1 ayat (3)","Pasal 1 ayat (1)","Pasal 1 ayat (2)","Pasal 27 ayat (1)"],"Pasal 1 ayat (3) UUD 1945 (hasil perubahan ketiga) menegaskan Indonesia sebagai negara hukum."],
+["Kedaulatan berada di tangan rakyat dan dilaksanakan menurut Undang-Undang Dasar. Ini bunyi UUD 1945 ...",["Pasal 1 ayat (2)","Pasal 1 ayat (3)","Pasal 2 ayat (1)","Pasal 3 ayat (1)"],"Pasal 1 ayat (2) setelah perubahan menyatakan kedaulatan di tangan rakyat dan dilaksanakan menurut UUD, tidak lagi sepenuhnya oleh MPR."],
+["Menurut Pasal 1 ayat (1) UUD 1945, bentuk negara Indonesia adalah ...",["Negara kesatuan yang berbentuk republik","Negara federal yang berbentuk republik","Negara kesatuan yang berbentuk kerajaan","Negara serikat"],"Pasal 1 ayat (1): Negara Indonesia ialah Negara Kesatuan yang berbentuk Republik."],
+["Menurut Pasal 7 UUD 1945, presiden dan wakil presiden memegang jabatan selama ...",["Lima tahun, dan sesudahnya dapat dipilih kembali dalam jabatan yang sama hanya untuk satu kali masa jabatan","Lima tahun dan dapat dipilih kembali tanpa batas","Empat tahun dan dapat dipilih kembali dua kali","Enam tahun untuk satu kali masa jabatan"],"Pembatasan dua periode ditegaskan melalui perubahan pertama UUD 1945 tahun 1999."],
+["Negara menjamin kemerdekaan tiap-tiap penduduk untuk memeluk agamanya masing-masing dan beribadat menurut agamanya. Ketentuan ini terdapat dalam UUD 1945 ...",["Pasal 29 ayat (2)","Pasal 29 ayat (1)","Pasal 28 ayat (1)","Pasal 31 ayat (2)"],"Pasal 29 ayat (1) menyatakan negara berdasar atas Ketuhanan Yang Maha Esa, sedangkan ayat (2) menjamin kemerdekaan memeluk agama dan beribadat."],
+["Bumi, air, dan kekayaan alam yang terkandung di dalamnya dikuasai oleh negara dan dipergunakan untuk sebesar-besar kemakmuran rakyat. Ini bunyi UUD 1945 ...",["Pasal 33 ayat (3)","Pasal 33 ayat (1)","Pasal 34 ayat (1)","Pasal 27 ayat (2)"],"Pasal 33 ayat (3) menjadi dasar penguasaan negara atas sumber daya alam untuk kemakmuran rakyat."],
+["Menurut Pasal 31 ayat (4) UUD 1945, negara memprioritaskan anggaran pendidikan sekurang-kurangnya ...",["20% dari APBN dan APBD","10% dari APBN","25% dari APBN dan APBD","15% dari APBD"],"Pasal 31 ayat (4) mewajibkan anggaran pendidikan sekurang-kurangnya dua puluh persen dari APBN dan APBD."],
+["Segala warga negara bersamaan kedudukannya di dalam hukum dan pemerintahan. Ketentuan ini terdapat dalam UUD 1945 ...",["Pasal 27 ayat (1)","Pasal 26 ayat (1)","Pasal 28D ayat (1)","Pasal 30 ayat (1)"],"Pasal 27 ayat (1) memuat asas persamaan di hadapan hukum dan pemerintahan, sekaligus kewajiban menjunjung keduanya."],
+["Tiap-tiap warga negara berhak dan wajib ikut serta dalam usaha pertahanan dan keamanan negara. Ketentuan ini terdapat dalam UUD 1945 ...",["Pasal 30 ayat (1)","Pasal 27 ayat (3)","Pasal 30 ayat (2)","Pasal 28 ayat (1)"],"Pasal 30 ayat (1) mengatur hak dan kewajiban dalam usaha pertahanan dan keamanan; Pasal 27 ayat (3) mengatur upaya pembelaan negara."],
+["Lambang Negara ialah Garuda Pancasila dengan semboyan Bhinneka Tunggal Ika. Ketentuan ini terdapat dalam UUD 1945 ...",["Pasal 36A","Pasal 35","Pasal 36","Pasal 36C"],"Pasal 36A ditambahkan melalui perubahan kedua UUD 1945 tahun 2000."],
+["Lembaga negara yang berwenang mengubah dan menetapkan Undang-Undang Dasar adalah ...",["MPR","DPR","Presiden bersama DPR","Mahkamah Konstitusi"],"Pasal 3 ayat (1) UUD 1945: MPR berwenang mengubah dan menetapkan Undang-Undang Dasar."],
+["Lembaga yang berwenang menguji undang-undang terhadap Undang-Undang Dasar adalah ...",["Mahkamah Konstitusi","Mahkamah Agung","Komisi Yudisial","DPR"],"Pasal 24C ayat (1): MK berwenang mengadili pada tingkat pertama dan terakhir, antara lain menguji UU terhadap UUD. MA menguji peraturan di bawah UU terhadap UU."],
+["Lembaga negara yang bertugas memeriksa pengelolaan dan tanggung jawab tentang keuangan negara adalah ...",["Badan Pemeriksa Keuangan (BPK)","BPKP","Bank Indonesia","Kementerian Keuangan"],"Pasal 23E UUD 1945 menyebut BPK sebagai badan yang bebas dan mandiri untuk memeriksa pengelolaan keuangan negara."],
+["Komisi Yudisial berwenang ...",["Mengusulkan pengangkatan hakim agung","Menguji undang-undang terhadap UUD","Memutus sengketa hasil pemilu","Mengadili perkara kasasi"],"Pasal 24B UUD 1945: Komisi Yudisial berwenang mengusulkan pengangkatan hakim agung serta menjaga kehormatan, keluhuran martabat, dan perilaku hakim."],
+["Perubahan (amandemen) UUD 1945 telah dilakukan sebanyak ...",["Empat kali, pada 1999 sampai 2002","Tiga kali, pada 1999 sampai 2001","Lima kali, pada 1999 sampai 2003","Dua kali, pada 1999 dan 2000"],"MPR melakukan perubahan pertama (1999), kedua (2000), ketiga (2001), dan keempat (2002)."],
+["Menurut Pasal 22E UUD 1945, pemilihan umum dilaksanakan secara ...",["Langsung, umum, bebas, rahasia, jujur, dan adil setiap lima tahun sekali","Langsung, umum, bebas, dan rahasia setiap empat tahun sekali","Bertingkat melalui perwakilan setiap lima tahun","Terbuka dan musyawarah setiap lima tahun"],"Asas pemilu luber jurdil dan periode lima tahunan diatur dalam Pasal 22E ayat (1)."],
+["MPR terdiri atas ...",["Anggota DPR dan anggota DPD yang dipilih melalui pemilihan umum","Anggota DPR dan utusan golongan","Anggota DPR, DPD, dan utusan daerah","Anggota DPR dan perwakilan TNI/Polri"],"Pasal 2 ayat (1) UUD 1945 setelah perubahan: MPR terdiri atas anggota DPR dan anggota DPD yang dipilih melalui pemilu."],
+["Lembaga negara yang anggotanya dipilih dari setiap provinsi melalui pemilu dan dapat mengajukan RUU yang berkaitan dengan otonomi daerah adalah ...",["Dewan Perwakilan Daerah (DPD)","Dewan Perwakilan Rakyat (DPR)","DPRD Provinsi","Majelis Permusyawaratan Rakyat (MPR)"],"Pasal 22C ayat (1) mengatur anggota DPD dipilih dari setiap provinsi melalui pemilu, dan Pasal 22D ayat (1) memberi DPD kewenangan mengajukan RUU terkait otonomi daerah kepada DPR."],
+["Peristiwa Rengasdengklok terjadi pada tanggal ...",["16 Agustus 1945","15 Agustus 1945","17 Agustus 1945","14 Agustus 1945"],"Golongan muda membawa Soekarno dan Hatta ke Rengasdengklok pada 16 Agustus 1945 agar segera memproklamasikan kemerdekaan tanpa pengaruh Jepang."],
+["Ikrar ketiga dalam Sumpah Pemuda berbunyi ...",["Menjunjung bahasa persatuan, bahasa Indonesia","Berbangsa yang satu, bangsa Indonesia","Bertumpah darah yang satu, tanah Indonesia","Berbahasa yang satu, bahasa Indonesia"],"Ikrar ketiga menggunakan kata menjunjung, bukan berbahasa satu. Artinya bahasa daerah tetap dihormati, sementara bahasa Indonesia dijunjung sebagai bahasa persatuan."],
+["Pengakuan kedaulatan Indonesia oleh Belanda sebagai hasil Konferensi Meja Bundar terjadi pada ...",["27 Desember 1949","17 Agustus 1950","2 November 1949","19 Desember 1948"],"KMB di Den Haag ditutup 2 November 1949, dan penyerahan kedaulatan kepada RIS dilakukan pada 27 Desember 1949."],
+["Dekrit Presiden 5 Juli 1959 berisi, antara lain ...",["Pembubaran Konstituante dan berlakunya kembali UUD 1945","Pembentukan negara federal","Pemberlakuan UUDS 1950","Pembubaran DPR hasil pemilu 1955 dan pembentukan MPRS tanpa UUD"],"Dekrit memuat pembubaran Konstituante, berlakunya kembali UUD 1945 dan tidak berlakunya UUDS 1950, serta pembentukan MPRS dan DPAS."],
+["Undang-Undang Dasar Sementara 1950 berlaku pada kurun waktu ...",["1950–1959","1949–1950","1945–1949","1959–1966"],"UUDS 1950 berlaku sejak kembali ke negara kesatuan pada 17 Agustus 1950 hingga Dekrit Presiden 5 Juli 1959."],
+["Deklarasi Djuanda 13 Desember 1957 penting karena ...",["Menyatakan laut di antara pulau-pulau Indonesia sebagai bagian wilayah NKRI","Menetapkan Pancasila sebagai asas tunggal","Mengakhiri sistem parlementer","Membentuk ASEAN"],"Deklarasi Djuanda melahirkan konsep negara kepulauan dan kini diperingati sebagai Hari Nusantara."],
+["Wawasan Nusantara adalah ...",["Cara pandang bangsa Indonesia tentang diri dan lingkungannya berdasarkan Pancasila dan UUD 1945 yang mengutamakan persatuan dan kesatuan","Strategi pertahanan militer menghadapi ancaman luar negeri","Konsep pembagian wilayah administratif","Kebijakan luar negeri bebas aktif"],"Wawasan Nusantara memandang wilayah, rakyat, dan seluruh aspek kehidupan sebagai satu kesatuan utuh."],
+["Yang bukan bagian dari nilai dasar ASN BerAKHLAK adalah ...",["Disiplin","Akuntabel","Harmonis","Kolaboratif"],"BerAKHLAK terdiri atas Berorientasi pelayanan, Akuntabel, Kompeten, Harmonis, Loyal, Adaptif, dan Kolaboratif."],
+["ASEAN didirikan melalui Deklarasi Bangkok pada tanggal ...",["8 Agustus 1967","17 Agustus 1967","8 Agustus 1976","24 Juni 1967"],"Indonesia, Malaysia, Filipina, Singapura, dan Thailand menandatangani Deklarasi Bangkok pada 8 Agustus 1967."],
+["Pidato Mendayung di Antara Dua Karang (1948) yang menjadi dasar politik luar negeri bebas aktif disampaikan oleh ...",["Mohammad Hatta","Soekarno","Sutan Sjahrir","Adam Malik"],"Hatta menegaskan Indonesia tidak memihak blok mana pun dan aktif memperjuangkan perdamaian dunia."],
+["Surat Perintah Sebelas Maret (Supersemar) dikeluarkan pada tahun ...",["1966","1965","1967","1968"],"Supersemar ditandatangani Presiden Soekarno pada 11 Maret 1966 dan menjadi awal peralihan kekuasaan ke Orde Baru."],
+["Presiden Soeharto menyatakan berhenti dari jabatannya pada ...",["21 Mei 1998","12 Mei 1998","20 Oktober 1999","11 Maret 1998"],"Pengunduran diri Soeharto pada 21 Mei 1998 menandai berakhirnya Orde Baru dan dimulainya era Reformasi."],
+["Pemerintahan daerah provinsi, kabupaten, dan kota mengatur dan mengurus sendiri urusan pemerintahan menurut asas otonomi dan tugas pembantuan. Ketentuan ini ada dalam UUD 1945 ...",["Pasal 18 ayat (2)","Pasal 18 ayat (1)","Pasal 18A ayat (1)","Pasal 18B ayat (2)"],"Pasal 18 ayat (2) menjadi dasar konstitusional otonomi daerah."],
+["Gratifikasi yang diterima pegawai negeri wajib dilaporkan kepada KPK paling lambat ...",["30 hari kerja sejak diterima","7 hari kerja sejak diterima","14 hari kalender sejak diterima","60 hari kerja sejak diterima"],"Undang-undang pemberantasan tindak pidana korupsi memberi batas 30 hari kerja sejak gratifikasi diterima untuk melaporkannya ke KPK."],
+["Pancasila sebagai ideologi terbuka berarti ...",["Nilai dasarnya tetap, sedangkan penerapannya dapat dikembangkan sesuai perkembangan zaman","Seluruh nilainya dapat diganti sesuai kebutuhan","Dapat dipadukan dengan ideologi apa pun termasuk yang bertentangan","Hanya berlaku pada masa tertentu"],"Ideologi terbuka memiliki nilai dasar yang tetap, sementara nilai instrumental dan praksisnya dapat menyesuaikan diri dengan dinamika masyarakat."],
+["Undang-undang yang mengatur Bendera, Bahasa, dan Lambang Negara serta Lagu Kebangsaan adalah ...",["UU Nomor 24 Tahun 2009","UU Nomor 12 Tahun 2011","UU Nomor 23 Tahun 2014","UU Nomor 39 Tahun 1999"],"UU 24/2009 mengatur tata cara penggunaan bendera, bahasa, lambang negara, dan lagu kebangsaan."],
+["Yang tidak termasuk Empat Pilar Kebangsaan adalah ...",["GBHN","Pancasila","UUD 1945","Bhinneka Tunggal Ika"],"Empat Pilar yang disosialisasikan MPR adalah Pancasila, UUD 1945, NKRI, dan Bhinneka Tunggal Ika."],
+["Hak DPR untuk meminta keterangan kepada pemerintah mengenai kebijakan penting yang berdampak luas disebut hak ...",["Interpelasi","Angket","Menyatakan pendapat","Imunitas"],"Interpelasi adalah hak meminta keterangan. Angket adalah hak melakukan penyelidikan."],
+["Kekuasaan kehakiman di Indonesia dilakukan oleh ...",["Mahkamah Agung dan Mahkamah Konstitusi beserta badan peradilan di bawah MA","Mahkamah Agung saja","Mahkamah Agung dan Komisi Yudisial","Kejaksaan Agung dan Mahkamah Agung"],"Pasal 24 ayat (2) UUD 1945 menyebut MA dengan badan peradilan di bawahnya dan MK sebagai pelaku kekuasaan kehakiman."],
+["Menurut UUD 1945 hasil perubahan, presiden dan wakil presiden dipilih oleh ...",["Rakyat secara langsung dalam satu pasangan","MPR","DPR","DPR dan DPD"],"Pasal 6A ayat (1): Presiden dan Wakil Presiden dipilih dalam satu pasangan secara langsung oleh rakyat."],
+["Lembaga yang memeriksa, mengadili, dan memutus pendapat DPR bahwa presiden diduga melakukan pelanggaran hukum adalah ...",["Mahkamah Konstitusi","Mahkamah Agung","MPR","Komisi Yudisial"],"Sebelum DPR mengusulkan pemberhentian kepada MPR, pendapat DPR wajib diputus lebih dulu oleh MK (Pasal 7B)."],
+["Peraturan pemerintah pengganti undang-undang (Perppu) dapat ditetapkan presiden dalam keadaan ...",["Hal ihwal kegentingan yang memaksa","Atas usul DPD","Ketika DPR sedang reses saja","Atas permintaan MPR"],"Pasal 22 ayat (1) UUD 1945. Perppu harus mendapat persetujuan DPR pada persidangan berikutnya."],
+["Dalam hierarki peraturan perundang-undangan menurut UU 12/2011, tingkat yang berada tepat di bawah UUD 1945 adalah ...",["Ketetapan MPR","Undang-Undang/Perppu","Peraturan Pemerintah","Peraturan Presiden"],"Urutannya: UUD 1945, Tap MPR, UU/Perppu, PP, Perpres, Perda Provinsi, Perda Kabupaten/Kota."],
+["Konvensi internasional yang mengakui Indonesia sebagai negara kepulauan adalah ...",["UNCLOS 1982","Konvensi Wina 1961","Konvensi Jenewa 1949","Piagam PBB 1945"],"Konvensi Hukum Laut PBB (UNCLOS) 1982 mengakui konsep archipelagic state yang diperjuangkan sejak Deklarasi Djuanda."],
+["Sistem pertahanan dan keamanan negara Indonesia disebut ...",["Sistem pertahanan dan keamanan rakyat semesta","Sistem pertahanan wajib militer","Sistem pertahanan blok","Sistem pertahanan terbatas"],"Pasal 30 ayat (2) UUD 1945: usaha pertahanan dan keamanan dilaksanakan melalui sistem pertahanan dan keamanan rakyat semesta."],
+["Sidang pertama BPUPKI yang membahas dasar negara berlangsung pada ...",["29 Mei – 1 Juni 1945","10 – 17 Juli 1945","18 – 22 Agustus 1945","1 – 22 Juni 1945"],"Dalam sidang pertama, Muhammad Yamin, Soepomo, dan Soekarno menyampaikan gagasan tentang dasar negara."],
+["Konsep Trisakti yang dikemukakan Soekarno berisi ...",["Berdaulat di bidang politik, berdikari di bidang ekonomi, dan berkepribadian dalam kebudayaan","Satu nusa, satu bangsa, satu bahasa","Nasionalisme, agama, dan komunisme","Pembangunan, stabilitas, dan pemerataan"],"Trisakti menegaskan kemandirian bangsa di bidang politik, ekonomi, dan budaya."],
+["Isi Perjanjian Linggarjati (1946) antara lain Belanda mengakui secara de facto wilayah RI yang meliputi ...",["Jawa, Sumatra, dan Madura","Jawa dan Bali","Sumatra dan Kalimantan","Seluruh bekas Hindia Belanda"],"Linggarjati mengakui kekuasaan de facto RI atas Jawa, Sumatra, dan Madura."],
+["Perjanjian Renville dilaksanakan di ...",["Atas kapal perang Amerika Serikat USS Renville","Gedung Merdeka Bandung","Den Haag, Belanda","Linggarjati, Kuningan"],"Perundingan berlangsung di atas kapal USS Renville yang berlabuh di Teluk Jakarta, Desember 1947 – Januari 1948."],
+["Agresi Militer Belanda I dimulai pada tanggal ...",["21 Juli 1947","19 Desember 1948","17 Januari 1948","10 November 1945"],"Agresi Militer I dimulai 21 Juli 1947; Agresi Militer II pada 19 Desember 1948."],
+["Pemerintahan Darurat Republik Indonesia (PDRI) tahun 1948 dipimpin oleh ...",["Sjafruddin Prawiranegara","Sutan Sjahrir","Amir Sjarifuddin","Mohammad Natsir"],"Ketika Soekarno dan Hatta ditawan dalam Agresi Militer II, Sjafruddin memimpin PDRI di Sumatra Barat."],
+["Hari Bela Negara diperingati setiap tanggal 19 Desember untuk mengenang ...",["Pembentukan Pemerintahan Darurat Republik Indonesia","Pertempuran Surabaya","Serangan Umum 1 Maret","Peristiwa Rengasdengklok"],"Tanggal 19 Desember 1948 adalah awal Agresi Militer II sekaligus hari dibentuknya PDRI yang menjaga keberlangsungan negara."],
+["Setiap warga negara berhak dan wajib ikut serta dalam upaya pembelaan negara. Ketentuan ini terdapat dalam UUD 1945 ...",["Pasal 27 ayat (3)","Pasal 30 ayat (1)","Pasal 27 ayat (2)","Pasal 28 ayat (3)"],"Pasal 27 ayat (3) ditambahkan dalam perubahan kedua UUD 1945."],
+["Ketentuan tentang hak asasi manusia dalam UUD 1945 hasil perubahan dimuat dalam ...",["Bab XA, Pasal 28A sampai 28J","Bab X, Pasal 26 sampai 28","Bab XI, Pasal 29","Bab XIII, Pasal 31 dan 32"],"Bab XA tentang Hak Asasi Manusia ditambahkan dalam perubahan kedua tahun 2000."],
+["Pasal 28J UUD 1945 pada intinya mengatur ...",["Kewajiban menghormati hak orang lain dan pembatasan HAM yang ditetapkan dengan undang-undang","Hak untuk hidup","Hak atas pendidikan","Hak beragama"],"Pasal 28J menegaskan bahwa pelaksanaan HAM tunduk pada pembatasan yang ditetapkan undang-undang demi menghormati hak orang lain dan ketertiban umum."],
+["Fakir miskin dan anak-anak yang terlantar dipelihara oleh negara. Ketentuan ini terdapat dalam UUD 1945 ...",["Pasal 34 ayat (1)","Pasal 33 ayat (1)","Pasal 28H ayat (1)","Pasal 27 ayat (2)"],"Pasal 34 ayat (1) menjadi dasar kebijakan perlindungan sosial oleh negara."],
+["Menurut Pasal 26 ayat (1) UUD 1945, yang menjadi warga negara ialah ...",["Orang-orang bangsa Indonesia asli dan orang-orang bangsa lain yang disahkan dengan undang-undang sebagai warga negara","Semua orang yang lahir di wilayah Indonesia","Semua orang yang tinggal di Indonesia lebih dari lima tahun","Orang yang orang tuanya warga negara Indonesia saja"],"Pengaturan rinci kewarganegaraan dilakukan dengan undang-undang."],
+["Menurut Pasal 37 ayat (5) UUD 1945, ketentuan yang tidak dapat dilakukan perubahan adalah ...",["Bentuk Negara Kesatuan Republik Indonesia","Jumlah pasal dalam UUD","Masa jabatan presiden","Susunan MPR"],"Pasal 37 ayat (5) menyatakan khusus mengenai bentuk NKRI tidak dapat dilakukan perubahan."],
+["Yang bukan termasuk tujuan negara dalam Pembukaan UUD 1945 alinea keempat adalah ...",["Membentuk negara federal yang kuat","Melindungi segenap bangsa Indonesia dan seluruh tumpah darah Indonesia","Mencerdaskan kehidupan bangsa","Ikut melaksanakan ketertiban dunia"],"Tujuan negara: melindungi segenap bangsa dan tumpah darah, memajukan kesejahteraan umum, mencerdaskan kehidupan bangsa, dan ikut melaksanakan ketertiban dunia."],
+["Pernyataan kemerdekaan yang didorong oleh motivasi spiritual (atas berkat rahmat Allah Yang Maha Kuasa) terdapat dalam Pembukaan UUD 1945 alinea ...",["Ketiga","Pertama","Kedua","Keempat"],"Alinea ketiga memuat motivasi spiritual sekaligus pernyataan kemerdekaan. Alinea pertama memuat dalil hak kemerdekaan, alinea kedua perjuangan pergerakan, alinea keempat tujuan negara dan dasar negara."],
+["Cita-cita negara Indonesia yang merdeka, bersatu, berdaulat, adil, dan makmur dirumuskan dalam Pembukaan UUD 1945 alinea ...",["Kedua","Pertama","Ketiga","Keempat"],"Alinea kedua menggambarkan perjuangan pergerakan yang telah mengantarkan rakyat ke depan pintu gerbang kemerdekaan negara yang merdeka, bersatu, berdaulat, adil, dan makmur."],
+["Penegasan Pancasila sebagai sumber segala sumber hukum negara diatur dalam UU Nomor 12 Tahun 2011 ...",["Pasal 2","Pasal 1","Pasal 3","Pasal 7"],"Pasal 2 UU 12/2011 menyatakan Pancasila merupakan sumber segala sumber hukum negara. Pasal 7 mengatur hierarki peraturan perundang-undangan."],
+["Rumusan dasar negara yang terdiri atas Peri Kebangsaan, Peri Kemanusiaan, Peri Ketuhanan, Peri Kerakyatan, dan Kesejahteraan Rakyat dikemukakan oleh ...",["Muhammad Yamin","Soepomo","Soekarno","Ki Bagus Hadikusumo"],"Rumusan ini disampaikan Muhammad Yamin dalam pidatonya pada sidang pertama BPUPKI, 29 Mei 1945."],
+["Rumusan dasar negara berupa Persatuan, Kekeluargaan, Keseimbangan lahir dan batin, Musyawarah, serta Keadilan rakyat dikemukakan oleh ...",["Soepomo","Muhammad Yamin","Soekarno","Mohammad Hatta"],"Soepomo menyampaikannya pada 31 Mei 1945 dan dikenal dengan paham negara integralistik."],
+["Menurut Pasal II Aturan Tambahan UUD 1945, setelah perubahan, UUD 1945 terdiri atas ...",["Pembukaan dan pasal-pasal","Pembukaan, batang tubuh, dan penjelasan","Pembukaan, pasal-pasal, dan penjelasan","Batang tubuh dan penjelasan"],"Sejak perubahan keempat, Penjelasan tidak lagi menjadi bagian UUD 1945; UUD terdiri atas Pembukaan dan pasal-pasal."],
+["Lembaga yang berwenang memutus sengketa kewenangan lembaga negara yang kewenangannya diberikan oleh UUD adalah ...",["Mahkamah Konstitusi","Mahkamah Agung","MPR","Presiden"],"Pasal 24C ayat (1) UUD 1945 memberi MK kewenangan memutus sengketa kewenangan lembaga negara, selain menguji UU, membubarkan partai politik, dan memutus perselisihan hasil pemilu."],
+["Ketentuan bahwa presiden tidak dapat membekukan dan/atau membubarkan DPR terdapat dalam UUD 1945 ...",["Pasal 7C","Pasal 7A","Pasal 7B","Pasal 20"],"Pasal 7C menegaskan ciri presidensial: presiden dan DPR sama-sama tidak dapat saling menjatuhkan secara politik."],
+["Presiden menyatakan perang, membuat perdamaian, dan perjanjian dengan negara lain dengan persetujuan ...",["DPR","MPR","DPD","Mahkamah Konstitusi"],"Pasal 11 ayat (1) UUD 1945 mensyaratkan persetujuan DPR."],
+["Dalam memberikan amnesti dan abolisi, presiden memperhatikan pertimbangan ...",["DPR","Mahkamah Agung","Mahkamah Konstitusi","Menteri Hukum"],"Pasal 14 ayat (2): amnesti dan abolisi dengan pertimbangan DPR. Pasal 14 ayat (1): grasi dan rehabilitasi dengan pertimbangan Mahkamah Agung."],
+["Dalam memberikan grasi dan rehabilitasi, presiden memperhatikan pertimbangan ...",["Mahkamah Agung","DPR","Mahkamah Konstitusi","Komisi Yudisial"],"Pasal 14 ayat (1) UUD 1945. Grasi dan rehabilitasi bersifat yudisial, sehingga pertimbangannya dari MA."],
+["Apabila DPR tidak menyetujui rancangan APBN yang diusulkan presiden, maka ...",["Pemerintah menjalankan APBN tahun yang lalu","Presiden menetapkan APBN dengan Perppu","MPR mengambil alih pembahasan","APBN ditetapkan oleh DPD"],"Pasal 23 ayat (3) UUD 1945 mengatur pemerintah menjalankan APBN tahun lalu."],
+["Lembaga yang berwenang menguji peraturan perundang-undangan di bawah undang-undang terhadap undang-undang adalah ...",["Mahkamah Agung","Mahkamah Konstitusi","DPR","Kementerian Dalam Negeri"],"Pasal 24A ayat (1) UUD 1945. MK menguji UU terhadap UUD, sedangkan MA menguji peraturan di bawah UU terhadap UU."],
+["Menurut Pasal 20A ayat (1) UUD 1945, DPR memiliki fungsi ...",["Legislasi, anggaran, dan pengawasan","Legislasi, yudikatif, dan pengawasan","Anggaran, pengawasan, dan pemerintahan","Legislasi, konsultatif, dan representasi"],"Tiga fungsi DPR adalah legislasi, anggaran, dan pengawasan; hak interpelasi, angket, dan menyatakan pendapat menunjang fungsi pengawasan."],
+["Ketentuan bahwa gubernur, bupati, dan wali kota dipilih secara demokratis terdapat dalam UUD 1945 ...",["Pasal 18 ayat (4)","Pasal 18 ayat (3)","Pasal 22E ayat (2)","Pasal 18A ayat (1)"],"Pasal 18 ayat (4) hanya menyebut dipilih secara demokratis, sehingga mekanisme pemilihannya diatur undang-undang."],
+["Pengakuan dan penghormatan negara terhadap kesatuan masyarakat hukum adat beserta hak tradisionalnya diatur dalam UUD 1945 ...",["Pasal 18B ayat (2)","Pasal 18B ayat (1)","Pasal 18A ayat (2)","Pasal 28I ayat (3)"],"Pasal 18B ayat (2) mengakui masyarakat hukum adat sepanjang masih hidup dan sesuai perkembangan masyarakat serta prinsip NKRI. Ayat (1) mengatur daerah khusus atau istimewa."],
+["Menurut Pasal 30 ayat (4) UUD 1945, Kepolisian Negara Republik Indonesia sebagai alat negara bertugas ...",["Menjaga keamanan dan ketertiban masyarakat, melindungi, mengayomi, melayani, serta menegakkan hukum","Mempertahankan keutuhan dan kedaulatan negara","Menjaga perbatasan wilayah laut","Melaksanakan operasi militer selain perang"],"Pasal 30 ayat (3) mengatur TNI sebagai alat negara untuk mempertahankan, melindungi, dan memelihara keutuhan serta kedaulatan negara; ayat (4) mengatur Polri."],
+["Ketentuan bahwa negara memiliki suatu bank sentral yang independensinya diatur dengan undang-undang terdapat dalam UUD 1945 ...",["Pasal 23D","Pasal 23B","Pasal 23C","Pasal 33 ayat (4)"],"Pasal 23D tidak menyebut nama bank sentral; nama dan kewenangannya diatur dalam undang-undang tentang Bank Indonesia."],
+["Hak berikut yang tidak termasuk hak yang tidak dapat dikurangi dalam keadaan apa pun menurut Pasal 28I ayat (1) UUD 1945 adalah ...",["Hak berserikat dan berkumpul","Hak untuk hidup","Hak untuk tidak disiksa","Hak untuk tidak dituntut atas dasar hukum yang berlaku surut"],"Pasal 28I ayat (1) menyebut hak hidup, tidak disiksa, kemerdekaan pikiran dan hati nurani, beragama, tidak diperbudak, diakui sebagai pribadi di hadapan hukum, dan tidak dituntut atas hukum yang berlaku surut."],
+["Yang tidak termasuk nilai dasar bela negara adalah ...",["Taat membayar pajak","Cinta tanah air","Setia pada Pancasila sebagai ideologi negara","Kemampuan awal bela negara"],"Nilai dasar bela negara: cinta tanah air, sadar berbangsa dan bernegara, setia pada Pancasila, rela berkorban untuk bangsa dan negara, serta kemampuan awal bela negara. Taat pajak adalah kewajiban warga, tetapi tidak disebut sebagai nilai dasar bela negara."],
+["Anda mengetahui rekan memakai akun milik pegawai yang sudah pensiun untuk mempercepat layanan warga yang menumpuk. Sikap yang paling mencerminkan integritas adalah ...",["Melaporkannya agar akun dinonaktifkan dan mengusulkan solusi beban kerja melalui jalur resmi","Membiarkannya karena tujuannya membantu warga","Menegurnya tetapi ikut memakai akun itu saat antrean panjang","Meminta rekan itu meminjamkan akun tersebut kepada Anda juga"],"Niat baik tidak membenarkan pelanggaran keamanan sistem dan akuntabilitas. Masalah beban kerja diselesaikan secara resmi, bukan dengan identitas orang lain."],
+["Sikap yang paling tepat dalam menghadapi masuknya budaya asing di era globalisasi adalah ...",["Menerima secara selektif budaya yang sesuai dengan nilai Pancasila","Menolak seluruh budaya asing demi menjaga budaya nasional","Menerima seluruh budaya asing agar tidak tertinggal","Membiarkan masyarakat menentukan sendiri tanpa penyaringan"],"Nasionalisme yang terbuka tidak menolak kemajuan, tetapi menyaringnya dengan nilai Pancasila."],
+["Tujuan utama Serangan Umum 1 Maret 1949 di Yogyakarta adalah ...",["Menunjukkan kepada dunia internasional bahwa Republik Indonesia dan TNI masih ada","Merebut kembali seluruh wilayah Jawa dari Belanda","Membebaskan Soekarno dan Hatta dari pengasingan","Membubarkan negara-negara boneka bentukan Belanda"],"Serangan ini mematahkan propaganda Belanda bahwa RI sudah tidak ada dan memperkuat posisi Indonesia di forum PBB."],
+["Ketetapan MPR yang mencabut Tap MPR tentang P4 sekaligus menegaskan Pancasila sebagai dasar negara adalah ...",["Tap MPR Nomor XVIII/MPR/1998","Tap MPR Nomor II/MPR/1978","Tap MPRS Nomor XX/MPRS/1966","Tap MPR Nomor I/MPR/2003"],"Tap MPR XVIII/MPR/1998 dikeluarkan pada awal Reformasi; Tap MPR II/MPR/1978 adalah ketetapan tentang P4 yang dicabut."],
+["Pernyataan yang paling tepat tentang hubungan Pembukaan UUD 1945 dengan Proklamasi 17 Agustus 1945 adalah ...",["Pembukaan UUD 1945 memuat penjabaran lebih rinci dari amanat Proklamasi","Pembukaan UUD 1945 menggantikan teks Proklamasi","Proklamasi merupakan penjelasan dari Pembukaan UUD 1945","Keduanya tidak berhubungan karena dibuat pada tanggal berbeda"],"Proklamasi adalah pernyataan kemerdekaan; Pembukaan UUD 1945 menjabarkan alasan, cita-cita, tujuan, dan dasar negara yang merdeka itu."],
+["Kewenangan MPR menurut UUD 1945 setelah perubahan adalah, kecuali ...",["Memilih presiden dan wakil presiden dalam pemilihan umum","Mengubah dan menetapkan Undang-Undang Dasar","Melantik presiden dan/atau wakil presiden","Memberhentikan presiden dan/atau wakil presiden dalam masa jabatannya menurut UUD"],"Sejak perubahan ketiga, presiden dan wakil presiden dipilih langsung oleh rakyat. MPR hanya memilih wakil presiden bila terjadi kekosongan, atau presiden dan wakil presiden bila keduanya berhalangan tetap."],
+["Pernyataan yang benar tentang kedudukan lembaga negara setelah perubahan UUD 1945 adalah ...",["MPR tidak lagi menjadi lembaga tertinggi negara dan sejajar dengan lembaga negara lain","MPR tetap menjadi lembaga tertinggi negara","Presiden adalah mandataris MPR","DPR berada di bawah MPR secara struktural"],"Setelah perubahan, kedaulatan dilaksanakan menurut UUD, sehingga tidak ada lagi lembaga tertinggi negara; hubungan antarlembaga bersifat saling mengawasi dan mengimbangi."],
+["Menurut Pasal 6A ayat (3) UUD 1945, pasangan calon presiden dan wakil presiden ditetapkan sebagai pemenang apabila memperoleh ...", ["Lebih dari 50% suara dengan sedikitnya 20% suara di setiap provinsi yang tersebar di lebih dari setengah jumlah provinsi", "Lebih dari 50% suara secara nasional tanpa syarat sebaran provinsi", "Suara terbanyak dengan sedikitnya 25% suara di setiap provinsi", "Sedikitnya 30% suara dan menang di lebih dari setengah jumlah provinsi"], "Syarat ganda ini menjamin presiden terpilih mendapat dukungan mayoritas sekaligus tersebar secara nasional. Jika tidak ada yang memenuhi, dua pasangan teratas maju ke putaran kedua."],
+["Lembaga yang berwenang memutus pembubaran partai politik adalah ...", ["Mahkamah Konstitusi", "Mahkamah Agung", "Kementerian Hukum", "Komisi Pemilihan Umum"], "Pasal 24C ayat (1) UUD 1945 memberi MK kewenangan memutus pembubaran partai politik."],
+["Tokoh berikut yang bukan anggota Panitia Sembilan perumus Piagam Jakarta adalah ...", ["Soepomo", "A.A. Maramis", "K.H. Wahid Hasjim", "Achmad Soebardjo"], "Panitia Sembilan beranggotakan Soekarno, Mohammad Hatta, A.A. Maramis, Abikoesno Tjokrosoejoso, Abdul Kahar Muzakir, H. Agus Salim, Achmad Soebardjo, K.H. Wahid Hasjim, dan Muhammad Yamin. Soepomo adalah anggota BPUPKI, tetapi tidak termasuk Panitia Sembilan."],
+["Dalam bahasa Jepang, BPUPKI yang menyusun rancangan dasar negara dikenal dengan nama ...", ["Dokuritsu Junbi Cosakai", "Dokuritsu Junbi Inkai", "Chuo Sangi In", "Jawa Hokokai"], "BPUPKI disebut Dokuritsu Junbi Cosakai, sedangkan PPKI disebut Dokuritsu Junbi Inkai. Chuo Sangi In adalah badan penasihat pemerintah pendudukan Jepang."],
+["Sidang kedua BPUPKI pada 10–17 Juli 1945 terutama membahas ...", ["Rancangan undang-undang dasar, bentuk negara, dan wilayah negara", "Usulan rumusan dasar negara dari Yamin, Soepomo, dan Soekarno", "Pengesahan UUD 1945 dan pemilihan presiden", "Pembentukan kementerian dan komite nasional"], "Sidang pertama (29 Mei–1 Juni 1945) membahas dasar negara. Sidang kedua membahas rancangan UUD, bentuk negara, dan wilayah. Pengesahan UUD dilakukan PPKI pada 18 Agustus 1945."],
+["Penetapan 1 Juni sebagai Hari Lahir Pancasila sekaligus hari libur nasional dilakukan melalui ...", ["Keputusan Presiden Nomor 24 Tahun 2016", "Ketetapan MPR Nomor XVIII/MPR/1998", "Undang-Undang Nomor 12 Tahun 2011", "Peraturan Presiden Nomor 7 Tahun 2018"], "Keppres 24/2016 ditetapkan Presiden Joko Widodo. Perpres 7/2018 adalah dasar pembentukan BPIP."],
+["Presiden dan Wakil Presiden Republik Indonesia periode 2024–2029, Prabowo Subianto dan Gibran Rakabuming Raka, dilantik pada tanggal ...", ["20 Oktober 2024", "17 Agustus 2024", "1 Oktober 2024", "14 Februari 2024"], "Pelantikan dilakukan dalam Sidang Paripurna MPR pada 20 Oktober 2024. Tanggal 14 Februari 2024 adalah hari pemungutan suara Pemilu 2024."],
+["Nama kabinet pemerintahan Presiden Prabowo Subianto adalah ...", ["Kabinet Merah Putih", "Kabinet Indonesia Maju", "Kabinet Kerja", "Kabinet Persatuan Nasional"], "Kabinet Indonesia Maju dan Kabinet Kerja adalah kabinet era Presiden Joko Widodo, sedangkan Kabinet Persatuan Nasional adalah kabinet era Presiden Abdurrahman Wahid."],
+["Asta Cita adalah delapan misi pemerintahan Prabowo–Gibran. Misi pertama Asta Cita adalah ...", ["Memperkokoh ideologi Pancasila, demokrasi, dan hak asasi manusia", "Melanjutkan hilirisasi dan industrialisasi untuk meningkatkan nilai tambah di dalam negeri", "Membangun dari desa dan dari bawah untuk pemerataan ekonomi dan pemberantasan kemiskinan", "Memperkuat reformasi politik, hukum, dan birokrasi serta pemberantasan korupsi"], "Pilihan lain adalah misi kelima, keenam, dan ketujuh Asta Cita. Misi pertama menempatkan penguatan ideologi Pancasila sebagai fondasi."],
+["Menurut Peraturan Presiden Nomor 115 Tahun 2025, Program Makan Bergizi Gratis dilaksanakan oleh ...", ["Badan Gizi Nasional", "Kementerian Kesehatan", "Kementerian Pendidikan Dasar dan Menengah", "Badan Pangan Nasional"], "Perpres 115/2025 tentang Tata Kelola Penyelenggaraan Program Makan Bergizi Gratis menetapkan Badan Gizi Nasional sebagai pelaksana. Badan ini dibentuk melalui Perpres 83 Tahun 2024."]
+];
+
+/* ================= BANK TKP =================
+   format: [situasi, [poin5, poin4, poin3, poin1], penjelasan] */
+const TKP = [
+["Anda bertugas di loket pelayanan kependudukan. Lima belas menit sebelum jam layanan berakhir, masih ada sekitar dua puluh warga yang sudah memegang nomor antrean. Sebagian dari mereka datang dari desa yang jauh dan mengaku sudah menunggu sejak pagi. Rekan di loket sebelah sedang bersiap pulang. Sikap Anda ...", ["Mengajak rekan di loket sebelah untuk membuka kembali loketnya sementara, lalu bersama-sama menuntaskan seluruh antrean yang sudah terdaftar hari itu juga", "Tetap melayani seluruh antrean seorang diri walaupun harus bekerja melewati jam layanan, karena warga sudah menunggu sejak pagi dan datang dari jauh", "Mendata nama dan keperluan warga yang belum terlayani, lalu memberi mereka nomor prioritas agar dilayani paling awal pada keesokan harinya", "Mengumumkan dengan sopan bahwa layanan hari ini sudah berakhir sesuai jam operasional, dan meminta warga kembali besok dengan membawa nomor antrean baru"], "Jawaban terbaik menuntaskan layanan dengan cara paling cepat melalui kerja sama. Melayani sendiri tetap baik tetapi lebih lambat, sedangkan menunda memindahkan beban kepada warga."],
+["Seorang warga mendatangi meja Anda dengan nada tinggi. Ia mengeluh berkas izinnya sudah tiga minggu tidak selesai, padahal dijanjikan selesai dalam tujuh hari. Setelah Anda periksa, berkas itu tertahan di bidang lain karena ada dokumen yang belum diverifikasi, dan itu bukan kesalahan unit Anda. Anda ...", ["Meminta maaf atas keterlambatan, menghubungi bidang terkait saat itu juga untuk menanyakan kendalanya, lalu menyampaikan kepada warga langkah dan waktu penyelesaian yang pasti", "Menjelaskan secara jujur bahwa berkas tertahan di bidang lain, lalu memberikan nama petugas dan nomor kontak bidang tersebut agar warga dapat menanyakannya langsung", "Mencatat keluhan warga beserta nomor berkasnya, kemudian berjanji akan menyampaikan keluhan tersebut kepada atasan untuk ditindaklanjuti dalam beberapa hari", "Menenangkan warga dengan menjelaskan bahwa keterlambatan terjadi di luar unit Anda, sehingga warga perlu bersabar menunggu sampai bidang terkait menyelesaikannya, sambil mencatat nomor berkas warga agar mudah ditelusuri bila ia kembali"], "Pelayan publik mengambil alih masalah warga sampai ada kepastian, tanpa melempar tanggung jawab ke unit lain."],
+["Anda bertugas di layanan daring sebuah kantor pelayanan. Seorang lansia meminta bantuan karena tidak bisa mengisi formulir pada aplikasi. Saat itu antrean di belakangnya cukup panjang dan beberapa warga mulai menggerutu karena layanan berjalan lambat. Di ruangan juga ada petugas pendamping yang sedang tidak sibuk. Anda ...", ["Meminta petugas pendamping membantu lansia tersebut mengisi formulir di meja terpisah, sementara Anda tetap melayani antrean berikutnya agar semua warga terlayani dengan baik", "Membantu lansia tersebut mengisi formulir sampai selesai karena kebutuhannya mendesak, kemudian meminta maaf kepada warga lain atas waktu tunggu yang bertambah", "Memberikan lembar panduan pengisian formulir kepada lansia tersebut dan mempersilakannya mencoba sendiri di kursi tunggu sambil Anda melanjutkan antrean, lalu memeriksa kembali isiannya setelah antrean di depan Anda mulai berkurang", "Menyarankan lansia tersebut kembali lain waktu bersama anggota keluarga yang lebih memahami teknologi agar pengisian formulir tidak menghambat antrean"], "Jawaban terbaik memenuhi kebutuhan khusus warga tanpa mengorbankan warga lain."],
+["Setelah Anda membantu mengurus berkasnya sampai tuntas, seorang ibu kembali ke kantor membawa sekotak kue buatannya sendiri. Ia mengatakan kue itu sekadar ucapan terima kasih, tidak bernilai mahal, dan ia akan tersinggung bila Anda menolaknya. Rekan-rekan Anda di ruangan ikut menunggu tanggapan Anda. Anda ...", ["Berterima kasih atas niat baik ibu tersebut, lalu menolak dengan sopan sambil menjelaskan bahwa petugas tidak boleh menerima pemberian apa pun terkait layanan yang diberikan", "Menerima kue tersebut agar ibu itu tidak tersinggung, lalu membagikannya kepada seluruh rekan di ruangan supaya tidak dinikmati untuk kepentingan pribadi", "Menerima kue tersebut karena nilainya kecil dan diberikan setelah layanan selesai, sehingga dianggap tidak akan memengaruhi layanan di kemudian hari, apalagi kue tersebut buatan sendiri dan bukan barang berharga", "Menerima kue tersebut sekali ini saja sambil berpesan kepada ibu itu agar lain kali tidak perlu membawa apa pun ketika datang ke kantor"], "Pemberian yang terkait layanan berpotensi gratifikasi berapa pun nilainya. Menolak dengan sopan juga mendidik masyarakat."],
+["Atasan Anda menelepon dan meminta agar berkas permohonan milik kenalannya diproses lebih dulu, karena kenalan itu akan berangkat ke luar kota besok pagi. Di meja Anda masih ada puluhan berkas warga lain yang masuk lebih awal dan juga ditunggu pemiliknya. Anda ...", ["Menjelaskan dengan santun bahwa berkas diproses sesuai urutan masuk, lalu menawarkan agar kenalan tersebut memakai jalur layanan percepatan resmi bila memenuhi syaratnya", "Memproses berkas tersebut sesuai urutan tanpa memberikan tanggapan khusus kepada atasan, dengan harapan atasan memahami aturan yang berlaku", "Memproses berkas tersebut lebih dahulu sekali ini saja sambil mencatatnya sebagai pengecualian, karena ada alasan perjalanan yang mendesak dan atasan sudah menjamin hal serupa tidak akan terulang", "Memproses berkas tersebut lebih dahulu karena merupakan perintah langsung dari atasan dan menolak perintah atasan dapat dianggap tidak loyal"], "Keadilan layanan berlaku untuk semua warga. Atasan tetap diberi penjelasan dan alternatif yang sah."],
+["Anda sedang menyelesaikan laporan mendesak yang diminta kepala bidang untuk rapat besok pagi. Tiba-tiba atasan langsung Anda memberi tugas lain yang juga harus selesai hari ini. Waktu yang tersisa tidak cukup untuk menyelesaikan keduanya dengan baik. Anda ...", ["Menyampaikan kondisi tersebut secara terbuka kepada atasan langsung dan kepala bidang, lalu meminta keputusan mengenai tugas mana yang harus didahulukan", "Mengerjakan kedua tugas tersebut secara bergantian dan lembur sampai malam, walaupun hasilnya mungkin tidak sebaik bila dikerjakan satu per satu", "Mendahulukan tugas dari atasan langsung karena ia yang menilai kinerja Anda, lalu menyelesaikan laporan untuk kepala bidang semampunya", "Menyelesaikan laporan yang sedang dikerjakan lebih dahulu, kemudian memberi tahu atasan langsung bahwa tugasnya baru bisa dikerjakan esok hari"], "Konflik prioritas antaratasan diselesaikan dengan komunikasi terbuka, bukan diputuskan sepihak."],
+["Dalam tim penyusun laporan bulanan, salah satu rekan hampir selalu terlambat menyerahkan bagiannya. Akibatnya laporan tim beberapa kali terlambat dikirim dan ketua tim mulai mengeluh. Rekan tersebut sebenarnya cakap, tetapi sering menunda pekerjaan hingga mendekati tenggat. Anda ...", ["Mengajaknya berbicara secara pribadi untuk memahami kendalanya, lalu bersama-sama menyepakati tenggat internal yang lebih awal untuk setiap bagian laporan", "Membantu menyelesaikan sebagian pekerjaannya setiap kali ia terlambat, agar laporan tim dapat dikirim tepat waktu dan suasana tim tetap terjaga", "Melaporkan pola keterlambatan rekan tersebut kepada ketua tim agar ketua tim yang memberikan teguran dan mengambil keputusan yang diperlukan", "Tetap menyelesaikan bagian Anda tepat waktu dan membiarkan ketua tim yang menegur, karena keterlambatan bagian lain bukan tanggung jawab Anda, sehingga Anda dapat fokus menjaga kualitas pekerjaan sendiri"], "Jawaban terbaik menyentuh akar masalah dan menjaga hubungan kerja."],
+["Anda baru dilantik sebagai ASN dan ditempatkan di kecamatan terpencil yang jauh dari keluarga. Akses jalan sulit saat musim hujan, sinyal internet lemah, dan fasilitas kantor sangat terbatas. Sebagian rekan seangkatan Anda ditempatkan di kota dengan fasilitas yang jauh lebih baik. Anda ...", ["Menjalani penempatan dengan sungguh-sungguh, beradaptasi dengan kondisi setempat, dan mencari cara memanfaatkan potensi lokal untuk meningkatkan pelayanan", "Menjalani penempatan dengan baik sambil menyesuaikan diri, walaupun pada awalnya merasa berat karena jauh dari keluarga dan fasilitas terbatas", "Menjalani penempatan sambil menunggu masa minimal tugas terpenuhi, lalu mengajukan mutasi ke daerah yang lebih dekat dengan keluarga, sambil tetap menjalankan tugas dengan penuh tanggung jawab selama penempatan", "Mengajukan keberatan atas penempatan tersebut melalui jalur resmi dengan alasan fasilitas yang tidak memadai untuk bekerja secara optimal"], "ASN bersedia ditempatkan di seluruh wilayah NKRI. Nilai tertinggi diberikan pada sikap adaptif dan inovatif."],
+["Kantor Anda menerapkan aplikasi tata naskah dinas elektronik. Menurut Anda, aplikasi itu lebih lambat dibanding cara manual karena harus melalui banyak tahapan. Beberapa rekan diam-diam masih memakai cara lama dan hanya menginput ke aplikasi bila diminta atasan. Anda ...", ["Menggunakan aplikasi tersebut sesuai ketentuan, mencatat tahapan yang dirasa memperlambat, lalu menyampaikan usulan perbaikan kepada pengelola aplikasi", "Menggunakan aplikasi tersebut sesuai ketentuan walaupun terasa lambat, karena kebijakan itu sudah ditetapkan oleh pimpinan dan wajib diikuti", "Menggunakan aplikasi tersebut hanya untuk surat yang wajib dicatat, sementara surat lain tetap diproses manual agar pekerjaan lebih cepat, sambil menunggu kebijakan tersebut dievaluasi oleh pimpinan", "Mengikuti rekan lain memakai cara manual dan baru menginput ke aplikasi bila diminta, karena hasil akhirnya dianggap tetap sama"], "Adaptif berarti mengikuti perubahan sekaligus ikut memperbaikinya melalui jalur yang tepat."],
+["Laporan capaian kinerja triwulan telah Anda kirim kepada atasan dan akan dipresentasikan di depan pimpinan lusa. Pagi ini Anda menyadari ada kesalahan input pada salah satu tabel. Kesalahan itu kecil dan tidak mengubah kesimpulan laporan, tetapi angka totalnya menjadi tidak tepat. Anda ...", ["Segera memberi tahu atasan tentang kesalahan tersebut, menjelaskan bagian yang keliru, dan mengirimkan versi perbaikan sebelum laporan dipresentasikan", "Mengirimkan versi perbaikan kepada atasan dengan catatan revisi singkat tanpa penjelasan rinci, karena kesalahannya tidak mengubah kesimpulan", "Mencatat kesalahan tersebut dan memperbaikinya pada laporan triwulan berikutnya, agar tidak mengganggu persiapan presentasi yang sudah berjalan", "Membiarkan laporan tersebut apa adanya karena kesimpulannya tetap benar dan kemungkinan besar tidak ada yang memperhatikan angka tersebut"], "Akuntabilitas menuntut data yang akurat, sekecil apa pun kesalahannya, dan keterbukaan kepada atasan."],
+["Dalam rapat perencanaan program, Anda mengusulkan metode sosialisasi berbasis media digital. Setelah diskusi panjang, mayoritas peserta memilih metode tatap muka yang diusulkan rekan lain. Anda masih yakin usulan Anda lebih efektif dan lebih hemat anggaran. Anda ...", ["Menerima keputusan bersama dan ikut melaksanakannya dengan sungguh-sungguh, sambil menawarkan agar unsur media digital dijadikan pelengkap untuk menjangkau lebih banyak warga", "Menerima keputusan bersama dan ikut melaksanakan metode tatap muka dengan sungguh-sungguh, karena keputusan itu sudah melalui musyawarah", "Menerima keputusan bersama tetapi meminta agar keberatan dan alasan usulan Anda dicatat dalam notulen rapat sebagai bahan evaluasi", "Melaksanakan keputusan sekadarnya sambil menunggu hasilnya kurang maksimal, agar usulan Anda dapat dipertimbangkan kembali pada rapat berikutnya dan keputusan tersebut dapat ditinjau ulang"], "Kolaboratif berarti mendukung keputusan bersama sambil tetap menyumbang perbaikan."],
+["Anda tergabung dalam tim lintas bidang yang anggotanya berasal dari berbagai daerah dan latar belakang. Sebagian anggota terbiasa bekerja dengan perencanaan rinci, sebagian lain lebih suka bekerja cepat dan menyesuaikan di tengah jalan. Perbedaan ini mulai menimbulkan gesekan kecil. Anda ...", ["Mengusulkan pertemuan singkat untuk menyepakati cara kerja bersama, termasuk pembagian peran, jadwal, dan cara berkomunikasi yang nyaman bagi semua", "Berusaha menyesuaikan diri dengan gaya kerja masing-masing anggota agar gesekan tidak semakin besar dan pekerjaan tetap berjalan", "Fokus menyelesaikan bagian pekerjaan sendiri dengan sebaik-baiknya dan menghindari ikut campur dalam perbedaan gaya kerja anggota lain", "Lebih banyak bekerja sama dengan anggota yang gaya kerjanya sama dengan Anda, agar pekerjaan bagian Anda dapat selesai lebih cepat, sehingga target tim secara keseluruhan juga tetap tercapai"], "Kesepakatan cara kerja sejak awal membantu tim yang beragam bekerja efektif."],
+["Tetangga Anda yang berbeda agama akan mengadakan acara keagamaan besar di rumahnya dan mengundang banyak tamu. Jalan di depan rumah Anda kemungkinan akan dipenuhi kendaraan sejak sore hingga malam. Tetangga tersebut belum meminta bantuan apa pun kepada Anda. Anda ...", ["Menawarkan halaman rumah Anda untuk parkir dan membantu mengatur kendaraan tamu, tanpa ikut serta dalam kegiatan ibadahnya", "Mempersilakan tetangga memakai halaman rumah Anda untuk parkir bila nanti ia meminta, sebagai bentuk saling menghormati antarwarga", "Menghormati acara tersebut dengan tidak mengeluh walaupun jalan di depan rumah menjadi ramai dan sulit dilalui", "Meminta ketua RT mengingatkan tetangga tersebut agar membatasi jumlah tamu supaya jalan lingkungan tidak terlalu padat"], "Toleransi aktif ditunjukkan dengan menawarkan bantuan tanpa mencampuri ibadah."],
+["Di grup percakapan kantor beredar tangkapan layar surat edaran tentang pemotongan tunjangan pegawai. Banyak anggota grup menanggapi dengan emosi dan sebagian sudah meneruskannya ke grup lain. Surat itu tampak resmi, tetapi Anda belum pernah melihatnya di kanal informasi kantor. Anda ...", ["Menanyakan keaslian surat itu kepada bagian kepegawaian, lalu menyampaikan hasil klarifikasinya di grup agar anggota tidak salah paham", "Mengingatkan anggota grup agar tidak menyebarkan surat tersebut sebelum ada konfirmasi resmi dari bagian kepegawaian", "Tidak ikut menanggapi dan tidak meneruskan surat tersebut, sambil menunggu informasi resmi dari kantor", "Bertanya di grup apakah ada anggota yang mengetahui sumber surat tersebut agar keasliannya dapat dipastikan bersama, sehingga anggota grup dapat menilai bersama kebenarannya"], "Literasi digital terbaik tidak hanya menahan diri, tetapi aktif meluruskan informasi melalui sumber resmi."],
+["Seorang kenalan lama mengajak Anda bergabung dalam kelompok diskusi daring. Belakangan Anda melihat kelompok itu sering membagikan tulisan yang menyebut Pancasila tidak layak menjadi dasar negara dan mengajak anggotanya memperjuangkan sistem lain. Kenalan Anda mengatakan diskusinya hanya sebatas wacana. Anda ...", ["Menolak bergabung, mengingatkan kenalan tersebut tentang bahaya paham itu, dan melaporkan kelompok tersebut kepada pihak berwenang", "Menolak bergabung dan mengingatkan kenalan tersebut bahwa ajakan mengganti dasar negara bertentangan dengan sumpah sebagai warga negara", "Menolak bergabung dengan halus tanpa memberikan alasan agar hubungan pertemanan dengan kenalan tersebut tetap terjaga", "Bergabung sementara untuk mengetahui isi diskusinya secara langsung sebelum menilai apakah kelompok itu benar-benar berbahaya"], "Paham yang menolak Pancasila harus dicegah sejak dini, termasuk dengan melaporkannya."],
+["Seorang teman sekolah Anda mengunggah tulisan di media sosial yang menyudutkan kelompok suku tertentu dan menuduh mereka sebagai penyebab masalah di daerahnya. Unggahan itu sudah dibagikan puluhan kali dan kolom komentarnya mulai memanas. Anda ...", ["Menghubungi teman tersebut secara pribadi untuk mengingatkan dampak tulisannya, dan melaporkan unggahan itu bila ia tetap tidak menghapusnya", "Melaporkan unggahan tersebut melalui fitur pelaporan media sosial karena termasuk konten yang menyudutkan kelompok tertentu", "Tidak memberikan tanda suka, komentar, atau membagikan unggahan tersebut agar tidak ikut memperluas penyebarannya", "Menulis komentar bantahan di unggahan tersebut agar pembaca lain mengetahui bahwa isi tulisan itu tidak benar, dengan menyertakan tautan sumber yang lebih dapat dipercaya"], "Pendekatan pribadi lebih efektif. Komentar terbuka justru menaikkan jangkauan unggahan."],
+["Akses aplikasi seorang rekan baru belum aktif, sedangkan ia harus menginput data yang tenggatnya pukul empat sore ini. Ia meminta Anda meminjamkan nama pengguna dan kata sandi Anda, dengan janji hanya dipakai satu jam dan Anda boleh mengganti kata sandi setelahnya. Anda ...", ["Menolak meminjamkan akun, membantu menginput data yang paling mendesak, dan mendampinginya menghubungi tim TI agar aksesnya segera diaktifkan", "Menolak meminjamkan akun dan meminta rekan tersebut segera menghubungi tim TI agar aksesnya dapat diaktifkan sebelum tenggat", "Mengoperasikan aplikasi tersebut sendiri dengan akun Anda untuk menginput seluruh datanya, karena tenggat sudah sangat dekat", "Meminjamkan akun tersebut selama satu jam lalu segera mengganti kata sandi setelah rekan selesai, agar tenggat dapat terpenuhi, karena kepercayaan antarrekan juga penting dalam sebuah tim"], "Keamanan akun tidak dikorbankan, tetapi pekerjaan tim tetap dibantu."],
+["Anda menerima email berlogo instansi Anda dengan judul pemberitahuan penonaktifan akun. Email itu meminta Anda memverifikasi akun dalam 24 jam melalui tautan yang tercantum. Alamat pengirimnya mirip alamat resmi, tetapi ada satu huruf yang berbeda. Anda ...", ["Tidak membuka tautan, melaporkan email tersebut ke tim TI, dan mengingatkan rekan-rekan agar mewaspadai email serupa", "Tidak membuka tautan dan melaporkan email tersebut kepada tim TI agar dapat diperiksa lebih lanjut", "Menghapus email tersebut karena alamat pengirimnya mencurigakan dan tidak sesuai dengan alamat resmi instansi", "Membuka tautan tersebut menggunakan perangkat pribadi untuk memastikan apakah email itu benar-benar dari instansi"], "Phishing harus dilaporkan dan diwaspadai bersama. Membuka tautan di perangkat lain tetap berisiko."],
+["Seorang pejabat dari instansi lain menghubungi Anda melalui pesan singkat dan meminta salinan data pribadi penerima bantuan di wilayah Anda. Ia beralasan data itu dibutuhkan segera untuk program bersama yang sedang dibahas pimpinan kedua instansi. Belum ada surat resmi yang Anda terima. Anda ...", ["Menjelaskan dengan sopan prosedur permintaan data resmi, lalu melaporkan permintaan tersebut kepada atasan agar dapat diproses sesuai ketentuan", "Meminta pejabat tersebut mengirimkan surat permintaan resmi terlebih dahulu sebelum data dapat diberikan", "Memberikan data yang tidak terlalu sensitif terlebih dahulu, sedangkan data lengkap menunggu surat resmi", "Memberikan data tersebut karena diminta oleh sesama instansi pemerintah untuk program yang sudah dibahas pimpinan, sehingga koordinasi antarinstansi tidak terhambat"], "Data pribadi hanya dibagikan melalui mekanisme yang sah, dan atasan perlu mengetahui permintaan tersebut."],
+["Pada hari Senin pagi, sistem layanan daring kantor Anda mendadak tidak bisa diakses, padahal ruang tunggu sedang penuh. Warga mulai gelisah karena tidak ada informasi kapan layanan dapat berjalan kembali. Tim TI mengatakan perbaikan membutuhkan waktu sekitar dua jam. Anda ...", ["Menjalankan prosedur layanan cadangan, mengumumkan perkiraan waktu perbaikan kepada warga, dan memprioritaskan layanan yang dapat diproses tanpa sistem", "Mengumumkan kepada warga bahwa sistem sedang diperbaiki dan meminta mereka menunggu sekitar dua jam sampai layanan kembali normal", "Mencatat data dan keperluan warga secara manual, lalu meminta mereka pulang dan menunggu kabar setelah sistem kembali berjalan, sehingga warga tidak perlu menunggu terlalu lama di kantor", "Menghentikan seluruh layanan sampai sistem kembali normal karena semua proses wajib tercatat di dalam sistem"], "Layanan tetap berjalan sebisa mungkin dengan informasi yang jelas bagi warga."],
+["Pimpinan menunjuk Anda sebagai ketua tim penyusunan aplikasi layanan baru. Latar belakang Anda administrasi, bukan teknologi informasi. Di tim ada dua anggota yang memahami pemrograman, tetapi masa kerja mereka jauh lebih singkat dari Anda. Anda ...", ["Menerima amanah tersebut, mempelajari dasar-dasar yang diperlukan, dan memberi ruang kepada anggota yang ahli untuk memimpin aspek teknis", "Menerima amanah tersebut dan meminta pimpinan menyediakan pendamping teknis dari luar tim agar proyek berjalan lancar", "Menerima amanah tersebut sambil mengusulkan agar salah satu anggota yang ahli ditetapkan sebagai wakil ketua tim", "Mengusulkan kepada pimpinan agar salah satu anggota yang memahami pemrograman ditunjuk sebagai ketua tim menggantikan Anda, agar proyek dipimpin oleh orang yang paling memahami teknologinya"], "Profesionalisme ditunjukkan dengan kesediaan belajar dan memberdayakan keahlian anggota tim."],
+["Seorang pegawai pindahan baru bergabung di unit Anda. Sudah satu minggu ia tampak canggung, sering salah memahami alur kerja, dan jarang bertanya kepada siapa pun. Atasan sedang dinas luar selama dua minggu sehingga belum sempat memberikan pengarahan. Anda ...", ["Menawarkan diri menjelaskan alur kerja unit, mengenalkannya kepada rekan-rekan lain, dan memintanya tidak sungkan bertanya kapan saja", "Membantunya setiap kali ia bertanya atau terlihat kesulitan, agar ia tidak terlalu sering melakukan kesalahan dalam pekerjaan", "Memberikan dokumen SOP unit kepadanya agar dapat dipelajari sendiri sambil menunggu atasan kembali dari dinas luar, sehingga ia dapat memahami alur kerja dengan caranya sendiri", "Membiarkan atasan yang memberikan pengarahan setelah kembali, karena orientasi pegawai baru merupakan kewenangan atasan"], "Inisiatif membantu rekan baru mempercepat kinerja tim."],
+["Menjelang batas waktu pelaporan, atasan meminta Anda mengubah tanggal pada berita acara serah terima barang agar tampak sesuai jadwal. Barang tersebut sebenarnya baru diterima seminggu setelah jadwal karena keterlambatan pengiriman. Atasan mengatakan perubahan itu hanya urusan administrasi. Anda ...", ["Menolak dengan sopan, menjelaskan risiko hukumnya, lalu menawarkan untuk menyusun laporan keterlambatan beserta alasan dan bukti pengirimannya", "Menolak dengan sopan karena mengubah tanggal berita acara tidak sesuai dengan fakta yang sebenarnya terjadi di lapangan", "Meminta waktu untuk menanyakan aturan yang berlaku kepada bagian hukum sebelum memutuskan untuk mengubah tanggal tersebut dan meminta pendapat rekan yang lebih berpengalaman", "Mengubah tanggal tersebut karena atasan yang bertanggung jawab dan perubahan itu tidak menimbulkan kerugian keuangan"], "Integritas tidak bisa ditawar, tetapi solusi yang sah tetap ditawarkan."],
+["Video keluhan seorang warga tentang lamanya layanan di unit Anda viral di media sosial. Sebagian isi keluhan memang benar karena ada petugas yang sering terlambat, tetapi sebagian lain tidak akurat dan cenderung melebih-lebihkan. Banyak komentar bernada kasar ditujukan kepada kantor Anda. Anda ...", ["Melapor kepada pimpinan dan bagian humas agar klarifikasi resmi disiapkan, sekaligus mengusulkan perbaikan atas bagian keluhan yang memang benar", "Melapor kepada pimpinan agar bagian humas segera menyiapkan klarifikasi resmi atas informasi yang tidak akurat", "Mengumpulkan bukti-bukti untuk membantah bagian keluhan yang tidak akurat agar nama baik kantor dapat dipulihkan di mata masyarakat dan para pemangku kepentingan", "Menanggapi komentar-komentar tersebut dengan akun pribadi untuk meluruskan informasi yang tidak sesuai fakta"], "Respons terbaik tetap mengakui dan memperbaiki bagian keluhan yang benar."],
+["Anda ditawari menjadi anggota tim lintas instansi untuk menyusun kebijakan daerah. Kegiatan itu akan menyita sekitar dua hari kerja setiap minggu selama tiga bulan, tetapi memberi kesempatan besar menambah kompetensi dan jejaring. Beban tugas rutin di unit Anda cukup tinggi. Anda ...", ["Menerima tawaran tersebut setelah berkoordinasi dengan atasan dan rekan agar tugas rutin tetap tertangani selama Anda bertugas di tim", "Menerima tawaran tersebut karena merupakan kesempatan baik untuk mengembangkan kompetensi dan memperluas jejaring kerja", "Meminta waktu beberapa hari untuk mempertimbangkan tawaran tersebut sambil melihat perkembangan beban kerja di unit dan mendiskusikannya terlebih dahulu dengan keluarga", "Menolak tawaran tersebut dengan sopan karena ingin fokus menyelesaikan tugas rutin yang bebannya sedang tinggi"], "Pengembangan diri diambil dengan tetap bertanggung jawab atas tugas utama."],
+["Instansi mewajibkan Anda mengikuti pelatihan kepemimpinan selama tiga hari. Jadwalnya bertepatan dengan acara pernikahan saudara kandung Anda yang sudah direncanakan sejak lama, dan keluarga berharap Anda ikut membantu persiapan. Panitia menyebutkan pelatihan serupa baru akan diadakan lagi tahun depan. Anda ...", ["Mengikuti pelatihan dengan sungguh-sungguh, menjelaskan kondisinya kepada keluarga, dan mengatur waktu agar tetap dapat hadir pada puncak acara", "Mengikuti pelatihan sampai selesai dan menyusul ke acara keluarga setelah pelatihan berakhir, walaupun tidak ikut membantu persiapan", "Mengajukan izin tidak mengikuti pelatihan tahun ini dan mendaftar untuk pelatihan berikutnya yang diadakan tahun depan", "Mengikuti pelatihan secara daring dari lokasi acara keluarga walaupun panitia mewajibkan peserta hadir secara langsung dan materinya dapat diulang kembali melalui rekaman"], "Kewajiban kedinasan didahulukan dengan komunikasi yang baik kepada keluarga."],
+["Saat melintas di loket sebelah, Anda melihat rekan menerima uang dari warga dan memasukkannya ke saku. Belakangan Anda mendengar warga tersebut membayar agar berkasnya selesai lebih cepat. Rekan itu sudah bekerja lebih lama dari Anda dan dikenal dekat dengan atasan. Anda ...", ["Menegur rekan tersebut dan melaporkan kejadian itu melalui saluran pengaduan pelanggaran yang disediakan instansi", "Melaporkan kejadian tersebut kepada atasan dan menyerahkan sepenuhnya penanganannya kepada atasan", "Menegur rekan tersebut secara pribadi dan memintanya mengembalikan uang serta tidak mengulangi perbuatannya", "Mencatat kejadian tersebut dan menunggu sampai ada kejadian serupa agar bukti yang dimiliki lebih kuat"], "Pungutan liar harus dihentikan dan dilaporkan melalui jalur yang melindungi pelapor."],
+["Kantor mengadakan kegiatan bakti sosial di panti asuhan pada hari Sabtu. Kegiatan itu bersifat sukarela dan panitia masih kekurangan orang untuk persiapan. Anda sebenarnya berencana beristirahat di rumah setelah seminggu bekerja cukup padat. Anda ...", ["Ikut serta dalam kegiatan tersebut dan menawarkan diri membantu panitia menyiapkan perlengkapan sejak pagi", "Ikut serta dalam kegiatan tersebut sebagai peserta dan membantu sesuai arahan panitia di lokasi", "Memberikan sumbangan untuk kegiatan tersebut tetapi tidak hadir karena ingin beristirahat di rumah", "Tidak mengikuti kegiatan tersebut karena bersifat sukarela dan Anda membutuhkan waktu istirahat"], "Partisipasi aktif dalam kegiatan sosial mempererat kerja sama dan kepedulian."],
+["Untuk menyusun laporan bersama, Anda membutuhkan data dari instansi mitra. Surat permintaan sudah dikirim dua minggu lalu dan belum ada balasan, sedangkan tenggat laporan tinggal lima hari. Anda tidak mengenal siapa pun di instansi tersebut. Anda ...", ["Mencari narahubung di instansi tersebut, menghubunginya langsung untuk menjelaskan urgensi data, dan menawarkan bantuan teknis bila diperlukan", "Mengirim surat susulan resmi kepada instansi tersebut dengan menegaskan tenggat waktu laporan yang semakin dekat", "Meminta atasan menghubungi pimpinan instansi tersebut agar data segera dikirimkan kepada unit Anda", "Menunggu balasan dari instansi tersebut sambil menyelesaikan bagian laporan yang tidak membutuhkan data mereka, lalu melengkapinya begitu data dari instansi mitra diterima"], "Jejaring kerja dibangun lewat komunikasi langsung yang solutif."],
+["Anda ditugaskan mendampingi kepala bidang dalam forum koordinasi antarinstansi. Sebagian besar peserta adalah pejabat yang lebih senior dari Anda. Di sesi diskusi, muncul pembahasan yang sangat berkaitan dengan data yang selama ini Anda kelola. Anda ...", ["Meminta izin kepala bidang untuk menyampaikan data yang relevan, lalu memanfaatkan sela acara untuk berkenalan dengan peserta lain", "Mencatat poin-poin penting diskusi dan bertanya kepada peserta lain bila ada kesempatan setelah sesi berakhir", "Mendampingi kepala bidang dan mencatat hasil diskusi untuk dilaporkan kembali kepada unit setelah forum selesai, sebagai bahan tindak lanjut bagi rekan-rekan di unit Anda", "Mengikuti forum sampai selesai tanpa banyak berinteraksi karena kehadiran Anda hanya sebagai pendamping"], "Forum antarinstansi adalah kesempatan membangun jejaring dan berkontribusi."],
+["Anda ditugaskan menyosialisasikan program kesehatan di sebuah desa. Sebagian besar warga, terutama yang lanjut usia, lebih fasih berbahasa daerah dan kurang memahami istilah teknis. Pada kunjungan sebelumnya, banyak warga meninggalkan acara sebelum selesai. Anda ...", ["Menggandeng tokoh masyarakat setempat sebagai pendamping, menyederhanakan materi, dan menggunakan bahasa serta contoh yang dekat dengan keseharian warga", "Meminta perangkat desa membantu menerjemahkan materi sosialisasi ke dalam bahasa daerah selama acara berlangsung", "Menyiapkan materi tertulis yang lengkap agar warga dapat membacanya kembali di rumah setelah acara selesai", "Menyampaikan materi sesuai bahan resmi dari kantor dan membuka sesi tanya jawab bagi warga yang belum memahami secara lebih rinci dengan contoh yang relevan"], "Pendekatan budaya lokal membuat pesan lebih mudah diterima."],
+["Seorang pengguna kursi roda datang ke kantor Anda saat antrean prioritas sedang penuh oleh lansia dan ibu hamil. Ruang tunggu prioritas berada di lantai dua dan lift sedang rusak. Ia terlihat kesulitan dan menanyakan berapa lama harus menunggu. Anda ...", ["Menyiapkan tempat layanan di lantai satu, melayaninya sesuai kebutuhan, dan tetap menjaga urutan antrean prioritas yang lain", "Mendahulukannya dari semua antrean yang ada karena kondisinya paling sulit dan lift sedang tidak berfungsi", "Mengarahkannya ke loket prioritas dan meminta petugas keamanan membantunya naik ke lantai dua", "Memintanya menunggu giliran di antrean prioritas seperti warga lain agar adil bagi semua yang sudah menunggu dan menunjukkan bahwa layanan tidak membeda-bedakan warga"], "Layanan inklusif menyesuaikan dengan kebutuhan tanpa mengabaikan warga lain."],
+["Pekerjaan Anda hari ini selesai dua jam sebelum jam pulang. Rekan satu ruangan terlihat kewalahan menyiapkan bahan rapat besok, dan atasan juga pernah meminta Anda mempelajari aturan baru yang akan berlaku bulan depan. Anda ...", ["Menawarkan bantuan kepada rekan yang sedang kewalahan, lalu mempelajari aturan baru bila masih ada waktu tersisa", "Mempelajari aturan baru yang diminta atasan karena hal itu akan bermanfaat bagi pekerjaan bulan depan", "Mengerjakan tugas yang dijadwalkan untuk esok hari agar beban pekerjaan esok menjadi lebih ringan, sekaligus menyiapkan bahan yang mungkin dibutuhkan rekan", "Merapikan arsip dan berkas pribadi di meja kerja sambil menunggu jam pulang kantor tiba"], "Waktu kerja dimanfaatkan untuk mendukung kinerja tim."],
+["Hasil evaluasi menunjukkan capaian kinerja unit Anda berada di bawah target triwulan ini. Pada rapat evaluasi, beberapa rekan menyebut penyebabnya adalah kurangnya anggaran, sementara yang lain menyalahkan kebijakan pusat yang sering berubah. Anda ...", ["Mengusulkan agar tim menganalisis penyebab berdasarkan data, lalu menyusun langkah perbaikan yang dapat dilakukan dengan sumber daya yang ada", "Bertekad bekerja lebih keras pada triwulan berikutnya agar capaian kinerja unit dapat mengejar ketertinggalan", "Menyampaikan kepada atasan kendala anggaran dan kebijakan yang menyebabkan capaian kinerja tidak tercapai, disertai usulan tambahan anggaran untuk periode berikutnya", "Mengusulkan agar target kinerja triwulan berikutnya disesuaikan dengan kondisi anggaran yang terbatas"], "Evaluasi berbasis data menghasilkan perbaikan yang tepat."],
+["Sebagai ketua tim, Anda melihat dua anggota berdebat tajam tentang metode pengumpulan data. Keduanya punya alasan kuat dan debat mereka mulai membuat anggota lain enggan berpendapat. Rapat harus menghasilkan keputusan hari ini. Anda ...", ["Menghentikan debat sejenak, meminta keduanya memaparkan kelebihan dan kekurangan metodenya berdasarkan data, lalu memandu tim mengambil keputusan bersama", "Mengajak kedua anggota berbicara secara terpisah setelah rapat untuk mencari jalan tengah sebelum keputusan diambil", "Memutuskan metode yang menurut Anda paling tepat agar rapat dapat segera selesai dan pekerjaan bisa dimulai", "Membiarkan kedua anggota menyelesaikan perdebatan mereka sendiri karena keduanya sama-sama memiliki alasan kuat, sementara Anda mencatat hasil akhirnya untuk notulen rapat"], "Pemimpin menjembatani perbedaan secara objektif dan tetap mengambil keputusan."],
+["Saat jam istirahat, beberapa rekan sering membicarakan kekurangan atasan, mulai dari cara memimpin sampai urusan pribadinya. Mereka beberapa kali meminta pendapat Anda. Anda merasa sebagian keluhan soal cara kerja atasan ada benarnya. Anda ...", ["Mengalihkan pembicaraan dari urusan pribadi atasan, dan menyarankan agar keluhan soal cara kerja disampaikan langsung atau melalui forum yang tepat", "Tidak ikut menanggapi pembicaraan tersebut dan memilih menghabiskan waktu istirahat di tempat lain", "Mendengarkan pembicaraan tersebut tanpa memberikan pendapat apa pun agar tidak terlibat lebih jauh", "Menyampaikan isi pembicaraan rekan-rekan tersebut kepada atasan agar atasan mengetahui keluhan yang ada sehingga dapat segera diperbaiki demi kebaikan bersama"], "Menjaga iklim kerja sehat dengan mendorong komunikasi yang langsung dan konstruktif."],
+["Anda dijadwalkan mempresentasikan laporan unit dalam rapat daring bersama pimpinan. Lima menit sebelum giliran Anda, koneksi internet kantor terputus. Seluruh bahan presentasi tersimpan di laptop Anda dan pimpinan dikenal tidak suka jadwal rapat berubah. Anda ...", ["Beralih ke koneksi data seluler, mengirim bahan presentasi kepada penyelenggara sebagai cadangan, lalu bergabung kembali untuk presentasi", "Bergabung kembali ke rapat melalui telepon dan menyampaikan presentasi secara lisan tanpa menayangkan bahan", "Mengabari penyelenggara rapat tentang gangguan koneksi dan meminta agar giliran presentasi Anda ditunda sampai koneksi Anda kembali stabil dan bahan siap ditampilkan", "Menunggu koneksi kantor pulih sambil berharap rapat masih berlangsung saat koneksi kembali normal"], "Kesiapan menghadapi kendala teknis menjaga kelancaran tugas."],
+["Laporan inovasi yang Anda kerjakan bersama tim mendapat penghargaan. Dalam sambutannya di depan seluruh pegawai, atasan hanya menyebut nama Anda sebagai penggagas dan pelaksana, padahal beberapa rekan berkontribusi besar dalam pengumpulan data dan uji coba. Anda ...", ["Berterima kasih, lalu menyampaikan di forum yang sama bahwa keberhasilan itu adalah kerja tim sambil menyebut kontribusi rekan-rekan", "Berterima kasih atas pujian tersebut atas nama tim tanpa menyebut nama rekan yang berkontribusi satu per satu", "Menyampaikan kepada rekan-rekan setelah acara bahwa penghargaan tersebut sebenarnya adalah milik tim bersama", "Berterima kasih atas pujian tersebut karena atasan yang menentukan siapa yang paling layak mendapatkan apresiasi sesuai dengan penilaian yang ia lakukan selama ini"], "Menghargai kontribusi rekan secara terbuka mencerminkan sikap kolaboratif dan jujur."],
+["Tim Anda harus menyelesaikan dokumen anggaran yang wajib dikirim besok pagi. Ketua tim meminta semua anggota lembur malam ini. Anda sudah berjanji menghadiri acara ulang tahun anak Anda pukul tujuh malam dan anak Anda sangat menantikannya. Anda ...", ["Ikut lembur dan berbicara dengan keluarga, lalu meminta izin keluar sebentar pada waktu acara dan kembali menyelesaikan bagian Anda", "Ikut lembur sampai bagian Anda selesai dan menjelaskan kepada keluarga bahwa Anda akan merayakannya lain hari", "Menyelesaikan bagian Anda dari rumah setelah acara ulang tahun selesai dan mengirimkannya sebelum tengah malam sehingga tenggat besok pagi tetap dapat dipenuhi oleh tim", "Meminta izin tidak ikut lembur karena sudah ada janji keluarga yang dibuat jauh sebelum tugas ini diberikan"], "Komitmen terhadap tugas bersama diutamakan, dengan tetap menjaga komunikasi dengan keluarga."],
+["Seorang warga datang ke loket Anda untuk mengurus izin usaha. Ternyata layanan itu sudah dipindahkan ke mal pelayanan publik di gedung lain sejak bulan lalu. Warga itu terlihat lelah karena sudah berpindah-pindah kantor sejak pagi. Anda ...", ["Menjelaskan lokasi layanan beserta persyaratannya, memeriksa kelengkapan berkasnya, dan menghubungi petugas di sana agar warga langsung dilayani", "Menjelaskan lokasi layanan yang baru dan menyampaikan persyaratan yang harus disiapkan sebelum warga berangkat ke sana", "Memberikan alamat dan nomor telepon mal pelayanan publik agar warga dapat langsung menanyakan persyaratannya dan mengarahkan warga menggunakan transportasi yang paling cepat", "Menyampaikan kepada warga bahwa layanan tersebut sudah bukan lagi wewenang kantor Anda sejak bulan lalu"], "Warga tetap mendapat solusi utuh meskipun urusannya sudah di luar wewenang unit Anda."],
+["Seorang warga menelepon untuk mengadukan bantuan sosial yang belum ia terima. Petugas yang menangani bantuan sosial sedang cuti selama seminggu, dan penggantinya baru akan masuk besok. Warga itu mengatakan sangat membutuhkan bantuan tersebut. Anda ...", ["Mencatat aduan secara lengkap, menyerahkannya kepada petugas pengganti besok, dan menghubungi warga kembali untuk menyampaikan perkembangannya", "Mencatat aduan secara lengkap dan menyampaikannya kepada petugas yang bersangkutan setelah masa cutinya selesai", "Memberikan nomor telepon petugas pengganti dan meminta warga menghubunginya langsung mulai besok pagi agar aduannya dapat segera ditindaklanjuti oleh petugas tersebut", "Meminta warga menelepon kembali minggu depan saat petugas yang menangani bantuan sosial sudah kembali bekerja"], "Aduan tidak boleh terhenti hanya karena petugas berhalangan."],
+["Seorang warga negara asing datang ke kantor Anda untuk melaporkan kehilangan paspor. Ia hanya bisa sedikit berbahasa Indonesia dan tampak panik. Rekan yang fasih berbahasa Inggris sedang rapat di lantai atas selama satu jam. Anda ...", ["Menenangkannya, berkomunikasi dengan bahasa Inggris sederhana dan alat penerjemah, lalu membantu memproses laporannya sampai ia memahami langkah selanjutnya", "Memintanya menunggu sekitar satu jam sampai rekan yang fasih berbahasa Inggris selesai rapat dan dapat melayaninya", "Memberikan brosur layanan berbahasa Inggris dan memintanya membaca prosedur pelaporan terlebih dahulu sambil menunggu", "Menyarankannya kembali lagi bersama penerjemah agar laporan dapat diproses dengan benar dan tidak terjadi salah paham sehingga laporan kehilangan paspornya tidak bermasalah di kemudian hari"], "Layanan prima menyesuaikan diri dengan kebutuhan komunikasi warga."],
+["Saat Anda menyosialisasikan pembagian bantuan di balai desa, dua kelompok warga berselisih. Kelompok pertama menuduh daftar penerima disusun berdasarkan kedekatan dengan kepala dusun, sedangkan kelompok kedua merasa sudah memenuhi syarat. Suasana mulai memanas. Anda ...", ["Menengahi secara netral, menjelaskan kriteria resmi penerima bantuan secara terbuka, dan melibatkan tokoh masyarakat untuk memverifikasi daftar", "Menjelaskan kriteria resmi penerima bantuan kepada kedua kelompok agar mereka memahami dasar penyusunan daftar", "Menghentikan acara sementara dan meminta perangkat desa menyelesaikan perselisihan sebelum sosialisasi dilanjutkan", "Mencatat keberatan kedua kelompok untuk disampaikan kepada atasan dan melanjutkan sosialisasi sesuai jadwal, karena keputusan atas daftar penerima merupakan kewenangan atasan"], "Netralitas dan transparansi kriteria meredakan konflik."],
+["Anda baru bertugas di daerah yang memiliki adat kuat. Warga setempat menyarankan agar Anda bersilaturahmi ke rumah tokoh adat sebelum memulai program, dengan tata cara tertentu yang berbeda jauh dari kebiasaan Anda. Jadwal program cukup padat. Anda ...", ["Menyempatkan bersilaturahmi ke tokoh adat dengan mempelajari dan mengikuti tata cara setempat selama tidak bertentangan dengan aturan", "Meminta warga setempat mendampingi Anda saat bertamu ke rumah tokoh adat agar tidak keliru dalam bersikap", "Bertamu ke rumah tokoh adat sesuai kebiasaan Anda sendiri dengan tetap menjaga sopan santun yang berlaku umum, karena niat baik untuk bersilaturahmi jauh lebih penting daripada tata caranya", "Langsung menjalankan program sesuai jadwal dan menunda silaturahmi ke tokoh adat sampai program selesai"], "Menghormati adat memudahkan penerimaan masyarakat terhadap program."],
+["Menjelang pemilihan kepala daerah, atasan meminta seluruh pegawai hadir dalam acara peresmian fasilitas umum di akhir pekan. Setibanya di lokasi, Anda mendapati acara itu dihadiri salah satu calon kepala daerah yang menyampaikan visi dan misinya. Anda ...", ["Meninggalkan acara dengan sopan karena bermuatan kampanye, lalu menjelaskan alasan netralitas tersebut kepada atasan", "Tetap berada di lokasi tetapi menjaga jarak dari kegiatan calon dan tidak mengenakan atribut apa pun", "Tetap hadir sampai acara selesai karena kehadiran Anda adalah perintah atasan, bukan atas kemauan sendiri", "Tetap hadir dan mendokumentasikan kegiatan tersebut sebagai bagian dari laporan kegiatan kantor"], "Netralitas ASN adalah kewajiban, termasuk ketika menghadapi tekanan atasan."],
+["Kantor menerapkan kebijakan baru yang mewajibkan pegawai lapangan membuat laporan harian secara rinci. Menurut Anda, kebijakan itu menyita waktu sehingga kunjungan ke warga berkurang. Beberapa rekan mulai mengisi laporan asal-asalan. Anda ...", ["Tetap mengisi laporan dengan benar sambil mengumpulkan data dampaknya, lalu menyampaikan usulan penyederhanaan melalui forum resmi", "Tetap mengisi laporan harian dengan benar dan menunggu evaluasi kebijakan yang biasanya dilakukan setiap semester", "Mendiskusikan keberatan atas kebijakan tersebut dengan rekan-rekan satu unit untuk mengetahui pendapat mereka", "Mengisi laporan secukupnya saja seperti rekan lain agar waktu kunjungan ke warga tidak berkurang, karena tujuan akhir kebijakan adalah pelayanan kepada warga"], "Loyal sekaligus konstruktif: kebijakan dijalankan, perbaikan diusulkan berdasarkan data."],
+["Anda menemukan aplikasi gratis di internet yang dapat mengolah data warga jauh lebih cepat daripada cara yang dipakai unit Anda sekarang. Aplikasi itu meminta data diunggah ke server milik pengembangnya. Beberapa rekan tertarik untuk langsung mencobanya. Anda ...", ["Mengusulkan aplikasi tersebut kepada atasan dan tim TI disertai kajian manfaat serta risiko keamanan data sebelum digunakan", "Mencoba aplikasi tersebut terlebih dahulu dengan data contoh yang tidak berisi data pribadi warga", "Menyarankan rekan-rekan untuk menunggu persetujuan atasan sebelum menggunakan aplikasi tersebut", "Langsung menggunakan aplikasi tersebut karena gratis dan dapat mempercepat pekerjaan seluruh unit dalam mengolah data warga yang jumlahnya sangat banyak"], "Inovasi perlu dikaji keamanannya, terutama yang menyangkut data pribadi warga."],
+["Arsip fisik di unit Anda menumpuk hingga memenuhi dua ruangan. Pegawai sering membutuhkan waktu lama untuk menemukan dokumen, bahkan beberapa dokumen penting pernah hilang. Belum ada anggaran khusus untuk pengelolaan arsip tahun ini. Anda ...", ["Menyusun usulan digitalisasi arsip secara bertahap sesuai ketentuan kearsipan, dimulai dari dokumen yang paling sering dibutuhkan", "Menyusun ulang arsip fisik dengan sistem indeks baru agar dokumen lebih mudah ditemukan", "Mengusulkan penambahan lemari arsip dan ruang penyimpanan pada perencanaan anggaran tahun depan", "Tetap mencari dokumen sesuai kebutuhan seperti biasa sampai ada anggaran khusus untuk pengelolaan arsip, agar penataan arsip dapat dilakukan secara menyeluruh dan profesional"], "Solusi berbasis teknologi yang bertahap meningkatkan efisiensi jangka panjang."],
+["Anda diminta menyebarkan informasi tentang program vaksinasi gratis kepada masyarakat. Bahan yang tersedia berupa surat edaran resmi yang panjang dan penuh istilah teknis. Sasaran utama program adalah warga usia produktif yang aktif di media sosial. Anda ...", ["Membuat konten ringkas berupa infografis atau video pendek yang mudah dipahami, lalu menyebarkannya melalui kanal resmi dan media sosial", "Membagikan surat edaran resmi tersebut melalui media sosial kantor agar informasinya sesuai dengan sumber aslinya", "Menempelkan surat edaran tersebut di papan informasi kantor dan tempat umum yang sering dikunjungi warga agar warga yang tidak aktif di media sosial juga mendapat informasi", "Menunggu bagian humas menyiapkan materi publikasi sebelum menyebarkan informasi tersebut kepada masyarakat"], "Pemanfaatan TIK yang tepat memperluas jangkauan informasi publik."],
+["Saat merapikan ruang tunggu menjelang jam pulang, Anda menemukan dompet berisi uang tunai cukup banyak, kartu identitas, dan beberapa kartu bank. Ruang tunggu sudah kosong dan petugas keamanan sedang berpatroli di area parkir. Anda ...", ["Menyerahkan dompet kepada petugas keamanan dengan berita acara, lalu membantu menghubungi pemilik melalui data pada kartu identitas", "Menyerahkan dompet tersebut kepada petugas keamanan agar disimpan dan dikembalikan saat pemiliknya datang", "Mengumumkan penemuan dompet tersebut melalui media sosial kantor dengan menampilkan foto kartu identitasnya", "Menyimpan dompet tersebut di laci meja Anda sampai pemiliknya datang mencari keesokan harinya, lalu menyerahkannya langsung kepada pemilik setelah memastikan identitasnya"], "Kejujuran dan transparansi dengan menjaga privasi pemilik."],
+["Seorang rekan sering melontarkan pendapat di ruang kerja bahwa pemeluk agama tertentu tidak layak dipercaya memegang jabatan. Ia menyampaikannya dengan nada bercanda, tetapi beberapa rekan dari kelompok tersebut terlihat tidak nyaman. Anda ...", ["Mengajaknya berdiskusi secara pribadi tentang nilai kebangsaan dan kesetaraan, serta melaporkannya bila pernyataannya berlanjut menjadi tindakan diskriminatif", "Menegurnya dengan sopan di tempat bahwa candaan tersebut dapat menyinggung rekan lain dan tidak pantas disampaikan", "Menghindari topik tersebut setiap kali ia memulainya agar suasana ruang kerja tidak semakin memanas, lalu membicarakannya dengan rekan-rekan lain yang merasa tidak nyaman", "Mendengarkan tanpa menanggapi karena ia menyampaikannya dengan nada bercanda dan tidak berniat buruk"], "Prasangka terhadap kelompok perlu diluruskan sejak dini sebelum berkembang menjadi diskriminasi."],
+["Anda rutin mengikuti kajian keagamaan di lingkungan tempat tinggal. Beberapa pekan terakhir, penceramah baru mulai menyampaikan bahwa pemerintah yang sah tidak wajib ditaati dan aturan negara boleh dilanggar demi keyakinan. Sebagian jamaah mulai terpengaruh. Anda ...", ["Berhenti mengikuti kajian tersebut, menyampaikan kekhawatiran kepada pengurus, dan melaporkannya kepada pihak berwenang", "Berhenti mengikuti kajian tersebut dan mencari kajian lain yang menyampaikan ajaran dengan sikap moderat", "Menyampaikan keberatan kepada penyelenggara kajian agar penceramah tersebut tidak diundang lagi", "Tetap mengikuti kajian tersebut tetapi tidak menyetujui isi ceramah yang bertentangan dengan aturan negara"], "ASN wajib setia kepada pemerintah yang sah dan ikut mencegah penyebaran paham radikal."],
+["Keponakan Anda yang masih duduk di bangku SMA mulai sering membagikan konten yang membenarkan kekerasan atas nama keyakinan. Ia juga mulai menjauh dari teman-teman lamanya dan jarang berkumpul dengan keluarga. Orang tuanya belum menyadari perubahan ini. Anda ...", ["Berbicara dengan orang tuanya tentang perubahan tersebut, lalu bersama-sama mengajak keponakan berdialog dan mendampinginya dengan tokoh agama yang moderat", "Menasihati keponakan secara langsung agar berhenti membagikan konten kekerasan dan kembali bergaul dengan teman-temannya", "Melaporkan akun media sosial keponakan tersebut ke platform agar konten yang dibagikannya diturunkan, sehingga pengaruh buruk konten tersebut terhadap teman-temannya dapat dicegah", "Membiarkannya karena perilaku tersebut dianggap wajar pada remaja yang sedang mencari jati diri"], "Pendekatan keluarga yang terkoordinasi efektif mencegah radikalisasi."],
+["Rekan Anda akan merayakan hari besar agamanya dan unit Anda harus tetap membuka layanan pada hari itu. Ia menjadi satu-satunya petugas yang menguasai layanan tertentu, sehingga atasan ragu memberinya izin cuti. Anda ...", ["Menawarkan diri mempelajari layanan tersebut dan menggantikannya pada hari itu, agar ia dapat merayakan hari besarnya dengan tenang", "Mendukung permohonan cutinya kepada atasan dan mengusulkan agar layanan tersebut dibatasi sementara pada hari itu", "Mengucapkan selamat hari raya kepadanya dan menyerahkan keputusan cuti sepenuhnya kepada atasan", "Menyarankannya tetap masuk kerja pada pagi hari dan merayakan hari besarnya setelah jam kantor, sehingga layanan tetap berjalan dan ia tetap dapat merayakan hari besarnya"], "Toleransi aktif diwujudkan dalam tindakan yang memudahkan rekan menjalankan ibadahnya."],
+["Dalam rapat, seorang rekan menirukan logat daerah rekan lain untuk mencairkan suasana. Sebagian peserta tertawa, tetapi rekan yang ditirukan terlihat diam dan menunduk. Rapat dipimpin atasan Anda yang ikut tersenyum. Anda ...", ["Setelah rapat, mengingatkan rekan yang menirukan dengan baik bahwa candaan tersebut bisa menyinggung, dan menyapa rekan yang ditirukan", "Mengalihkan topik pembicaraan agar candaan tersebut tidak berlanjut dan rapat kembali fokus pada agenda", "Tidak ikut tertawa dan tetap fokus pada agenda rapat tanpa menanggapi candaan tersebut", "Ikut tersenyum agar suasana rapat tetap cair karena atasan juga terlihat menikmati candaan tersebut, sehingga rapat dapat berlanjut tanpa ketegangan"], "Menghargai keragaman berarti mencegah candaan yang merendahkan, tanpa mempermalukan siapa pun."],
+["Anda bertugas di unit pengaduan. Setiap bulan, lebih dari separuh pengaduan yang masuk berisi keluhan yang sama, yaitu sulitnya mengunduh formulir di situs kantor. Selama ini setiap pengaduan dijawab satu per satu dengan mengirimkan formulir melalui email. Anda ...", ["Merekap pola pengaduan tersebut dan mengusulkan perbaikan situs kepada pengelola, sekaligus menyediakan tautan alternatif sementara", "Menjawab setiap pengaduan dengan lebih cepat dengan menyiapkan berkas formulir yang siap dikirimkan", "Meneruskan setiap pengaduan tersebut kepada pengelola situs agar mereka mengetahui adanya masalah", "Membuat jawaban baku untuk pengaduan tersebut agar penanganannya lebih cepat dan seragam"], "Memperbaiki akar masalah lebih bermanfaat daripada menjawab keluhan satu per satu."],
+["Seorang wartawan meminta salinan dokumen evaluasi pengadaan yang menurut aturan termasuk informasi yang dikecualikan. Ia mendesak dengan alasan kepentingan publik dan mengancam akan menulis bahwa kantor Anda tidak transparan. Anda ...", ["Menjelaskan dengan sopan dasar pengecualian informasi tersebut, lalu menawarkan informasi lain yang terbuka dan cara mengajukan keberatan sesuai aturan", "Menolak permintaan tersebut dengan sopan karena dokumen evaluasi termasuk informasi yang dikecualikan", "Memintanya mengajukan permohonan informasi resmi kepada PPID agar permintaannya dapat diproses sesuai ketentuan", "Memberikan ringkasan isi dokumen tersebut secara lisan agar ia tidak menulis bahwa kantor tidak transparan dan hubungan baik antara kantor dengan media tetap terjaga"], "Keterbukaan informasi tetap dijalankan dalam koridor aturan, dengan alternatif yang sah."],
+["Survei kepuasan masyarakat menunjukkan nilai layanan unit Anda turun cukup jauh dibanding tahun lalu. Keluhan terbanyak menyangkut sikap petugas yang dianggap kurang ramah. Sebagian rekan menilai survei itu tidak mewakili seluruh warga. Anda ...", ["Mengusulkan agar tim membahas hasil survei secara terbuka dan menyusun langkah perbaikan sikap pelayanan yang dapat dipantau", "Melaporkan hasil survei kepada atasan dan menunggu arahan tentang langkah perbaikan yang perlu dilakukan", "Memperbaiki sikap pelayanan Anda sendiri tanpa perlu membahasnya bersama tim", "Menyampaikan kepada atasan bahwa jumlah responden survei terlalu sedikit untuk dijadikan dasar penilaian dan meminta survei ulang dengan responden yang lebih banyak"], "Umpan balik masyarakat adalah dasar peningkatan layanan bersama."],
+["Atasan Anda sering mengubah instruksi kerja secara lisan. Beberapa kali pekerjaan yang hampir selesai harus diulang dari awal karena instruksinya berubah, dan rekan-rekan mulai kehilangan semangat. Anda ...", ["Mengonfirmasi setiap instruksi secara tertulis melalui pesan singkat sebelum mengerjakan, agar perubahan dapat diketahui sejak awal", "Menanyakan kembali kepada atasan setiap kali instruksi terasa berbeda dari sebelumnya", "Selalu mengikuti instruksi terakhir yang diberikan atasan walaupun pekerjaan harus diulang", "Menunggu sampai instruksi benar-benar final sebelum mulai mengerjakan tugas tersebut, sehingga pekerjaan tidak perlu diulang berkali-kali"], "Dokumentasi mencegah kesalahpahaman tanpa menunda pekerjaan."],
+["Rekan dekat Anda menelepon pagi-pagi. Ia terjebak macet karena kecelakaan di jalan tol dan meminta Anda melakukan presensi elektronik dengan ponselnya yang tertinggal di meja kantor. Ia berjanji tiba dalam tiga puluh menit. Anda ...", ["Menolak dan menyarankannya segera melaporkan keterlambatan beserta alasannya kepada atasan agar dapat dicatat sesuai ketentuan", "Menolak permintaan tersebut karena presensi harus dilakukan sendiri oleh pegawai yang bersangkutan", "Menyampaikan kepada atasan bahwa rekan Anda terlambat karena terjebak macet akibat kecelakaan", "Membantu melakukan presensi sekali ini karena keterlambatannya terjadi di luar kendali rekan tersebut dan ia sudah berjanji segera tiba di kantor"], "Kejujuran tidak bisa ditawar, tetapi solusi yang sah tetap diberikan."],
+["Program pemberdayaan UMKM yang Anda kelola membutuhkan dukungan paguyuban pedagang setempat. Selama ini paguyuban itu pasif dan beberapa pengurusnya pernah kecewa karena program sebelumnya tidak berlanjut. Anda ...", ["Menemui pengurus paguyuban untuk mendengarkan pengalaman mereka, lalu menyusun kegiatan bersama yang manfaatnya jelas bagi kedua pihak", "Mengirimkan undangan resmi kepada paguyuban untuk menghadiri sosialisasi program di kantor", "Meminta lurah atau camat setempat membantu menggerakkan paguyuban agar mau terlibat dalam program dan menindaklanjutinya dengan pertemuan di kantor kelurahan", "Menjalankan program dengan peserta yang sudah ada tanpa melibatkan paguyuban yang pasif tersebut"], "Kemitraan yang dibangun dengan mendengarkan meningkatkan keberhasilan program."],
+["Instansi mitra meminta data hasil survei unit Anda untuk program bersama yang sudah disepakati pimpinan kedua instansi dalam nota kesepahaman. Data tersebut memuat beberapa informasi pribadi responden. Anda ...", ["Memberikan data sesuai kesepakatan dan prosedur berbagi data, dengan memastikan informasi pribadi responden dilindungi sesuai ketentuan", "Memberikan data setelah meminta konfirmasi ulang kepada atasan, walaupun program sudah disepakati pimpinan", "Memberikan sebagian data yang tidak memuat informasi pribadi responden dan menahan sisanya", "Menunda pemberian data sampai ada surat permintaan baru yang secara khusus menyebutkan jenis data, sehingga tanggung jawab penggunaan data menjadi lebih jelas"], "Kolaborasi dijalankan sesuai kesepakatan dengan tetap melindungi data pribadi."],
+["Saat memeriksa dokumen pertanggungjawaban kegiatan, Anda menemukan kuitansi dari rekan yang jumlahnya berbeda dengan nota pembelian aslinya. Selisihnya tidak besar, dan rekan tersebut dikenal jujur selama ini. Anda ...", ["Mengonfirmasi perbedaan tersebut kepada rekan secara langsung, lalu melaporkannya kepada atasan bila terindikasi pelanggaran", "Melaporkan perbedaan tersebut langsung kepada atasan agar diperiksa sesuai ketentuan yang berlaku", "Menegur rekan tersebut secara pribadi dan memintanya memperbaiki kuitansi agar sesuai dengan nota", "Mencatat temuan tersebut untuk berjaga-jaga tanpa menindaklanjutinya karena selisihnya kecil"], "Klarifikasi mencegah tuduhan keliru, tetapi indikasi pelanggaran tetap harus dilaporkan."],
+["Sudah tiga tahun Anda mengerjakan tugas rekapitulasi data yang sama setiap bulan. Pekerjaan itu terasa monoton dan Anda mulai sering lengah. Bulan lalu ada kesalahan kecil dalam rekapitulasi Anda yang baru diketahui atasan belakangan. Anda ...", ["Mencari cara kerja yang lebih efisien, seperti membuat templat otomatis, sambil menambah langkah pengecekan agar tetap teliti", "Mengerjakan rekapitulasi dengan lebih hati-hati seperti biasa agar kesalahan bulan lalu tidak terulang", "Meminta atasan memberikan variasi tugas agar Anda tidak jenuh mengerjakan pekerjaan yang sama", "Menyelesaikan rekapitulasi secepat mungkin agar ada waktu untuk mengerjakan hal lain yang lebih menarik dan dapat menambah wawasan Anda di bidang lain"], "Inovasi kecil menjaga kualitas dan motivasi kerja."],
+["Anda menyampaikan ide inovasi layanan kepada rekan dalam diskusi santai. Seminggu kemudian, rekan tersebut mempresentasikan ide yang sama kepada pimpinan sebagai gagasannya sendiri dan mendapat apresiasi. Pimpinan meminta ide itu segera dijalankan. Anda ...", ["Membicarakannya secara baik-baik dengan rekan tersebut, lalu tetap mendukung pelaksanaan inovasi agar bermanfaat bagi layanan", "Membiarkannya karena yang terpenting inovasi tersebut dapat dijalankan dan bermanfaat bagi masyarakat", "Menyampaikan kepada pimpinan bahwa ide tersebut sebenarnya berasal dari Anda disertai bukti diskusi agar penghargaan diberikan kepada orang yang tepat", "Menceritakan kejadian tersebut kepada rekan-rekan lain agar mereka mengetahui siapa penggagas sebenarnya"], "Kedewasaan profesional menyelesaikan masalah secara langsung dan mengutamakan tujuan bersama."],
+["Unit Anda mulai menggunakan sistem informasi baru. Seorang rekan senior yang dua tahun lagi pensiun menolak memakainya dan meminta stafnya mengerjakan bagian digital untuknya. Akibatnya beban staf tersebut bertambah. Anda ...", ["Menawarkan pendampingan singkat kepada rekan senior itu dengan sabar, sambil menunjukkan bagian sistem yang justru mempermudah pekerjaannya", "Memberikan panduan tertulis penggunaan sistem yang ringkas agar rekan senior dapat mempelajarinya sendiri", "Membantu staf rekan senior tersebut mengerjakan bagian digital agar bebannya tidak terlalu berat", "Membiarkannya karena rekan senior tersebut akan segera pensiun dan sulit mempelajari hal baru, sehingga tidak perlu dipaksa mempelajari sistem baru"], "Membantu rekan beradaptasi memperlancar transformasi digital."],
+["Sebuah unggahan anonim di media sosial menuduh kepala kantor Anda menerima suap dari kontraktor. Unggahan itu menyertakan foto yang belum jelas keasliannya dan sudah dibagikan ribuan kali. Beberapa kerabat mulai menanyakannya kepada Anda. Anda ...", ["Menyampaikan kepada kerabat bahwa Anda menunggu klarifikasi resmi, dan melaporkan unggahan tersebut kepada humas agar dapat diverifikasi", "Melaporkan unggahan tersebut kepada atasan agar kantor segera menyiapkan klarifikasi resmi", "Tidak menanggapi pertanyaan kerabat dan menunggu klarifikasi resmi dari kantor, sambil mengingatkan kerabat agar tidak ikut menyebarkan unggahan tersebut", "Membalas unggahan tersebut dari akun pribadi untuk membela kepala kantor"], "Klarifikasi dilakukan melalui kanal resmi, tanpa ikut menyebarkan atau membela secara emosional."],
+["Kantor mulai mewajibkan tanda tangan elektronik untuk seluruh surat dinas. Beberapa rekan masih ragu karena khawatir keamanannya, sehingga mereka tetap mencetak surat dan menandatanganinya secara manual. Akibatnya alur surat menjadi tidak seragam. Anda ...", ["Mempelajari ketentuan dan cara kerja tanda tangan elektronik, menerapkannya, lalu membantu menjelaskan keamanannya kepada rekan yang ragu", "Mempelajari dan menerapkan tanda tangan elektronik sesuai ketentuan untuk seluruh surat yang Anda tangani", "Menggunakan tanda tangan elektronik hanya untuk surat yang wajib, sedangkan surat lain tetap ditandatangani manual sampai seluruh rekan siap beralih sepenuhnya", "Tetap mencetak surat sebagai cadangan sampai seluruh rekan benar-benar yakin dengan keamanan sistem"], "Kompetensi digital mencakup kesediaan membantu rekan beradaptasi."],
+["Setelah rapat dengan instansi lain, Anda menemukan flashdisk tanpa label tertinggal di meja rapat. Rekan menyarankan agar flashdisk itu dicolokkan ke komputer kantor untuk mencari tahu pemiliknya. Anda ...", ["Tidak mencolokkannya ke komputer mana pun dan menyerahkannya kepada bagian TI atau keamanan beserta informasi rapat tersebut", "Menyerahkan flashdisk tersebut kepada resepsionis agar disimpan sampai ada yang mencarinya", "Menghubungi penyelenggara rapat untuk menanyakan siapa peserta yang kehilangan flashdisk agar flashdisk tersebut dapat segera dikembalikan kepada pemiliknya", "Mencolokkan flashdisk tersebut ke komputer kantor untuk mencari identitas pemiliknya"], "Perangkat penyimpanan tak dikenal bisa membawa perangkat lunak berbahaya."],
+["Anda akan mengunggah foto kegiatan penyerahan bantuan ke media sosial kantor. Dalam foto itu terlihat jelas kartu identitas dan wajah anak-anak penerima bantuan. Atasan meminta foto segera diunggah sebelum siang. Anda ...", ["Menyamarkan kartu identitas dan wajah anak-anak dalam foto terlebih dahulu, lalu mengunggahnya sesuai waktu yang diminta", "Memilih foto lain yang tidak memperlihatkan kartu identitas dan wajah anak-anak penerima bantuan", "Mengunggah foto tersebut dengan resolusi rendah agar kartu identitas tidak terbaca dengan jelas", "Mengunggah foto tersebut apa adanya karena diminta atasan dan bertujuan menunjukkan transparansi atas penyaluran bantuan kepada masyarakat"], "Perlindungan data pribadi, terutama anak-anak, wajib dijaga dalam publikasi."],
+["Hari ini loket layanan sangat sepi karena hujan deras. Di meja Anda ada beberapa berkas lama yang belum diarsipkan, dan Anda pernah mencatat beberapa ide perbaikan alur layanan yang belum sempat disusun. Anda ...", ["Menuntaskan berkas yang tertunda, lalu menyusun usulan perbaikan alur layanan dari catatan yang sudah ada", "Merapikan dan mengarsipkan berkas-berkas lama yang belum sempat diselesaikan sejak minggu lalu", "Membaca peraturan terbaru yang berkaitan dengan layanan sambil menunggu warga datang", "Beristirahat di meja sambil menunggu warga datang karena hari ini layanan sangat sepi"], "Waktu kerja dimanfaatkan secara produktif untuk menyelesaikan tunggakan dan memperbaiki layanan."],
+["Seorang warga pengusaha meminta nomor ponsel pribadi Anda agar dapat menanyakan perkembangan izinnya kapan saja, termasuk di luar jam kerja. Ia mengatakan sudah mendapatkan nomor pribadi petugas di kantor lain. Anda ...", ["Memberikan kontak layanan resmi dan menunjukkan cara memantau perkembangan izin secara daring melalui sistem kantor", "Memberikan nomor kontak layanan resmi kantor dan menjelaskan jam operasionalnya", "Memberikan nomor telepon unit Anda yang dapat dihubungi selama jam kerja", "Memberikan nomor pribadi Anda tetapi meminta ia hanya menghubungi pada jam kerja, sehingga ia tidak perlu datang ke kantor hanya untuk bertanya"], "Komunikasi layanan melalui kanal resmi menjaga transparansi dan mencegah konflik kepentingan."],
+["Banjir besar melanda beberapa desa di wilayah kerja Anda. Posko bencana kekurangan relawan untuk pendataan pengungsi. Tugas Anda di kantor masih berjalan seperti biasa, tetapi atasan belum memberi instruksi apa pun terkait bencana. Anda ...", ["Meminta izin atasan untuk membantu pendataan di posko, sambil memastikan tugas kantor yang mendesak tetap tertangani", "Mengumpulkan bantuan logistik dari rekan kantor dan menyalurkannya melalui posko bencana", "Menunggu instruksi resmi dari atasan sebelum ikut terlibat dalam penanganan bencana", "Tetap menjalankan tugas kantor seperti biasa karena penanganan bencana sudah ada instansi khususnya dan tugas kantor Anda juga tidak boleh terbengkalai"], "Kepedulian sosial dijalankan secara terkoordinasi tanpa meninggalkan tanggung jawab utama."],
+["Dalam proyek tim yang Anda pimpin, seorang anggota hampir tidak berkontribusi selama tiga minggu. Anggota lain mulai mengeluh karena beban kerja mereka bertambah. Anda mendengar kabar bahwa anggota tersebut sedang menghadapi masalah keluarga. Anda ...", ["Mengajaknya berbicara secara pribadi untuk memahami kendalanya, lalu menyesuaikan pembagian tugas yang jelas dan realistis", "Memberinya tugas yang lebih ringan sampai masalah keluarganya selesai tanpa membicarakannya terlebih dahulu", "Mengambil alih bagian pekerjaannya agar proyek tidak terhambat dan anggota lain tidak terbebani sampai anggota tersebut siap kembali bekerja", "Melaporkan kurangnya kontribusi anggota tersebut kepada atasan untuk dijadikan bahan penilaian kinerja"], "Memahami kendala sekaligus memperjelas peran menjaga kinerja dan kepedulian."],
+["Anda baru diangkat sebagai kepala seksi. Sebagian besar anggota seksi lebih senior dan sudah terbiasa dengan cara kerja lama yang menurut Anda kurang efisien. Beberapa dari mereka terlihat meragukan kemampuan Anda. Anda ...", ["Menghormati pengalaman mereka, mengajak mereka terlibat menyusun perbaikan cara kerja, sambil tetap tegas pada target yang ditetapkan", "Banyak bertanya kepada anggota senior tentang cara kerja yang selama ini berjalan sebelum mengubah apa pun", "Mengikuti cara kerja lama terlebih dahulu sampai Anda benar-benar diterima oleh anggota senior", "Segera menerapkan cara kerja baru dan menegaskan kewenangan Anda agar dihormati sebagai pimpinan dan perubahan dapat segera dirasakan hasilnya"], "Kepemimpinan kolaboratif yang tegas membangun kepercayaan."],
+["Anda mendapat promosi jabatan di kantor wilayah yang berada di provinsi lain. Pasangan Anda bekerja di kota saat ini dan anak-anak baru saja pindah sekolah tahun lalu. Batas waktu menjawab tawaran promosi adalah satu minggu. Anda ...", ["Menerima promosi setelah berdiskusi matang dengan keluarga dan menyusun rencana penyesuaian yang realistis bagi semua", "Menerima promosi tersebut karena merupakan kesempatan baik untuk mengembangkan karier dan kompetensi", "Meminta penundaan pelantikan kepada pimpinan agar keluarga memiliki waktu lebih untuk mempersiapkan diri", "Menolak promosi tersebut karena tidak ingin mengganggu pekerjaan pasangan dan sekolah anak-anak"], "Kesiapan berkembang diimbangi perencanaan yang matang bersama keluarga."],
+["Anda gagal dalam seleksi beasiswa pendidikan kedinasan untuk kedua kalinya. Nilai Anda hanya sedikit di bawah batas kelulusan. Seorang rekan yang nilainya lebih rendah tahun lalu justru lolos tahun ini. Anda ...", ["Mengevaluasi bagian seleksi yang nilainya kurang, lalu menyusun rencana belajar untuk mempersiapkan seleksi berikutnya", "Menerima hasil tersebut dengan lapang dada dan kembali fokus pada pekerjaan sehari-hari", "Mencari pelatihan atau kursus lain yang dapat mengembangkan kompetensi tanpa melalui seleksi", "Menanyakan kepada panitia mengapa rekan yang nilainya dulu lebih rendah justru lolos tahun ini agar penilaian seleksi berikutnya lebih adil"], "Ketangguhan dan semangat belajar adalah ciri profesional."],
+["Laporan keuangan unit dikembalikan auditor karena banyak kesalahan input. Kesalahan itu sebagian besar dilakukan rekan Anda. Atasan memanggil Anda yang ikut menyusun laporan dan menanyakan penyebabnya. Anda ...", ["Menjelaskan fakta penyebab kesalahan secara objektif tanpa menyudutkan rekan, lalu menawarkan langkah perbaikan dan pengecekan bersama", "Menjelaskan fakta penyebab kesalahan secara apa adanya kepada atasan tanpa menambahkan penilaian pribadi", "Menyarankan atasan menanyakan langsung kepada rekan yang melakukan kesalahan input tersebut", "Menjelaskan bahwa Anda tidak terlibat dalam bagian yang salah sehingga tidak mengetahui penyebabnya, dan menyarankan atasan memeriksa ulang bagian tersebut"], "Objektif, solutif, dan tetap menjaga hubungan kerja."],
+["Di unit baru tempat Anda dimutasi, banyak pegawai terbiasa pulang satu jam sebelum jam kerja berakhir karena atasan jarang memeriksa. Beberapa rekan mengajak Anda ikut pulang lebih awal agar tidak dianggap berbeda. Anda ...", ["Tetap bekerja hingga jam kerja berakhir dan memanfaatkan waktu tersebut secara produktif sebagai teladan disiplin", "Tetap bekerja hingga jam kerja berakhir walaupun rekan-rekan lain sudah pulang lebih awal", "Pulang tepat waktu bila pekerjaan sudah selesai dan tetap di kantor bila masih ada pekerjaan", "Sesekali ikut pulang lebih awal agar tidak dianggap berbeda oleh rekan-rekan di unit baru"], "Disiplin tidak bergantung pada kebiasaan lingkungan."],
+["Rekan mengajak Anda memakai mobil dinas untuk mengantar keluarganya ke bandara pada akhir pekan. Ia beralasan mobil itu tidak dipakai, bensinnya akan diisi sendiri, dan kepala bagian umum biasanya mengizinkan. Anda ...", ["Menolak dan mengingatkan bahwa kendaraan dinas hanya boleh digunakan untuk kepentingan tugas sesuai ketentuan", "Menolak ajakan tersebut tanpa memberikan penjelasan panjang agar tidak menyinggung perasaan rekan", "Ikut bila kepala bagian umum benar-benar memberikan izin tertulis untuk penggunaan tersebut", "Ikut karena mobil tidak dipakai dan biaya bensin ditanggung sendiri oleh rekan tersebut dan kendaraan dinas tersebut sedang tidak digunakan"], "Fasilitas negara tidak boleh dipakai untuk kepentingan pribadi."],
+["Menjelang hari raya, sebuah perusahaan rekanan yang sedang mengikuti proses pengadaan di kantor Anda mengirimkan parsel ke rumah. Parsel itu berisi makanan dan sebuah jam tangan bermerek. Keluarga Anda sudah menerimanya saat Anda tidak di rumah. Anda ...", ["Mengembalikan parsel tersebut kepada pengirim dan melaporkannya sesuai ketentuan pelaporan gratifikasi", "Mengembalikan parsel tersebut kepada pengirim dengan surat yang menjelaskan alasan penolakan", "Membagikan makanan dalam parsel kepada tetangga dan mengembalikan jam tangan kepada pengirim", "Menyimpan parsel tersebut karena diterima keluarga saat Anda tidak di rumah dan merupakan tradisi hari raya"], "Pemberian dari rekanan yang sedang berproses pengadaan jelas berpotensi konflik kepentingan."],
+["Unit Anda kesulitan menyusun analisis data spasial untuk perencanaan wilayah. Anda mengetahui seorang pegawai di instansi lain dikenal ahli di bidang itu, tetapi Anda belum pernah berkenalan dengannya. Anda ...", ["Menghubunginya melalui jalur yang baik untuk berdiskusi, belajar, dan menjajaki kemungkinan kerja sama antarunit", "Mempelajari analisis data spasial secara mandiri melalui materi yang tersedia di internet", "Menyarankan atasan agar meminta instansi tersebut mengirimkan pegawainya sebagai narasumber", "Menunggu adanya pelatihan resmi tentang analisis data spasial yang diselenggarakan instansi agar memperoleh sertifikat kompetensi yang diakui"], "Jejaring lintas instansi memperkaya kapasitas organisasi."],
+["Program relokasi pedagang ke pasar baru ditolak sebagian pedagang karena mereka mengira biaya sewa akan dinaikkan. Padahal biaya sewa justru digratiskan selama setahun. Beberapa pedagang mulai mengajak yang lain untuk berunjuk rasa. Anda ...", ["Mengadakan dialog dengan perwakilan pedagang, menjelaskan rincian program dengan bahasa sederhana, dan melibatkan tokoh pasar yang dipercaya", "Membagikan brosur yang menjelaskan rincian program relokasi kepada seluruh pedagang di pasar lama", "Melaporkan rencana unjuk rasa kepada atasan agar dapat diantisipasi oleh pihak terkait", "Melanjutkan program relokasi bagi pedagang yang sudah setuju dan membiarkan pedagang lain menyusul, karena pedagang yang menolak akan menyesuaikan diri setelah melihat hasilnya"], "Komunikasi dua arah membangun penerimaan masyarakat."],
+["Anda diminta menyusun laporan capaian program untuk rapat pimpinan lusa. Data dari dua kecamatan belum masuk, dan petugas di sana mengatakan baru dapat mengirimnya minggu depan. Rekan menyarankan memakai data tahun lalu sebagai perkiraan. Anda ...", ["Menyusun laporan dengan data yang tersedia, menyatakan dengan jelas data yang belum lengkap, dan menyampaikan jadwal pelengkapannya kepada atasan", "Menyusun laporan dengan data yang sudah tersedia tanpa memasukkan kedua kecamatan tersebut", "Meminta perpanjangan waktu kepada atasan sampai data dari kedua kecamatan diterima", "Mengisi data yang kurang dengan data tahun lalu agar laporan terlihat lengkap pada saat rapat dan pimpinan dapat mengambil keputusan tanpa menunggu minggu depan"], "Laporan harus akurat dan transparan terhadap keterbatasan data."],
+["Menjelang pemilu, seorang rekan membagikan artikel di grup kantor yang menyudutkan salah satu calon presiden. Artikel itu berasal dari situs yang tidak jelas, dan beberapa rekan mulai berdebat dengan nada tinggi. Anda ...", ["Mengingatkan anggota grup tentang kewajiban netralitas ASN dan menyampaikan bahwa sumber artikel tersebut tidak dapat dipastikan kebenarannya", "Mengingatkan rekan yang membagikan artikel tersebut secara pribadi agar tidak membagikan konten politik di grup kantor", "Tidak menanggapi perdebatan tersebut dan memilih membisukan grup sampai suasana kembali tenang", "Meminta admin grup menghapus artikel tersebut tanpa menyampaikan alasan kepada anggota grup, karena konten politik memang tidak boleh dibagikan di grup kantor"], "Netralitas dan literasi informasi dijaga secara terbuka."],
+["Saat apel pagi, Anda melihat bendera Merah Putih di halaman kantor sudah pudar dan robek di bagian ujungnya. Petugas yang biasa mengurus perlengkapan sedang cuti, dan menurut jadwal, penggantian bendera baru dilakukan bulan depan. Anda ...", ["Segera melapor kepada pejabat yang berwenang dan mengusulkan agar bendera diganti hari itu juga sesuai ketentuan penggunaan bendera", "Menurunkan bendera tersebut sementara sampai petugas perlengkapan kembali dari cuti", "Mencatat kondisi bendera tersebut untuk disampaikan kepada petugas perlengkapan setelah cuti, sambil memastikan bendera tetap berkibar selama jam kantor", "Membiarkannya karena penggantian bendera sudah dijadwalkan pada bulan depan"], "Menghormati simbol negara termasuk menjaga kelayakannya."],
+["Aplikasi pengaduan masyarakat milik kantor sering lambat dan kadang gagal menyimpan pengaduan. Beberapa warga mengeluh pengaduannya hilang. Tim pengembang berada di instansi lain dan jarang berkomunikasi dengan unit Anda. Anda ...", ["Mencatat setiap gangguan secara rinci, melaporkannya kepada pengembang, dan sementara itu menyediakan pencatatan cadangan agar pengaduan tidak hilang", "Melaporkan gangguan aplikasi tersebut kepada rekan di bagian TI kantor untuk diteruskan kepada pengembang", "Mencatat pengaduan warga secara manual sebagai cadangan setiap kali aplikasi mengalami gangguan", "Menyarankan warga menggunakan kanal pengaduan lain seperti telepon atau datang langsung ke kantor agar pengaduan mereka tetap dapat diterima dan ditindaklanjuti"], "Masukan yang rinci mempercepat perbaikan, sambil memastikan layanan tidak terhenti."],
+["Anda baru dipindahkan ke unit yang menangani pengadaan barang. Pada hari pertama, Anda langsung diberi tugas memeriksa dokumen penawaran, padahal belum memahami aturan dan alur kerjanya. Tenggat pemeriksaan adalah tiga hari lagi. Anda ...", ["Mempelajari aturan dan SOP pengadaan, lalu bertanya kepada atasan atau rekan berpengalaman tentang bagian yang belum dipahami", "Mempelajari sendiri aturan pengadaan melalui dokumen yang tersedia agar tidak merepotkan rekan lain", "Mengerjakan pemeriksaan sesuai pemahaman Anda dan memperbaikinya bila ada koreksi dari atasan", "Menunggu atasan memberikan penjelasan lengkap tentang tugas tersebut sebelum mulai mengerjakan"], "Inisiatif belajar dan bertanya mempercepat penyesuaian dengan tugas baru."],
+["Anda diundang ke dua rapat penting pada waktu yang sama. Rapat pertama membahas anggaran unit, sedangkan rapat kedua merupakan koordinasi dengan instansi mitra. Anda memiliki staf yang memahami materi rapat koordinasi. Anda ...", ["Menentukan prioritas, menghadiri rapat anggaran, dan menugaskan staf yang memahami materi untuk mewakili di rapat koordinasi dengan pembekalan yang cukup", "Menghadiri rapat yang paling penting menurut Anda dan meminta notulen rapat yang lain setelah selesai", "Menghadiri kedua rapat tersebut secara bergantian agar tetap mengikuti perkembangan keduanya dengan berpindah ruangan setiap kali ada jeda atau sesi istirahat rapat", "Meminta penyelenggara salah satu rapat menjadwalkan ulang rapat tersebut agar Anda dapat hadir"], "Manajemen waktu dan delegasi yang tepat menunjukkan profesionalisme."],
+["Dalam rapat bersama seluruh pegawai, atasan menegur tim Anda dengan keras karena laporan terlambat dikirim. Sebagian keterlambatan sebenarnya disebabkan data dari bagian lain yang terlambat masuk. Seluruh peserta rapat memperhatikan tim Anda. Anda ...", ["Menerima teguran dengan tenang, lalu menjelaskan duduk perkaranya kepada atasan secara pribadi setelah rapat sambil menawarkan perbaikan alur data", "Menerima teguran dengan tenang dan segera memperbaiki agar laporan berikutnya tidak terlambat lagi", "Menjelaskan saat itu juga di hadapan peserta rapat bahwa keterlambatan disebabkan data dari bagian lain, agar seluruh pegawai mengetahui duduk perkara yang sebenarnya", "Diam selama rapat dan tidak menanggapi teguran tersebut karena merasa tidak sepenuhnya bersalah"], "Pengendalian diri sekaligus kejelasan informasi bagi atasan."],
+["Warga di lingkungan tempat tinggal Anda merencanakan kerja bakti membersihkan saluran air menjelang musim hujan. Pengurus RT kesulitan mengajak warga karena banyak yang beralasan sibuk. Anda juga punya rencana pribadi pada hari itu. Anda ...", ["Ikut serta dalam kerja bakti dan membantu pengurus RT mengajak tetangga agar lebih banyak warga yang terlibat", "Ikut serta dalam kerja bakti setelah menyesuaikan rencana pribadi Anda pada hari tersebut", "Menyumbang konsumsi untuk kerja bakti tetapi tidak ikut hadir karena ada rencana pribadi", "Tidak ikut kerja bakti karena sudah ada rencana pribadi yang dibuat sebelumnya"], "Partisipasi sosial dan menggerakkan warga mencerminkan kepedulian."],
+["Sekelompok pemuda karang taruna di desa tempat Anda tinggal meminta Anda mengajarkan dasar-dasar komputer dan pembuatan surat lamaran kerja. Anda cukup sibuk di kantor, tetapi akhir pekan biasanya lebih longgar. Anda ...", ["Bersedia membantu dan menyusun jadwal belajar di akhir pekan, sambil mengajak rekan lain yang mampu untuk ikut mengajar", "Bersedia mengajarkan dasar-dasar komputer pada akhir pekan sesuai waktu yang Anda miliki", "Memberikan rekomendasi tempat kursus komputer yang terjangkau kepada para pemuda tersebut sesuai dengan kebutuhan dan kemampuan masing-masing", "Menolak dengan halus karena pekerjaan kantor sedang sangat padat"], "Berbagi pengetahuan TIK membantu masyarakat sekitar."],
+["Anda menerima pesan berantai di grup alumni yang mengajak demonstrasi menolak kebijakan pemerintah. Pesan itu juga berisi ajakan membawa benda keras untuk merusak fasilitas umum bila tuntutan tidak dipenuhi. Beberapa anggota grup menyatakan akan ikut. Anda ...", ["Tidak meneruskan pesan tersebut, mengingatkan anggota grup tentang bahaya tindakan perusakan, dan melaporkannya kepada pihak berwenang", "Tidak meneruskan pesan tersebut dan mengingatkan anggota grup bahwa merusak fasilitas umum melanggar hukum", "Menghapus pesan tersebut dari ponsel Anda dan keluar dari grup alumni untuk menghindari masalah", "Membiarkan pesan tersebut karena setiap orang berhak menyampaikan pendapat terhadap kebijakan pemerintah, sehingga Anda tidak perlu ikut campur dalam urusan grup tersebut"], "Menyampaikan pendapat dilindungi, tetapi ajakan kekerasan harus dicegah dan dilaporkan."],
+["Seorang pegawai baru bercerita kepada Anda bahwa ia sering tidak dilibatkan dalam kegiatan tim dan merasa diperlakukan berbeda karena berasal dari daerah dan latar belakang yang berbeda dari mayoritas pegawai. Ia meminta Anda merahasiakan ceritanya. Anda ...", ["Mendengarkan dengan empati, mendukungnya, dan membantunya menyampaikan masalah tersebut melalui jalur yang tepat dengan persetujuannya", "Menghiburnya dan mengajaknya lebih sering terlibat dalam kegiatan yang Anda ikuti bersama rekan lain", "Menyarankannya bersabar karena perlakuan tersebut biasanya berkurang seiring berjalannya waktu", "Menyarankannya lebih berusaha menyesuaikan diri dengan kebiasaan mayoritas pegawai di kantor agar lebih mudah diterima dalam pergaulan sehari-hari"], "Lingkungan kerja harus bebas diskriminasi, dengan tetap menghormati kepercayaan yang diberikan."],
+["Anda mengelola akun media sosial kantor. Seorang warganet menulis komentar kasar yang menuduh kantor Anda lamban dan korup. Komentar itu disukai banyak orang. Sebagian tuduhan tidak berdasar, tetapi keluhan soal kelambanan memang pernah terjadi. Anda ...", ["Membalas dengan sopan, mengakui keluhan yang benar, menjelaskan perbaikan yang sedang dilakukan, dan mengarahkan ke kanal pengaduan resmi", "Membalas singkat dengan sopan dan mengarahkan warganet tersebut ke kanal pengaduan resmi kantor", "Tidak membalas komentar tersebut agar tidak memancing perdebatan yang lebih panjang", "Menghapus komentar tersebut karena berisi tuduhan yang tidak berdasar dan kata-kata kasar yang dapat merusak citra kantor di mata masyarakat"], "Kanal resmi tetap profesional, jujur, dan informatif."],
+["Dalam rapat penyusunan anggaran, seorang pejabat mengusulkan harga satuan alat tulis kantor dinaikkan dua kali lipat dari harga pasar dengan alasan antisipasi kenaikan harga. Sebagian peserta rapat diam dan terlihat setuju. Anda ...", ["Menyampaikan keberatan dengan sopan berdasarkan data harga pasar dan mengusulkan anggaran disusun sesuai kebutuhan dan harga riil", "Menyampaikan keberatan atas usulan tersebut karena tidak sesuai dengan harga pasar yang berlaku", "Meminta pertimbangan atasan secara pribadi setelah rapat tentang usulan kenaikan harga tersebut", "Mengikuti keputusan mayoritas peserta rapat karena usulan tersebut disampaikan oleh pejabat, sambil mencatat keberatan Anda secara pribadi"], "Penggelembungan harga adalah praktik korupsi yang harus ditolak dengan data."],
+["Anda mendapat informasi pembukaan program magister yang sangat relevan dengan bidang tugas Anda. Biayanya harus ditanggung sendiri, dan perkuliahan diadakan pada Jumat sore dan Sabtu. Atasan belum pernah membahas rencana pengembangan pegawai di unit Anda. Anda ...", ["Mendiskusikannya dengan atasan, lalu mendaftar dan mengatur waktu agar perkuliahan tidak mengganggu tugas kantor", "Mendaftar program tersebut karena relevan dengan tugas dan memberi tahu atasan setelah diterima", "Menunggu tawaran beasiswa dari instansi agar biaya pendidikan tidak ditanggung sendiri", "Menunda rencana studi lanjut karena biaya pendidikan cukup besar dan jadwalnya padat"], "Pengembangan diri yang relevan direncanakan bersama atasan."],
+["Pukul tiga sore, rekan satu ruangan terlihat panik karena laporan yang harus dikirim besok pagi baru selesai separuh. Tugas Anda hari ini sudah selesai, dan Anda tahu cara menyusun bagian laporan yang belum dikerjakannya. Ia belum meminta bantuan. Anda ...", ["Menawarkan bantuan untuk mengerjakan bagian yang Anda kuasai dan menyepakati pembagian kerja agar laporan selesai tepat waktu", "Membantu rekan tersebut bila ia meminta bantuan kepada Anda atau kepada rekan lain di ruangan", "Memberikan saran kepada rekan tersebut tentang cara menyusun bagian laporan yang belum dikerjakan, sehingga ia dapat menyelesaikan laporan tersebut secara mandiri", "Membiarkannya menyelesaikan laporan sendiri karena itu merupakan tanggung jawabnya"], "Kolaborasi dan kepedulian antarrekan."],
+["Anda bertugas di layanan perizinan. Seorang pemohon datang dengan berkas yang kurang satu dokumen. Ia menjelaskan bahwa dokumen itu sedang diproses di instansi lain dan meminta agar berkasnya tetap diterima karena ia harus segera membuka usahanya. Anda ...", ["Menjelaskan persyaratan dengan ramah, mencatat berkas yang sudah lengkap, dan memberi tahu langkah tercepat setelah dokumen dari instansi lain terbit", "Menjelaskan dengan ramah bahwa berkas belum dapat diterima dan memintanya kembali setelah semua dokumen lengkap", "Menerima berkas tersebut dengan catatan kekurangan agar pemohon tidak perlu antre lagi", "Menerima berkas tersebut dan memprosesnya terlebih dahulu karena dokumen yang kurang sedang dalam proses, sambil meminta pemohon segera menyusulkan dokumen yang kurang"], "Pelayanan tetap ramah dan membantu, tanpa melanggar persyaratan yang berlaku."],
+["Anda bertugas sebagai operator layanan pengaduan daring yang aktif hingga pukul sembilan malam. Pukul delapan lewat lima puluh menit, masuk pengaduan tentang pipa air bersih yang bocor besar di sebuah permukiman dan mulai menggenangi jalan. Petugas teknis yang berwenang sudah pulang, tetapi nomor piket darurat tersedia di daftar kontak. Anda ...", ["Menghubungi petugas piket darurat saat itu juga, menyampaikan lokasi dan kondisi kebocoran, lalu mengabarkan kepada pelapor bahwa petugas sedang menuju lokasi", "Mencatat pengaduan secara lengkap dan menandainya sebagai prioritas agar petugas teknis langsung menanganinya besok pagi saat jam kerja dimulai kembali", "Membalas pengaduan dengan memberikan nomor piket darurat kepada pelapor agar ia dapat menghubungi petugas secara langsung tanpa melalui operator", "Membalas bahwa layanan pengaduan akan segera tutup dan meminta pelapor mengirimkan kembali pengaduannya besok pagi pada jam layanan, sehingga pengaduan tercatat dengan benar sesuai prosedur yang berlaku"], "Kondisi darurat harus segera diteruskan ke petugas yang dapat bertindak, dan pelapor perlu diberi kepastian."]
+];
+
+/* ================= BANK TIU (verbal tetap, tingkat sulit) ================= */
+const TIU_STATIC = [
+["Sinonim kata ESKALASI adalah ...",["Peningkatan","Penurunan","Perluasan wilayah","Penundaan"],"Eskalasi berarti kenaikan atau pertambahan jumlah, volume, atau intensitas, misalnya eskalasi konflik."],
+["Sinonim kata PREROGATIF adalah ...",["Hak istimewa","Hak asasi","Kewajiban mutlak","Kebijakan umum"],"Hak prerogatif adalah hak istimewa yang dimiliki lembaga atau pejabat tertentu, misalnya presiden."],
+["Sinonim kata KREDIBEL adalah ...",["Dapat dipercaya","Dapat dikreditkan","Berwenang","Berpengalaman"],"Kredibel berarti dapat dipercayai. Jangan terkecoh dengan kata kredit."],
+["Sinonim kata DISPARITAS adalah ...",["Kesenjangan","Kesetaraan","Perpecahan","Penyimpangan"],"Disparitas berarti perbedaan atau jarak, misalnya disparitas pendapatan antardaerah."],
+["Sinonim kata ASIMILASI adalah ...",["Pembauran","Penyesuaian bunyi","Pengasingan","Penyerapan kata"],"Asimilasi berarti pembauran budaya hingga melebur menjadi budaya baru. Penyesuaian bunyi juga disebut asimilasi dalam linguistik, tetapi makna umum yang paling tepat adalah pembauran."],
+["Sinonim kata DISTORSI adalah ...",["Penyimpangan","Gangguan suara","Pengurangan","Pemalsuan"],"Distorsi berarti pemutarbalikan atau penyimpangan dari keadaan sebenarnya."],
+["Sinonim kata LATEN adalah ...",["Tersembunyi","Terlambat","Berbahaya","Tertunda"],"Laten berarti tersembunyi atau terpendam dan dapat muncul sewaktu-waktu."],
+["Sinonim kata PRAGMATIS adalah ...",["Mementingkan kegunaan praktis","Mementingkan teori","Bersifat sementara","Berpandangan luas"],"Pragmatis berarti bersifat praktis dan berguna bagi umum, mengutamakan hasil nyata."],
+["Sinonim kata EKUIVALEN adalah ...",["Sepadan","Seimbang dalam jumlah","Sejajar posisinya","Serupa bentuknya"],"Ekuivalen berarti mempunyai nilai, ukuran, atau arti yang sama; sepadan."],
+["Sinonim kata AFIRMASI adalah ...",["Penegasan","Penolakan","Pengakuan dosa","Penambahan"],"Afirmasi berarti penetapan yang positif atau penegasan, misalnya kebijakan afirmasi."],
+["Sinonim kata NISBI adalah ...",["Relatif","Mutlak","Nyata","Sementara"],"Nisbi berarti tidak mutlak atau relatif."],
+["Sinonim kata HIPOTESIS adalah ...",["Dugaan sementara","Kesimpulan akhir","Teori yang terbukti","Rumusan masalah"],"Hipotesis adalah dugaan sementara yang masih harus dibuktikan."],
+["Antonim kata PREMATUR adalah ...",["Matang","Mentah","Terlambat","Lambat"],"Prematur berarti belum waktunya atau belum matang; lawannya matang."],
+["Antonim kata DEFLASI adalah ...",["Inflasi","Resesi","Devaluasi","Depresiasi"],"Deflasi adalah penurunan harga umum; lawannya inflasi, yaitu kenaikan harga umum."],
+["Antonim kata KONTRAKSI adalah ...",["Ekspansi","Kompresi","Retraksi","Depresi"],"Kontraksi berarti penyusutan atau pengerutan; ekspansi berarti perluasan."],
+["Antonim kata ORTODOKS adalah ...",["Modern","Kuno","Tradisional","Kolot"],"Ortodoks berarti berpegang teguh pada ajaran lama atau kolot; lawannya modern."],
+["Antonim kata KOLEKTIF adalah ...",["Individual","Bersama","Kelompok","Kolegial"],"Kolektif berarti secara bersama; individual berarti perseorangan."],
+["Antonim kata FANA adalah ...",["Abadi","Musnah","Semu","Lenyap"],"Fana berarti dapat rusak atau tidak kekal; lawannya abadi atau baka."],
+["Antonim kata AKSELERASI adalah ...",["Perlambatan","Percepatan","Penghentian","Pengulangan"],"Akselerasi berarti percepatan; lawannya perlambatan (deselerasi)."],
+["Antonim kata MUTAKHIR adalah ...",["Usang","Terbaru","Canggih","Modern"],"Mutakhir berarti terbaru atau modern; lawannya usang."],
+["Antonim kata SENTRALISASI adalah ...",["Desentralisasi","Dekonsentrasi","Konsentrasi","Integrasi"],"Sentralisasi berarti pemusatan kewenangan; desentralisasi berarti penyerahan kewenangan. Dekonsentrasi adalah pelimpahan wewenang, bukan lawan langsungnya."],
+["Antonim kata EKSKLUSIF adalah ...",["Inklusif","Elite","Khusus","Terbatas"],"Eksklusif berarti terpisah atau khusus; inklusif berarti terbuka dan mencakup semua."],
+["Antonim kata KONSERVATIF adalah ...",["Progresif","Tradisional","Moderat","Liberal"],"Konservatif berarti mempertahankan keadaan atau kebiasaan; progresif berarti ke arah kemajuan."],
+["Antonim kata SPORADIS adalah ...",["Terus-menerus","Jarang","Tidak teratur","Sesekali"],"Sporadis berarti terjadi sekali-sekali atau tidak tentu; lawannya terus-menerus."],
+["ULAT : KUPU-KUPU = BERUDU : ...",["Katak","Ikan","Kolam","Telur"],"Ulat adalah fase muda kupu-kupu; berudu adalah fase muda katak."],
+["HAKIM : VONIS = DOKTER : ...",["Diagnosis","Pasien","Obat","Rumah sakit"],"Vonis adalah keputusan yang dihasilkan hakim; diagnosis adalah keputusan yang dihasilkan dokter. Obat adalah tindakan lanjutan."],
+["KOMPAS : ARAH = JAM : ...",["Waktu","Jarum","Tangan","Detik"],"Kompas adalah alat penunjuk arah; jam adalah alat penunjuk waktu."],
+["SEISMOGRAF : GEMPA = SPEEDOMETER : ...",["Kecepatan","Kendaraan","Jarak","Bensin"],"Seismograf mengukur getaran gempa; speedometer mengukur kecepatan."],
+["PENGHARGAAN : PRESTASI = HUKUMAN : ...",["Pelanggaran","Penjara","Hakim","Denda"],"Penghargaan diberikan karena prestasi; hukuman diberikan karena pelanggaran. Penjara dan denda adalah bentuk hukuman."],
+["AKSARA : KATA = NADA : ...",["Lagu","Suara","Penyanyi","Alat musik"],"Aksara adalah unsur penyusun kata; nada adalah unsur penyusun lagu."],
+["BENIH : POHON = TELUR : ...",["Ayam","Cangkang","Sarang","Induk"],"Benih tumbuh menjadi pohon; telur menetas menjadi ayam."],
+["LAPAR : MAKAN = MENGANTUK : ...",["Tidur","Malam","Kasur","Lelah"],"Lapar diatasi dengan makan; mengantuk diatasi dengan tidur."],
+["PERPUSTAKAAN : BUKU = MUSEUM : ...",["Benda bersejarah","Pengunjung","Gedung","Pemandu"],"Perpustakaan tempat menyimpan buku; museum tempat menyimpan benda bersejarah."],
+["Semua pegawai di kantor itu adalah lulusan sarjana. Sebagian lulusan sarjana bekerja di Jakarta.\nKesimpulan yang tepat ...",["Tidak dapat ditarik kesimpulan yang pasti","Sebagian pegawai di kantor itu bekerja di Jakarta","Semua pegawai di kantor itu bekerja di Jakarta","Tidak ada pegawai di kantor itu yang bekerja di Jakarta"],"Sarjana yang bekerja di Jakarta belum tentu pegawai kantor itu, sehingga tidak ada kesimpulan pasti."],
+["Jika hujan deras, panen gagal. Panen tahun ini gagal.\nKesimpulan yang tepat ...",["Belum tentu terjadi hujan deras","Terjadi hujan deras","Tidak terjadi hujan deras","Panen gagal karena hama"],"Ini kesalahan menegaskan konsekuen. Panen gagal bisa disebabkan hal lain, jadi belum tentu hujan deras."],
+["Rapat diadakan hari Senin atau Selasa. Jika rapat diadakan hari Senin, kepala dinas hadir. Kepala dinas tidak hadir.\nKesimpulan yang tepat ...",["Rapat diadakan hari Selasa","Rapat diadakan hari Senin","Rapat dibatalkan","Tidak dapat disimpulkan"],"Kepala dinas tidak hadir berarti rapat bukan hari Senin (modus tollens), sehingga rapat hari Selasa (silogisme disjungtif)."],
+["Jika pegawai rajin, ia naik pangkat. Jika naik pangkat, gajinya naik. Gaji Dodi tidak naik.\nKesimpulan yang tepat ...",["Dodi tidak rajin","Dodi rajin tetapi tidak naik pangkat","Dodi naik pangkat","Dodi rajin"],"Rantai p → q → r; tidak r, maka tidak p. Dodi tidak rajin."],
+["Ingkaran dari pernyataan Jika harga BBM naik, maka harga kebutuhan pokok naik adalah ...",["Harga BBM naik dan harga kebutuhan pokok tidak naik","Jika harga BBM tidak naik, maka harga kebutuhan pokok tidak naik","Harga BBM tidak naik atau harga kebutuhan pokok naik","Jika harga kebutuhan pokok tidak naik, maka harga BBM tidak naik"],"Ingkaran p → q adalah p dan bukan q."],
+["Ingkaran dari pernyataan Semua peserta lulus tes adalah ...",["Ada peserta yang tidak lulus tes","Semua peserta tidak lulus tes","Tidak ada peserta yang lulus tes","Sebagian peserta lulus tes"],"Ingkaran semua adalah ada (beberapa) yang tidak."],
+["Pernyataan yang setara dengan Jika Ani lulus seleksi, maka ia bekerja di kementerian adalah ...",["Ani tidak lulus seleksi atau ia bekerja di kementerian","Jika Ani bekerja di kementerian, maka ia lulus seleksi","Jika Ani tidak lulus seleksi, maka ia tidak bekerja di kementerian","Ani lulus seleksi dan ia tidak bekerja di kementerian"],"p → q setara dengan bukan p atau q, dan juga setara dengan kontraposisinya (bukan q → bukan p)."],
+["Tidak ada pejabat yang korup. Sebagian pegawai adalah pejabat.\nKesimpulan yang tepat ...",["Sebagian pegawai tidak korup","Semua pegawai tidak korup","Sebagian pegawai korup","Tidak ada pegawai yang korup"],"Pegawai yang juga pejabat pasti tidak korup, sehingga sebagian pegawai tidak korup. Pegawai lainnya tidak diketahui."],
+["Andi lebih tinggi daripada Budi. Citra lebih pendek daripada Budi. Dedi lebih tinggi daripada Andi. Eka lebih tinggi daripada Citra tetapi lebih pendek daripada Budi.\nOrang tertinggi kedua adalah ...",["Andi","Dedi","Budi","Eka"],"Urutan dari tertinggi: Dedi, Andi, Budi, Eka, Citra."]
+];
+
+/* ================= TIU (numerik, dibangkitkan acak, tingkat sulit) ================= */
+const NAMES=["Andi","Budi","Citra","Dewi","Eka","Fajar","Gita","Hasan","Intan","Joko","Lina","Rudi","Sari","Tono","Wati","Yusuf"];
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+const frac=(a,b)=>{const g=gcd(a,b);return (a/g)+"/"+(b/g)};
+const C2=n=>n*(n-1)/2;
+const pctS=x=>String(Math.round(x*100)/100).replace('.',',')+"%";
+const GEN = [
+  function deretKaliTambah(){const a=rnd(1,6),k=pick([2,3]),c=pick([-1,1,2,-2,3]);const t=[a];for(let i=0;i<4;i++)t.push(t[i]*k+c);const ans=t[4]*k+c;
+    return ["Bilangan berikutnya dari deret: "+t.join(", ")+", ...", numOpts(ans,[t[4]*k,ans+c*2,t[4]+(t[4]-t[3])*k,ans+k]), "Pola: setiap suku dikali "+k+" lalu "+(c<0?"dikurangi "+(-c):"ditambah "+c)+". "+t[4]+" × "+k+(c<0?" − "+(-c):" + "+c)+" = "+ans+"."]},
+  function deretSelisihKali(){const a=rnd(2,15),d=rnd(1,4),k=2;const t=[a];let dd=d;for(let i=0;i<4;i++){t.push(t[i]+dd);dd*=k}const ans=t[4]+dd;
+    return ["Bilangan berikutnya dari deret: "+t.join(", ")+", ...", numOpts(ans,[t[4]+dd/2*3,ans-d,t[4]*2,ans+dd/2]), "Selisih antarsuku berlipat dua: "+[0,1,2,3].map(i=>d*2**i).join(", ")+". Selisih berikutnya "+dd+", jadi "+t[4]+" + "+dd+" = "+ans+"."]},
+  function deretFibo(){const a=rnd(1,6),b=rnd(2,8);const t=[a,b];for(let i=2;i<7;i++)t.push(t[i-1]+t[i-2]);const ans=t[5]+t[6];
+    return ["Bilangan berikutnya dari deret: "+t.join(", ")+", ...", numOpts(ans,[t[6]*2,ans-1,t[6]+t[4],ans+a]), "Setiap suku adalah jumlah dua suku sebelumnya: "+t[5]+" + "+t[6]+" = "+ans+"."]},
+  function deretSelang(){const a=rnd(2,5),d=rnd(3,9),b=rnd(1,4);const t=[];for(let i=0;i<7;i++){const k=Math.floor(i/2);t.push(i%2===0?a*2**k:b+k*d)}const ans=b+3*d;
+    return ["Bilangan berikutnya dari deret: "+t.join(", ")+", ...", numOpts(ans,[a*16,ans+d,t[6]*2,ans-d]), "Dua deret berselang-seling. Suku ganjil dikali 2: "+[0,2,4,6].map(i=>t[i]).join(", ")+". Suku genap bertambah "+d+": "+[1,3,5].map(i=>t[i]).join(", ")+". Suku ke-8 termasuk suku genap: "+t[5]+" + "+d+" = "+ans+"."]},
+  function persenBerantai(){const p=pick([10,20,25,50]),q=pick([10,20,25,40]);const net=((100+p)*(100-q)-10000)/100;
+    const f=x=>(x>0?"Naik ":x<0?"Turun ":"Tetap ")+(x===0?"":pctS(Math.abs(x)));const ans=f(net);
+    const c=[f(p-q===0?5:p-q),f(net+(net>=0?-2.5:2.5)),f(-net===net?-10:-net)];const uniq=[...new Set([ans,...c,f(net+5),f(net-5)])].slice(0,4);
+    return ["Harga sebuah barang naik "+p+"%, kemudian turun "+q+"% dari harga setelah kenaikan. Dibandingkan harga awal, harga akhir barang tersebut ...", uniq, "Misalkan harga awal 100. Setelah naik "+p+"% menjadi "+(100+p)+". Turun "+q+"%: "+(100+p)+" × "+(100-q)+"% = "+String((100+p)*(100-q)/100).replace('.',',')+". Perubahan "+String(net).replace('.',',')+"%. Persentase berantai tidak boleh dijumlahkan langsung."]},
+  function hargaLabel(){const d=pick([10,20,25]),u=pick([20,35,50]),k=rnd(2,9);const B=k*(100-d)*1000,L=k*(100+u)*1000;
+    return ["Seorang pedagang membeli barang seharga "+rp(B)+". Ia ingin memperoleh untung "+u+"% setelah memberikan diskon "+d+"% kepada pembeli. Harga yang harus ditulis pada label adalah ...", numOpts(L,[B*(100+u+d)/100,B*(100+u)/100,Math.round(B*(100+u)/100*(100+d)/100/100)*100,L+k*1000],rp), "Harga jual = "+rp(B)+" × "+(100+u)+"% = "+rp(B*(100+u)/100)+". Harga ini sama dengan "+(100-d)+"% dari harga label, jadi label = "+rp(B*(100+u)/100)+" : "+(100-d)+"% = "+rp(L)+"."]},
+  function campuran(){let x,y,a,b,r;do{x=rnd(2,8);y=rnd(2,8);a=pick([10,20,30,40]);b=pick([50,60,70,80]);r=(x*a+y*b)/(x+y)}while(!Number.isInteger(r));
+    return ["Larutan A sebanyak "+x+" liter berkadar gula "+a+"% dicampur dengan larutan B sebanyak "+y+" liter berkadar gula "+b+"%. Kadar gula campuran adalah ...", numOpts(r,[(a+b)/2,r+5,r-5,(x*b+y*a)/(x+y)],v=>pctS(v)), "Gula A = "+x+" × "+a+"% = "+String(x*a/100).replace('.',',')+" L; gula B = "+y+" × "+b+"% = "+String(y*b/100).replace('.',',')+" L. Kadar = ("+String(x*a/100).replace('.',',')+" + "+String(y*b/100).replace('.',',')+") : "+(x+y)+" × 100% = "+r+"%."]},
+  function rataPP(){const [v1,v2,ans]=pick([[40,60,48],[30,60,40],[60,90,72],[20,30,24],[45,90,60],[40,120,60],[36,45,40],[60,40,48]]);
+    return ["Sebuah mobil pergi dari kota A ke kota B dengan kecepatan rata-rata "+v1+" km/jam, lalu kembali melalui jalan yang sama dengan kecepatan rata-rata "+v2+" km/jam. Kecepatan rata-rata seluruh perjalanan adalah ... km/jam", numOpts(ans,[(v1+v2)/2,ans+4,ans-4,Math.max(v1,v2)-6]), "Kecepatan rata-rata = total jarak : total waktu = 2 × "+v1+" × "+v2+" : ("+v1+" + "+v2+") = "+ans+" km/jam. Bukan rata-rata biasa ("+String((v1+v2)/2).replace('.',',')+")."]},
+  function kerjaBalik(){const [a,b]=pick([[3,6],[4,12],[6,12],[10,15],[12,24],[20,30],[6,30],[12,36],[10,40],[15,30]]);const t=a*b/(a+b);const [A,B]=shuffle(NAMES).slice(0,2);
+    return [A+" dan "+B+" bersama-sama dapat menyelesaikan sebuah pekerjaan dalam "+t+" hari. Jika "+A+" sendiri membutuhkan "+a+" hari, maka "+B+" sendiri membutuhkan ... hari", numOpts(b,[a-t,a+t,b-a,2*t]), "1/"+B+" = 1/"+t+" − 1/"+a+" = "+frac(a-t,a*t)+" per hari, sehingga "+B+" membutuhkan "+b+" hari."]},
+  function peluang(){let m,n;do{m=rnd(3,7);n=rnd(2,6)}while(m===n);const ans=frac(C2(m),C2(m+n));
+    const opts=[...new Set([ans,frac(m,m+n),frac(m*m,(m+n)*(m+n)),frac(C2(m),C2(m+n)+C2(n)),frac(m*(m-1),(m+n)*(m+n)),frac(m-1,m+n)])].slice(0,4);
+    return ["Sebuah kotak berisi "+m+" bola merah dan "+n+" bola biru. Diambil 2 bola sekaligus secara acak. Peluang terambil keduanya bola merah adalah ...", opts, "Banyak cara memilih 2 merah = C("+m+",2) = "+C2(m)+". Banyak cara memilih 2 bola = C("+(m+n)+",2) = "+C2(m+n)+". Peluang = "+C2(m)+"/"+C2(m+n)+" = "+ans+"."]},
+  function kombinasi(){if(Math.random()<.5){const n=rnd(6,10);const ans=n*(n-1)*(n-2);
+      return ["Dari "+n+" orang kandidat akan dipilih ketua, sekretaris, dan bendahara. Banyak susunan pengurus yang mungkin adalah ...", numOpts(ans,[ans/6,n*3,ans/2,n**3]), "Jabatan berbeda sehingga urutan diperhatikan (permutasi): "+n+" × "+(n-1)+" × "+(n-2)+" = "+ans+"."]}
+    const n=rnd(6,10);const ans=n*(n-1)*(n-2)/6;
+    return ["Dari "+n+" orang pegawai akan dipilih 3 orang untuk menjadi tim tanpa jabatan khusus. Banyak cara memilih tim tersebut adalah ...", numOpts(ans,[ans*6,ans*2,n*3,C2(n)]), "Urutan tidak diperhatikan (kombinasi): C("+n+",3) = "+n+" × "+(n-1)+" × "+(n-2)+" : 6 = "+ans+"."]},
+  function umur(){const b=rnd(10,20),k=rnd(2,4),a=k*(b-5)+5;const [A,B]=shuffle(NAMES).slice(0,2);
+    return ["Jumlah umur "+A+" dan "+B+" sekarang "+(a+b)+" tahun. Lima tahun yang lalu, umur "+A+" "+k+" kali umur "+B+". Umur "+A+" sekarang adalah ... tahun", numOpts(a,[a-5,k*b,a+5,b*k-5]), "Misal umur "+B+" = x, umur "+A+" = "+(a+b)+" − x. Lima tahun lalu: "+(a+b)+" − x − 5 = "+k+"(x − 5), sehingga x = "+b+". Umur "+A+" = "+a+" tahun."]},
+  function gajiAwal(){const p=pick([5,8,10,12,15,20,25]),base=rnd(30,90)*100000,G=base*(100+p)/100;
+    return ["Setelah naik "+p+"%, gaji seorang pegawai menjadi "+rp(G)+". Gaji pegawai tersebut sebelum naik adalah ...", numOpts(base,[G*(100-p)/100,G-p*10000,base+50000,base-50000],rp), "Gaji baru = "+(100+p)+"% × gaji awal. Gaji awal = "+rp(G)+" : "+(100+p)+"% = "+rp(base)+". Mengurangi "+p+"% dari gaji baru adalah kesalahan umum."]},
+  function hitungCepat(){const a=rnd(31,79),b=rnd(11,29),c=rnd(2,9);const ans=(a+b)*c;
+    return ["Nilai dari ("+a+"² − "+b+"²) : ("+a+" − "+b+") × "+c+" adalah ...", numOpts(ans,[(a-b)*c,(a+b)+c,(a*a-b*b)/c,ans+c]), "Gunakan a² − b² = (a + b)(a − b). Hasilnya ("+a+" + "+b+") × "+c+" = "+ans+"."]},
+  function rataGabung(){let n1,n2,r1,r2,r;do{n1=rnd(10,30);n2=rnd(10,30);r1=rnd(60,75);r2=rnd(76,90);r=(n1*r1+n2*r2)/(n1+n2)}while(!Number.isInteger(r));
+    return ["Rata-rata nilai "+n1+" peserta kelas A adalah "+r1+", sedangkan rata-rata "+n2+" peserta kelas B adalah "+r2+". Rata-rata nilai gabungan kedua kelas adalah ...", numOpts(r,[(r1+r2)/2,r+1,r-1,r+2].map(x=>Number.isInteger(x)?x:Math.round(x))), "Rata-rata gabungan = ("+n1+" × "+r1+" + "+n2+" × "+r2+") : "+(n1+n2)+" = "+(n1*r1+n2*r2)+" : "+(n1+n2)+" = "+r+"."]},
+  function bunga(){const M=rnd(2,20)*1000000,r=pick([6,8,10,12]),b=pick([9,15,18,30]);const bunga=M*r/100*b/12,ans=M+bunga;
+    return ["Ibu menabung "+rp(M)+" dengan bunga tunggal "+r+"% per tahun. Jumlah tabungan setelah "+b+" bulan adalah ...", numOpts(ans,[M+M*r/100,M+bunga*12/b*Math.ceil(b/12),ans+M*r/400,M+M*r/100*b],rp), "Bunga = "+rp(M)+" × "+r+"% × "+b+"/12 = "+rp(bunga)+". Tabungan = "+rp(M)+" + "+rp(bunga)+" = "+rp(ans)+"."]}
+];
+function buildTIU(){
+  const out=TIU_STATIC.slice();
+  let i=0; while(out.length<100){out.push(GEN[i%GEN.length]()); i++}
+  return out;
+}
+
+/* ================= STATE ================= */
+const CATS={TWK:{color:'var(--twk)',pts:[5,0,0,0]},TIU:{color:'var(--tiu)',pts:[5,0,0,0]},TKP:{color:'var(--tkp)',pts:[5,4,3,1]},UJIAN:{color:'var(--ujian)'}};
+const LIMIT=90*60; /* 90 menit untuk semua menu */
+const MIX={TWK:30,TIU:35,TKP:35}; /* komposisi menu Ujian */
+const S={name:'',cat:'TWK',exam:false,items:[],ans:[],idx:0,start:0,end:0,finished:false,timeout:false,timer:null,rankCat:'TWK',saved:false};
+let DB=null, USER=null, ALL=[], dbState='loading';
+/* Tempel URL Web App Google Apps Script (berakhiran /exec) di antara tanda kutip di bawah ini */
+const API_URL='https://script.google.com/macros/s/AKfycbyOIrXVqNFg06wNFQOG9s_X0rAxiR3xRMynJpzonptjeFS7462zHcdoYozW5HDkwhx9/exec';
+const LOCAL_KEY='cpns_scores_local';
+
+function show(id){['scrName','scrMenu','scrQuiz','scrResult','scrRank'].forEach(s=>$(s).hidden=(s!==id));window.scrollTo(0,0)}
+function setWho(){$('who').hidden=!S.name;$('whoName').textContent=S.name}
+
+/* ================= NAMA ================= */
+$('nameForm').addEventListener('submit',e=>{e.preventDefault();
+  const v=$('nameInput').value.replace(/\s+/g,' ').trim();
+  if(v.length<2){$('nameErr').textContent='Nama minimal 2 huruf.';return}
+  S.name=v.slice(0,40);lsSet('cpns_name',S.name);$('nameErr').textContent='';setWho();toMenu()});
+$('btnGanti').addEventListener('click',()=>{stopTimer();S.name='';S.items=[];S.ans=[];S.finished=false;
+  try{localStorage.removeItem('cpns_name')}catch(e){}
+  setWho();$('nameInput').value='';$('nameErr').textContent='';show('scrName');$('nameInput').focus()});
+function toMenu(){stopTimer();$('helloTitle').textContent='Halo, '+S.name+'. Pilih materi latihan';show('scrMenu')}
+
+/* ================= KUIS ================= */
+document.querySelectorAll('.cat').forEach(b=>b.addEventListener('click',()=>startQuiz(b.dataset.cat)));
+function mkItems(bank,kind){const pts=CATS[kind].pts;
+  return bank.map(([q,o,e])=>({q,e,kind,opts:shuffle(o.map((t,i)=>({t,p:pts[i],best:i===0})))}))}
+function startQuiz(cat){
+  S.cat=cat;S.exam=cat==='UJIAN';
+  if(S.exam){
+    S.items=shuffle([
+      ...mkItems(shuffle(TWK).slice(0,MIX.TWK),'TWK'),
+      ...mkItems(shuffle(buildTIU()).slice(0,MIX.TIU),'TIU'),
+      ...mkItems(shuffle(TKP).slice(0,MIX.TKP),'TKP')]);
+  } else {
+    const bank=cat==='TWK'?TWK:cat==='TKP'?TKP:buildTIU();
+    S.items=mkItems(shuffle(bank).slice(0,100),cat);
+  }
+  S.ans=new Array(S.items.length).fill(null);S.idx=0;S.start=Date.now();S.end=0;S.finished=false;S.timeout=false;S.saved=false;
+  document.documentElement.style.setProperty('--c',CATS[cat].color);
+  $('scrQuiz').style.setProperty('--c',CATS[cat].color);$('scrResult').style.setProperty('--c',CATS[cat].color);
+  $('qChip').textContent=cat;$('confirmBox').hidden=true;
+  buildBoard();renderLegend();renderQ();startTimer();show('scrQuiz');
+}
+function startTimer(){stopTimer();
+  const tick=()=>{const used=Math.floor((Date.now()-S.start)/1000);
+    if(!S.exam){$('qTimer').textContent='Waktu '+mmss(used);$('qTimer').classList.remove('warn');return}
+    const rem=LIMIT-used;
+    $('qTimer').textContent='Sisa '+mmss(Math.max(0,rem));$('qTimer').classList.toggle('warn',rem<=300);
+    if(rem<=0&&!S.finished)finish(true)};
+  tick();S.timer=setInterval(tick,1000)}
+function stopTimer(){if(S.timer){clearInterval(S.timer);S.timer=null}}
+function cls(i){const a=S.ans[i];if(a==null)return '';if(S.exam&&!S.finished)return 'ans';
+  const it=S.items[i],p=it.opts[a].p;return p===5?'ok':(it.kind==='TKP'&&p>=3?'mid':'bad')}
+function buildBoard(){const tb=$('board');tb.textContent='';
+  for(let r=0;r<10;r++){const tr=document.createElement('tr');
+    for(let c=0;c<10;c++){const i=r*10+c;const td=document.createElement('td');const b=document.createElement('button');
+      b.type='button';b.className='cell';b.id='cell'+i;b.textContent=i+1;b.setAttribute('aria-label','Soal '+(i+1));
+      b.addEventListener('click',()=>{S.idx=i;renderQ()});td.appendChild(b);tr.appendChild(td)}
+    tb.appendChild(tr)}}
+function renderLegend(){const L=$('legend');L.textContent='';
+  const items=(S.exam&&!S.finished)?[['','Belum dijawab'],['ans','Sudah dijawab']]
+    :S.exam?[['','Belum'],['ok','Benar'],['mid','TKP poin 3–4'],['bad','Salah']]
+    :S.cat==='TKP'?[['','Belum'],['ok','Poin 5'],['mid','Poin 3–4'],['bad','Poin 1']]:[['','Belum'],['ok','Benar'],['bad','Salah']];
+  items.forEach(([c,t])=>{const s=document.createElement('span');const i=document.createElement('i');if(c)i.className=c;s.appendChild(i);s.append(t);L.appendChild(s)})}
+function refreshBoard(){let done=0;S.items.forEach((_,i)=>{const b=$('cell'+i);if(!b)return;const c=cls(i);b.className='cell'+(c?' '+c:'')+(i===S.idx?' cur':'');if(S.ans[i]!=null)done++});
+  $('cDone').textContent=done;$('cTodo').textContent=S.items.length-done;$('qProg').style.width=(done/S.items.length*100)+'%'}
+function renderQ(){
+  const it=S.items[S.idx],a=S.ans[S.idx];
+  $('qNo').textContent=S.idx+1;$('qText').textContent=it.q;
+  const qk=$('qKind');qk.hidden=!S.exam;qk.textContent=it.kind;
+  const reveal=S.finished||(!S.exam&&a!=null);
+  const box=$('qOpts');box.textContent='';
+  it.opts.forEach((o,k)=>{const b=document.createElement('button');b.type='button';b.className='opt';
+    const key=document.createElement('span');key.className='k';key.textContent='ABCD'[k];
+    const tx=document.createElement('span');tx.textContent=o.t;b.append(key,tx);
+    if(reveal){b.disabled=true;
+      if(o.best)b.classList.add('correct');else if(k===a)b.classList.add('wrong');
+      if(k===a)b.classList.add('picked');
+      if(it.kind==='TKP'){const pt=document.createElement('span');pt.className='pt';pt.textContent='poin '+o.p;b.appendChild(pt)}
+    } else { if(k===a)b.classList.add('chosen');b.appendChild(document.createElement('span'));b.addEventListener('click',()=>answer(k)) }
+    box.appendChild(b)});
+  const ex=$('qExplain');
+  if(reveal){const best=it.opts.findIndex(x=>x.best);ex.hidden=false;ex.textContent='';
+    let kind,title;
+    if(a==null){kind='bad';title='Tidak dijawab. Jawaban '+(it.kind==='TKP'?'terbaik':'benar')+': '+'ABCD'[best]+'.'}
+    else{const o=it.opts[a];
+      if(it.kind==='TKP'){kind=o.p===5?'ok':o.p>=3?'mid':'bad';title=o.p===5?'Jawaban terbaik. Poin 5.':'Poin Anda '+o.p+'. Jawaban terbaik: '+'ABCD'[best]+'.'}
+      else{kind=o.best?'ok':'bad';title=o.best?'Benar! +5':'Kurang tepat. Jawaban benar: '+'ABCD'[best]+'.'}}
+    ex.className='explain '+kind;const h=document.createElement('h3');h.textContent=title;const p=document.createElement('p');p.textContent=it.e;ex.append(h,p)}
+  else{ex.hidden=true}
+  renderLegend();
+  $('btnPrev').disabled=S.idx===0;
+  $('btnNext').textContent=S.idx===S.items.length-1?'Ke soal belum dijawab':'Berikutnya →';
+  refreshBoard();
+}
+function answer(k){if(S.finished)return;if(!S.exam&&S.ans[S.idx]!=null)return;S.ans[S.idx]=k;renderQ()}
+$('btnPrev').addEventListener('click',()=>{if(S.idx>0){S.idx--;renderQ()}});
+$('btnNext').addEventListener('click',()=>{
+  if(S.idx<S.items.length-1){S.idx++;renderQ();return}
+  const j=S.ans.findIndex(x=>x==null);if(j>=0){S.idx=j;renderQ()}else{askFinish()}});
+document.addEventListener('keydown',e=>{if($('scrQuiz').hidden||e.target.tagName==='INPUT')return;
+  const m={a:0,b:1,c:2,d:3,'1':0,'2':1,'3':2,'4':3}[e.key.toLowerCase()];
+  if(m!=null){answer(m)}else if(e.key==='ArrowRight'){$('btnNext').click()}else if(e.key==='ArrowLeft'){$('btnPrev').click()}});
+$('btnExit').addEventListener('click',toMenu);
+$('btnFinish').addEventListener('click',askFinish);
+function askFinish(){if(S.finished){showResult();return}
+  const todo=S.ans.filter(x=>x==null).length;
+  if(todo===0){finish();return}
+  $('confirmText').textContent='Masih ada '+todo+' soal belum dijawab dan akan dihitung 0. Selesaikan sekarang?';
+  $('confirmBox').hidden=false;$('btnConfirmNo').focus()}
+$('btnConfirmYes').addEventListener('click',()=>{$('confirmBox').hidden=true;finish()});
+$('btnConfirmNo').addEventListener('click',()=>{$('confirmBox').hidden=true});
+
+/* ================= HASIL ================= */
+function tally(){let score=0,ok=0,bad=0,empty=0;
+  S.items.forEach((it,i)=>{const a=S.ans[i];if(a==null){empty++;return}const o=it.opts[a];score+=o.p;if(o.best)ok++;else bad++});
+  const raw=Math.round(((S.end||Date.now())-S.start)/1000);
+  return {score,ok,bad,empty,dur:S.exam?Math.min(LIMIT,raw):raw}}
+function finish(timeout){if(S.finished)return;
+  S.finished=true;S.timeout=!!timeout;S.end=S.exam?Math.min(Date.now(),S.start+LIMIT*1000):Date.now();stopTimer();
+  $('confirmBox').hidden=true;$('qTimer').textContent=S.timeout?'Waktu habis':'Selesai';$('qTimer').classList.remove('warn');
+  const t=tally();showResult();if(!S.saved){S.saved=true;saveScore(t)}}
+function showResult(){const t=tally();
+  $('rCat').textContent='Hasil '+S.cat;$('rName').textContent=S.name;
+  $('rScore').textContent=t.score;$('rOk').textContent=t.ok;$('rBad').textContent=t.bad;$('rEmpty').textContent=t.empty;$('rTime').textContent=mmss(t.dur);
+  const bar=$('rBar');bar.textContent='';[[t.ok,'var(--ok)'],[t.bad,'var(--bad)'],[t.empty,'var(--soft)']].forEach(([n,c])=>{const i=document.createElement('i');i.style.width=n+'%';i.style.background=c;bar.appendChild(i)});
+  let note;
+  if(S.exam){const sub={TWK:0,TIU:0,TKP:0},n={TWK:0,TIU:0,TKP:0};
+    S.items.forEach((it,i)=>{n[it.kind]++;const a=S.ans[i];if(a!=null)sub[it.kind]+=it.opts[a].p});
+    note='Rincian nilai: TWK '+sub.TWK+'/'+n.TWK*5+' · TIU '+sub.TIU+'/'+n.TIU*5+' · TKP '+sub.TKP+'/'+n.TKP*5+'. Soal TKP bernilai 1–5; jawaban benar TKP = pilihan terbaik (poin 5).'}
+  else note=S.cat==='TKP'
+    ?'TKP tidak mengenal jawaban salah mutlak: setiap pilihan bernilai 1 sampai 5. Benar = memilih jawaban terbaik (poin 5); salah = memilih pilihan lain (poin 1–4).'
+    :'Setiap jawaban benar bernilai 5, jawaban salah dan soal kosong bernilai 0.';
+  if(S.timeout)note='Waktu 90 menit habis, jawaban dikumpulkan otomatis. '+note;
+  $('rNote').textContent=note;
+  show('scrResult')}
+$('btnReview').addEventListener('click',()=>{S.idx=0;renderQ();show('scrQuiz')});
+$('btnRetry').addEventListener('click',()=>startQuiz(S.cat));
+$('btnResMenu').addEventListener('click',toMenu);
+$('btnResRank').addEventListener('click',()=>openRank(S.cat));
+
+/* ================= RANKING ================= */
+const PENDING_KEY='cpns_pending';
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,10)}
+async function postScore(rec){
+  const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(rec)});
+  const j=await r.json();if(!j.ok)throw new Error(j.error||'gagal');return j}
+async function saveScore(t){
+  const rec={id:uid(),nama:S.name,kat:S.cat,nilai:t.score,benar:t.ok,salah:t.bad,kosong:t.empty,durasi:t.dur,waktu:new Date().toISOString()};
+  const loc=lsGet(LOCAL_KEY,[]);loc.push(rec);lsSet(LOCAL_KEY,loc.slice(-300));
+  if(!API_URL){$('rSaved').textContent='Nilai disimpan di perangkat ini saja, karena penyimpanan bersama belum diatur.';return}
+  $('rSaved').textContent='Menyimpan nilai ke ranking...';
+  try{await postScore(rec);ALL.push(rec);$('rSaved').textContent='Nilai sudah masuk ke ranking '+S.cat+'.';loadScores(true)}
+  catch(e){const p=lsGet(PENDING_KEY,[]);p.push(rec);lsSet(PENDING_KEY,p.slice(-50));
+    $('rSaved').textContent='Koneksi bermasalah. Nilai disimpan di perangkat ini dan akan dikirim ulang otomatis saat koneksi pulih.'}
+}
+async function flushPending(){
+  if(!API_URL)return;let p=lsGet(PENDING_KEY,[]);if(!p.length)return;
+  const left=[];for(const rec of p){try{await postScore(rec)}catch(e){left.push(rec)}}
+  lsSet(PENDING_KEY,left);if(left.length<p.length)loadScores(true)}
+function rows(cat){
+  const src=DB?ALL:lsGet(LOCAL_KEY,[]);
+  const best=new Map();
+  src.filter(r=>r&&r.kat===cat&&typeof r.nilai==='number'&&r.nama).forEach(r=>{
+    const k=String(r.nama).trim().toLowerCase();const b=best.get(k);
+    if(!b||r.nilai>b.nilai||(r.nilai===b.nilai&&r.durasi<b.durasi))best.set(k,r)});
+  if(S.rankMode==='all') return src.filter(r=>r&&r.kat===cat&&typeof r.nilai==='number'&&r.nama).slice().sort((a,b)=>String(b.waktu||'').localeCompare(String(a.waktu||'')));
+  return [...best.values()].sort((a,b)=>b.nilai-a.nilai||a.durasi-b.durasi).slice(0,10);
+}
+function renderRank(){
+  document.querySelectorAll('#rankTabs .tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.cat===S.rankCat)));
+  const all=S.rankMode==='all';
+  document.querySelectorAll('.modes .btn').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===S.rankMode)));
+  $('rankTitle').textContent=all?'Semua nilai peserta':'10 besar nilai tertinggi';
+  $('rankNote').textContent=all?'Menampilkan semua percobaan dari semua peserta, yang terbaru di atas.':'Hanya 10 peserta dengan nilai tertinggi yang ditampilkan. Ranking memakai nilai terbaik tiap nama. Jika nilai sama, durasi yang lebih cepat di atas.';
+  const body=$('rankBody');body.textContent='';body.classList.toggle('plain',all);const list=rows(S.rankCat);
+  if(!list.length){const tr=document.createElement('tr');const td=document.createElement('td');td.colSpan=7;td.className='empty';
+    td.textContent=dbState==='loading'&&DB?'Memuat ranking...':'Belum ada nilai untuk '+S.rankCat+'. Selesaikan latihan untuk menjadi yang pertama.';tr.appendChild(td);body.appendChild(tr)}
+  list.forEach((r,i)=>{const tr=document.createElement('tr');if(String(r.nama).trim().toLowerCase()===S.name.toLowerCase())tr.className='me';
+    const cells=[null,r.nama,r.nilai,r.benar,r.salah,mmss(r.durasi||0),r.waktu?(all?new Date(r.waktu).toLocaleString('id-ID',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):new Date(r.waktu).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})):'-'];
+    cells.forEach((v,j)=>{const td=document.createElement('td');if(j===0){const m=document.createElement('span');m.className='medal';m.textContent=i+1;td.appendChild(m)}else td.textContent=v;if(j>=2&&j<=5)td.className='num';tr.appendChild(td)});
+    body.appendChild(tr)});
+  $('rankStatus').textContent=DB?({live:'Ranking bersama dari semua peserta, diperbarui otomatis setiap 30 detik.',stale:'Koneksi terputus. Data yang tampil mungkin belum terbaru.',error:'Ranking belum bisa dimuat. Periksa koneksi internet, lalu buka lagi menu ranking.',loading:'Memuat ranking...'}[dbState]||''):'Penyimpanan bersama belum diatur. Yang tampil adalah nilai yang tersimpan di perangkat ini.';
+}
+function openRank(cat){S.rankCat=cat||S.rankCat;renderRank();show('scrRank');loadScores(true)}
+$('btnRank').addEventListener('click',()=>openRank());
+$('btnRankBack').addEventListener('click',toMenu);
+S.rankMode='top';
+document.querySelectorAll('.modes .btn').forEach(b=>b.addEventListener('click',()=>{S.rankMode=b.dataset.mode;renderRank()}));
+document.querySelectorAll('#rankTabs .tab').forEach(t=>t.addEventListener('click',()=>{S.rankCat=t.dataset.cat;renderRank()}));
+
+/* ================= PENYIMPANAN NILAI: GOOGLE SHEETS (Apps Script) ================= */
+let lastLoad=0,loadingNow=false;
+DB=!!API_URL;if(!API_URL)dbState='none';
+async function loadScores(force){
+  if(!API_URL||loadingNow)return;if(!force&&Date.now()-lastLoad<15000)return;
+  loadingNow=true;
+  try{const r=await fetch(API_URL+'?action=list&t='+Date.now());const j=await r.json();if(!j.ok)throw 0;
+    ALL=j.rows.map(a=>({waktu:a[0],nama:a[1],kat:a[2],nilai:+a[3],benar:+a[4],salah:+a[5],kosong:+a[6],durasi:+a[7]}));
+    dbState='live';lastLoad=Date.now()}
+  catch(e){dbState=lastLoad?'stale':'error'}
+  finally{loadingNow=false;if(!$('scrRank').hidden)renderRank()}
+}
+setInterval(()=>{if(!$('scrRank').hidden&&!document.hidden)loadScores(true)},30000);
+window.addEventListener('online',flushPending);
+loadScores(true).then(flushPending);
+
+/* ================= MULAI ================= */
+S.name=lsGet('cpns_name','')||'';
+setWho();
+if(S.name){toMenu()}else{show('scrName');setTimeout(()=>$('nameInput').focus(),50)}
+</script>
+
+</body>
+</html>
