@@ -4,7 +4,7 @@
  * lalu Deploy > New deployment > Web app (Execute as: Me, Who has access: Anyone).
  */
 const SHEET = 'Skor';
-const KATEGORI = ['TWK', 'TIU', 'TKP', 'UJIAN', 'PU', 'WK', 'BING', 'MTK'];
+const KATEGORI = ['TWK', 'TIU', 'TKP', 'UJIAN', 'PU', 'WK', 'BING', 'MTK', 'UPOLRI'];
 const HEADER = ['Waktu', 'Nama', 'Kategori', 'Nilai', 'Benar', 'Salah', 'Tidak dijawab', 'Durasi (detik)', 'ID'];
 
 function sheet_() {

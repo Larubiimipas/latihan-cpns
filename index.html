@@ -87,7 +87,9 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--tiu);outline-of
 .modes .btn[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 #rankBody.plain .medal{background:var(--soft);color:var(--ink)}
 .credit{border-top:1px solid var(--line);padding-top:14px;text-align:center;font-size:13px;color:var(--muted);letter-spacing:.02em}
-.cats4{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cats4,.cats2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cat.hub .code{font-size:40px}
+.cat.hub .nm{font-size:20px}
 .cat.wide{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px 24px}
 .cat.wide .txt{display:flex;flex-direction:column;gap:6px;flex:1 1 320px;min-width:0}
 .cat.wide .meta{border-top:0;padding-top:0;margin-top:0;flex-wrap:wrap}
@@ -212,12 +214,40 @@ tr:nth-child(3) .medal{background:#B9774A;color:#1A0F07}
     </form>
   </section>
 
-  <!-- 2. Menu -->
+  <!-- 2. Menu utama -->
   <section id="scrMenu" hidden>
     <div class="wrap" style="gap:20px">
       <div class="hello">
+        <span class="eyebrow">Menu utama</span>
+        <h2 id="helloTitle">Pilih jenis tes</h2>
+        <p>Pilih latihan yang ingin Anda kerjakan. Setiap jenis tes berisi latihan per materi dan satu simulasi ujian.</p>
+      </div>
+      <div class="cats cats2">
+        <button class="cat hub" type="button" id="btnCpns" style="--c:var(--twk)">
+          <span class="code">TES CPNS</span><span class="nm">Seleksi Kompetensi Dasar CPNS</span>
+          <span class="ds">Latihan Seleksi Kompetensi Dasar: TWK, TIU, TKP, dan simulasi UJIAN SKD.</span>
+          <span class="meta"><span>4 menu</span><span>50 soal per latihan</span><span>Ujian 100 soal</span></span>
+        </button>
+        <button class="cat hub" type="button" id="btnPolri" style="--c:var(--polri)">
+          <span class="code">TES POLRI</span><span class="nm">Tes Akademik Penerimaan Polri</span>
+          <span class="ds">Latihan tes akademik penerimaan Polri: Pengetahuan Umum, Wawasan Kebangsaan, Bahasa Inggris, Matematika, dan simulasi UJIAN.</span>
+          <span class="meta"><span>5 menu</span><span>50 soal per latihan</span><span>Ujian 100 soal</span></span>
+        </button>
+      </div>
+      <div class="menu-actions">
+        <button class="btn primary" type="button" id="btnRankHub">Lihat ranking nilai</button>
+      </div>
+      <footer class="credit">Copyright © Designed &amp; Developed by ASM 2026</footer>
+    </div>
+  </section>
+
+  <!-- 2a. Menu Tes CPNS -->
+  <section id="scrCpns" hidden>
+    <div class="wrap" style="gap:20px">
+      <div class="qhead"><div class="left"><button class="btn small" type="button" id="btnCpnsBack">← Menu utama</button></div></div>
+      <div class="hello">
         <span class="eyebrow">Seleksi Kompetensi Dasar</span>
-        <h2 id="helloTitle">Pilih materi latihan</h2>
+        <h2>Tes CPNS</h2>
         <p>Setiap latihan berisi 50 soal yang diambil acak dari bank soal, sehingga soalnya berbeda setiap kali mulai. Penjelasan muncul setelah Anda menjawab.</p>
       </div>
       <div class="cats">
@@ -242,12 +272,6 @@ tr:nth-child(3) .medal{background:#B9774A;color:#1A0F07}
           <span class="ds">100 soal acak gabungan: 30 TWK, 35 TIU, 35 TKP. Seperti ujian sungguhan, tidak ada pembahasan selama mengerjakan dan jawaban masih bisa diganti. Setelah selesai, kunci dan penjelasan bisa dilihat lewat Tinjau jawaban.</span></span>
           <span class="meta"><span>100 soal</span><span>90 menit</span><span>Nilai maks. 500</span></span>
         </button>
-        <button class="cat wide" type="button" id="btnPolri" style="--c:var(--polri)">
-          <span class="code">POLRI</span>
-          <span class="txt"><span class="nm">Tes Akademik Polri</span>
-          <span class="ds">Latihan tes akademik penerimaan anggota Polri: Pengetahuan Umum, Wawasan Kebangsaan, Bahasa Inggris, dan Matematika.</span></span>
-          <span class="meta"><span>4 menu</span><span>50 soal per menu</span><span>Nilai maks. 100</span></span>
-        </button>
       </div>
       <div class="menu-actions">
         <button class="btn primary" type="button" id="btnRank">Lihat ranking nilai</button>
@@ -260,11 +284,11 @@ tr:nth-child(3) .medal{background:#B9774A;color:#1A0F07}
   <!-- 2b. Menu Tes Akademik Polri -->
   <section id="scrPolri" hidden>
     <div class="wrap" style="gap:20px">
-      <div class="qhead"><div class="left"><button class="btn small" type="button" id="btnPolriBack">← Menu CPNS</button></div></div>
+      <div class="qhead"><div class="left"><button class="btn small" type="button" id="btnPolriBack">← Menu utama</button></div></div>
       <div class="hello">
         <span class="eyebrow">Seleksi Penerimaan Polri</span>
-        <h2>Tes Akademik Polri</h2>
-        <p>Pilih materi tes akademik. Setiap latihan berisi 50 soal yang diambil acak dari bank soal, dan penjelasan muncul setelah Anda menjawab.</p>
+        <h2>Tes Polri</h2>
+        <p>Latihan tes akademik penerimaan Polri. Setiap latihan berisi 50 soal yang diambil acak dari bank soal, dan penjelasan muncul setelah Anda menjawab. Simulasi UJIAN berisi 100 soal campuran dengan batas waktu 90 menit.</p>
       </div>
       <div class="cats cats4">
         <button class="cat" type="button" data-cat="PU" style="--c:var(--pu)">
@@ -287,11 +311,17 @@ tr:nth-child(3) .medal{background:#B9774A;color:#1A0F07}
           <span class="ds">Aritmetika, aljabar, persamaan, barisan dan deret, statistika, peluang, bangun ruang, pangkat, dan logaritma.</span>
           <span class="meta"><span>50 soal acak</span><span>Benar 2 · Salah 0</span></span>
         </button>
+        <button class="cat wide" type="button" data-cat="UPOLRI" style="--c:var(--polri)">
+          <span class="code">UJIAN</span>
+          <span class="txt"><span class="nm">Simulasi Ujian Tes Polri</span>
+          <span class="ds">100 soal acak gabungan: 25 Pengetahuan Umum, 25 Wawasan Kebangsaan, 25 Bahasa Inggris, 25 Matematika. Tidak ada pembahasan selama mengerjakan dan jawaban masih bisa diganti. Setelah selesai, kunci dan penjelasan bisa dilihat lewat Tinjau jawaban.</span></span>
+          <span class="meta"><span>100 soal</span><span>90 menit</span><span>Nilai maks. 100</span></span>
+        </button>
       </div>
       <div class="menu-actions">
         <button class="btn primary" type="button" id="btnRankPolri">Lihat ranking nilai</button>
       </div>
-      <p class="note">Setiap menu tidak dibatasi waktu, tetapi lama pengerjaan dicatat. Nilai maksimal 100 (50 soal × 2). Materi dan bobot tes akademik sesungguhnya ditetapkan panitia seleksi Polri setiap tahun, jadi selalu cek pengumuman resmi di penerimaan.polri.go.id.</p>
+      <p class="note">Latihan per materi tidak dibatasi waktu, tetapi lama pengerjaan dicatat; nilai maksimal 100 (50 soal × 2). Simulasi UJIAN dibatasi 90 menit dengan nilai maksimal 100 (100 soal × 1). Materi dan bobot tes akademik sesungguhnya ditetapkan panitia seleksi Polri setiap tahun, jadi selalu cek pengumuman resmi di penerimaan.polri.go.id.</p>
       <footer class="credit">Copyright © Designed &amp; Developed by ASM 2026</footer>
     </div>
   </section>
@@ -372,11 +402,12 @@ tr:nth-child(3) .medal{background:#B9774A;color:#1A0F07}
         <button class="tab" role="tab" type="button" data-cat="TWK" style="--c:var(--twk)">TWK</button>
         <button class="tab" role="tab" type="button" data-cat="TIU" style="--c:var(--tiu)">TIU</button>
         <button class="tab" role="tab" type="button" data-cat="TKP" style="--c:var(--tkp)">TKP</button>
-        <button class="tab" role="tab" type="button" data-cat="UJIAN" style="--c:var(--ujian)">UJIAN</button>
-        <button class="tab" role="tab" type="button" data-cat="PU" style="--c:var(--pu)">POLRI·PU</button>
-        <button class="tab" role="tab" type="button" data-cat="WK" style="--c:var(--wk)">POLRI·WK</button>
-        <button class="tab" role="tab" type="button" data-cat="BING" style="--c:var(--bing)">POLRI·B.ING</button>
-        <button class="tab" role="tab" type="button" data-cat="MTK" style="--c:var(--mtk)">POLRI·MTK</button>
+        <button class="tab" role="tab" type="button" data-cat="UJIAN" style="--c:var(--ujian)">CPNS·UJIAN</button>
+        <button class="tab" role="tab" type="button" data-cat="PU" style="--c:var(--pu)">TES POLRI·PU</button>
+        <button class="tab" role="tab" type="button" data-cat="WK" style="--c:var(--wk)">TES POLRI·WK</button>
+        <button class="tab" role="tab" type="button" data-cat="BING" style="--c:var(--bing)">TES POLRI·B.ING</button>
+        <button class="tab" role="tab" type="button" data-cat="MTK" style="--c:var(--mtk)">TES POLRI·MTK</button>
+        <button class="tab" role="tab" type="button" data-cat="UPOLRI" style="--c:var(--polri)">TES POLRI·UJIAN</button>
       </div>
       <div class="modes" role="group" aria-label="Tampilan nilai">
         <button class="btn small" type="button" data-mode="top" aria-pressed="true">10 Besar</button>
@@ -1585,9 +1616,11 @@ function buildMTK(n){
 }
 
 /* ================= STATE ================= */
-const CATS={TWK:{color:'var(--twk)',pts:[5,0,0,0],n:50,label:'TWK',group:'cpns'},TIU:{color:'var(--tiu)',pts:[5,0,0,0],n:50,label:'TIU',group:'cpns'},TKP:{color:'var(--tkp)',pts:[5,4,3,1],n:50,label:'TKP',group:'cpns'},UJIAN:{color:'var(--ujian)',n:100,label:'UJIAN',group:'cpns'},
-  PU:{color:'var(--pu)',pts:[2,0,0,0],n:50,label:'Pengetahuan Umum',chip:'POLRI · PU',group:'polri'},WK:{color:'var(--wk)',pts:[2,0,0,0],n:50,label:'Wawasan Kebangsaan',chip:'POLRI · WK',group:'polri'},
-  BING:{color:'var(--bing)',pts:[2,0,0,0],n:50,label:'Bahasa Inggris',chip:'POLRI · B.ING',group:'polri'},MTK:{color:'var(--mtk)',pts:[2,0,0,0],n:50,label:'Matematika',chip:'POLRI · MTK',group:'polri'}};
+const CATS={TWK:{color:'var(--twk)',pts:[5,0,0,0],n:50,label:'TWK',group:'cpns'},TIU:{color:'var(--tiu)',pts:[5,0,0,0],n:50,label:'TIU',group:'cpns'},TKP:{color:'var(--tkp)',pts:[5,4,3,1],n:50,label:'TKP',group:'cpns'},UJIAN:{color:'var(--ujian)',n:100,label:'UJIAN',chip:'UJIAN CPNS',group:'cpns',exam:true,mix:{TWK:30,TIU:35,TKP:35}},
+  PU:{color:'var(--pu)',pts:[2,0,0,0],n:50,label:'Pengetahuan Umum',chip:'TES POLRI · PU',group:'polri'},WK:{color:'var(--wk)',pts:[2,0,0,0],n:50,label:'Wawasan Kebangsaan',chip:'TES POLRI · WK',group:'polri'},
+  BING:{color:'var(--bing)',pts:[2,0,0,0],n:50,label:'Bahasa Inggris',chip:'TES POLRI · B.ING',group:'polri'},MTK:{color:'var(--mtk)',pts:[2,0,0,0],n:50,label:'Matematika',chip:'TES POLRI · MTK',group:'polri'},
+  UPOLRI:{color:'var(--polri)',n:100,label:'UJIAN',chip:'UJIAN TES POLRI',group:'polri',exam:true,mix:{PU:25,WK:25,BING:25,MTK:25},pts:[1,0,0,0]}};
+const SHORT={PU:'PU',WK:'WK',BING:'B.ING',MTK:'MTK',TWK:'TWK',TIU:'TIU',TKP:'TKP'};
 const LIMIT=90*60; /* 90 menit untuk semua menu */
 const MIX={TWK:30,TIU:35,TKP:35}; /* komposisi menu Ujian */
 const S={name:'',cat:'TWK',group:'cpns',exam:false,items:[],ans:[],idx:0,start:0,end:0,finished:false,timeout:false,timer:null,rankCat:'TWK',saved:false};
@@ -1596,7 +1629,7 @@ let DB=null, USER=null, ALL=[], dbState='loading';
 const API_URL='https://script.google.com/macros/s/AKfycbyOIrXVqNFg06wNFQOG9s_X0rAxiR3xRMynJpzonptjeFS7462zHcdoYozW5HDkwhx9/exec';
 const LOCAL_KEY='cpns_scores_local';
 
-function show(id){['scrName','scrMenu','scrPolri','scrQuiz','scrResult','scrRank'].forEach(s=>$(s).hidden=(s!==id));window.scrollTo(0,0)}
+function show(id){['scrName','scrMenu','scrCpns','scrPolri','scrQuiz','scrResult','scrRank'].forEach(s=>$(s).hidden=(s!==id));window.scrollTo(0,0)}
 function setWho(){$('who').hidden=!S.name;$('whoName').textContent=S.name}
 
 /* ================= NAMA ================= */
@@ -1607,28 +1640,29 @@ $('nameForm').addEventListener('submit',e=>{e.preventDefault();
 $('btnGanti').addEventListener('click',()=>{stopTimer();S.name='';S.items=[];S.ans=[];S.finished=false;
   try{localStorage.removeItem('cpns_name')}catch(e){}
   setWho();$('nameInput').value='';$('nameErr').textContent='';show('scrName');$('nameInput').focus()});
-function toMenu(){stopTimer();S.group='cpns';$('helloTitle').textContent='Halo, '+S.name+'. Pilih materi latihan';show('scrMenu')}
+function toMenu(){stopTimer();$('helloTitle').textContent='Halo, '+S.name+'. Pilih jenis tes';show('scrMenu')}
+function showCpns(){stopTimer();S.group='cpns';show('scrCpns')}
 function showPolri(){stopTimer();S.group='polri';show('scrPolri')}
-function goHome(){S.group==='polri'?showPolri():toMenu()}
+function goHome(){S.group==='polri'?showPolri():showCpns()}
+$('btnCpns').addEventListener('click',showCpns);
 $('btnPolri').addEventListener('click',showPolri);
+$('btnCpnsBack').addEventListener('click',toMenu);
 $('btnPolriBack').addEventListener('click',toMenu);
+$('btnRankHub').addEventListener('click',()=>{S.group='hub';openRank('TWK')});
 $('btnRankPolri').addEventListener('click',()=>openRank(CATS[S.rankCat]&&CATS[S.rankCat].group==='polri'?S.rankCat:'PU'));
 
 /* ================= KUIS ================= */
 document.querySelectorAll('.cat[data-cat]').forEach(b=>b.addEventListener('click',()=>startQuiz(b.dataset.cat)));
-function mkItems(bank,kind){const pts=CATS[kind].pts;
+function mkItems(bank,kind,ptsOv){const pts=ptsOv||CATS[kind].pts;
   return bank.map(([q,o,e])=>{const op=o.map((t,i)=>({t,p:pts[i],best:i===0}));const fixed=o.every(t=>/^[A-D]$/.test(t));
     return {q,e,kind,opts:fixed?op.sort((x,y)=>x.t.localeCompare(y.t)):shuffle(op)}})}
 function startQuiz(cat){
-  S.cat=cat;S.exam=cat==='UJIAN';S.group=CATS[cat].group;const N=CATS[cat].n;
-  if(S.exam){
-    S.items=shuffle([
-      ...mkItems(shuffle(TWK).slice(0,MIX.TWK),'TWK'),
-      ...mkItems(shuffle(buildTIU(100)).slice(0,MIX.TIU),'TIU'),
-      ...mkItems(shuffle(TKP).slice(0,MIX.TKP),'TKP')]);
+  S.cat=cat;S.exam=!!CATS[cat].exam;S.group=CATS[cat].group;const N=CATS[cat].n;
+  const BANKS={TWK:n=>TWK,TKP:n=>TKP,TIU:n=>buildTIU(n),PU:n=>PU,WK:n=>WKP,BING:n=>BING,MTK:n=>buildMTK(n)};
+  if(S.exam){const mix=CATS[cat].mix;
+    S.items=shuffle([].concat(...Object.keys(mix).map(k=>mkItems(shuffle(BANKS[k](Math.max(mix[k],50))).slice(0,mix[k]),k,CATS[cat].pts))));
   } else {
-    const bank={TWK:()=>TWK,TKP:()=>TKP,TIU:()=>buildTIU(N),PU:()=>PU,WK:()=>WKP,BING:()=>BING,MTK:()=>buildMTK(N)}[cat]();
-    S.items=mkItems(shuffle(bank).slice(0,N),cat);
+    S.items=mkItems(shuffle(BANKS[cat](N)).slice(0,N),cat);
   }
   S.ans=new Array(S.items.length).fill(null);S.idx=0;S.start=Date.now();S.end=0;S.finished=false;S.timeout=false;S.saved=false;
   document.documentElement.style.setProperty('--c',CATS[cat].color);
@@ -1655,7 +1689,7 @@ function buildBoard(){const tb=$('board');tb.textContent='';
     tb.appendChild(tr)}}
 function renderLegend(){const L=$('legend');L.textContent='';
   const items=(S.exam&&!S.finished)?[['','Belum dijawab'],['ans','Sudah dijawab']]
-    :S.exam?[['','Belum'],['ok','Benar'],['mid','TKP poin 3–4'],['bad','Salah']]
+    :S.exam?(S.cat==='UJIAN'?[['','Belum'],['ok','Benar'],['mid','TKP poin 3–4'],['bad','Salah']]:[['','Belum'],['ok','Benar'],['bad','Salah']])
     :S.cat==='TKP'?[['','Belum'],['ok','Poin 5'],['mid','Poin 3–4'],['bad','Poin 1']]:[['','Belum'],['ok','Benar'],['bad','Salah']];
   items.forEach(([c,t])=>{const s=document.createElement('span');const i=document.createElement('i');if(c)i.className=c;s.appendChild(i);s.append(t);L.appendChild(s)})}
 function refreshBoard(){let done=0;S.items.forEach((_,i)=>{const b=$('cell'+i);if(!b)return;const c=cls(i);b.className='cell'+(c?' '+c:'')+(i===S.idx?' cur':'');if(S.ans[i]!=null)done++});
@@ -1663,7 +1697,7 @@ function refreshBoard(){let done=0;S.items.forEach((_,i)=>{const b=$('cell'+i);i
 function renderQ(){
   const it=S.items[S.idx],a=S.ans[S.idx];
   $('qNo').textContent=S.idx+1;$('qText').textContent=it.q;
-  const qk=$('qKind');qk.hidden=!S.exam;qk.textContent=it.kind;
+  const qk=$('qKind');qk.hidden=!S.exam;qk.textContent=SHORT[it.kind]||it.kind;
   const reveal=S.finished||(!S.exam&&a!=null);
   const box=$('qOpts');box.textContent='';
   it.opts.forEach((o,k)=>{const b=document.createElement('button');b.type='button';b.className='opt';
@@ -1717,14 +1751,14 @@ function finish(timeout){if(S.finished)return;
   $('confirmBox').hidden=true;$('qTimer').textContent=S.timeout?'Waktu habis':'Selesai';$('qTimer').classList.remove('warn');
   const t=tally();showResult();if(!S.saved){S.saved=true;saveScore(t)}}
 function showResult(){const t=tally();
-  $('rCat').textContent='Hasil '+(CATS[S.cat].group==='polri'?'Tes Akademik Polri · ':'')+CATS[S.cat].label;$('rName').textContent=S.name;
+  $('rCat').textContent='Hasil '+(CATS[S.cat].group==='polri'?'Tes Polri · ':'Tes CPNS · ')+CATS[S.cat].label;$('rName').textContent=S.name;
   const L=S.items.length,maxS=S.items.reduce((m,it)=>m+Math.max(...it.opts.map(o=>o.p)),0);$('rMax').textContent='/ '+maxS;
   $('rScore').textContent=t.score;$('rOk').textContent=t.ok;$('rBad').textContent=t.bad;$('rEmpty').textContent=t.empty;$('rTime').textContent=mmss(t.dur);
   const bar=$('rBar');bar.textContent='';[[t.ok,'var(--ok)'],[t.bad,'var(--bad)'],[t.empty,'var(--soft)']].forEach(([n,c])=>{const i=document.createElement('i');i.style.width=(n/L*100)+'%';i.style.background=c;bar.appendChild(i)});
   let note;
-  if(S.exam){const sub={TWK:0,TIU:0,TKP:0},n={TWK:0,TIU:0,TKP:0};
-    S.items.forEach((it,i)=>{n[it.kind]++;const a=S.ans[i];if(a!=null)sub[it.kind]+=it.opts[a].p});
-    note='Rincian nilai: TWK '+sub.TWK+'/'+n.TWK*5+' · TIU '+sub.TIU+'/'+n.TIU*5+' · TKP '+sub.TKP+'/'+n.TKP*5+'. Soal TKP bernilai 1–5; jawaban benar TKP = pilihan terbaik (poin 5).'}
+  if(S.exam){const sub={},mx={};
+    S.items.forEach((it,i)=>{const k=it.kind;sub[k]=sub[k]||0;mx[k]=(mx[k]||0)+Math.max(...it.opts.map(o=>o.p));const a=S.ans[i];if(a!=null)sub[k]+=it.opts[a].p});
+    note='Rincian nilai: '+Object.keys(CATS[S.cat].mix).map(k=>(SHORT[k]||k)+' '+sub[k]+'/'+mx[k]).join(' · ')+'.'+(S.cat==='UJIAN'?' Soal TKP bernilai 1–5; jawaban benar TKP = pilihan terbaik (poin 5).':' Setiap jawaban benar bernilai 1.')}
   else note=S.cat==='TKP'
     ?'TKP tidak mengenal jawaban salah mutlak: setiap pilihan bernilai 1 sampai 5. Benar = memilih jawaban terbaik (poin 5); salah = memilih pilihan lain (poin 1–4).'
     :'Setiap jawaban benar bernilai '+CATS[S.cat].pts[0]+', jawaban salah dan soal kosong bernilai 0. Nilai maksimal '+maxS+'.';
@@ -1780,8 +1814,8 @@ function renderRank(){
   $('rankStatus').textContent=DB?({live:'Ranking bersama dari semua peserta, diperbarui otomatis setiap 30 detik.',stale:'Koneksi terputus. Data yang tampil mungkin belum terbaru.',error:'Ranking belum bisa dimuat. Periksa koneksi internet, lalu buka lagi menu ranking.',loading:'Memuat ranking...'}[dbState]||''):'Penyimpanan bersama belum diatur. Yang tampil adalah nilai yang tersimpan di perangkat ini.';
 }
 function openRank(cat){S.rankCat=cat||S.rankCat;renderRank();show('scrRank');loadScores(true)}
-$('btnRank').addEventListener('click',()=>openRank());
-$('btnRankBack').addEventListener('click',toMenu);
+$('btnRank').addEventListener('click',()=>openRank(CATS[S.rankCat]&&CATS[S.rankCat].group==='cpns'?S.rankCat:'TWK'));
+$('btnRankBack').addEventListener('click',()=>{S.group==='polri'?showPolri():S.group==='cpns'?showCpns():toMenu()});
 S.rankMode='top';
 document.querySelectorAll('.modes .btn').forEach(b=>b.addEventListener('click',()=>{S.rankMode=b.dataset.mode;renderRank()}));
 document.querySelectorAll('#rankTabs .tab').forEach(t=>t.addEventListener('click',()=>{S.rankCat=t.dataset.cat;renderRank()}));
