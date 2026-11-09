@@ -18,7 +18,7 @@ img{max-width:100%}
 :root{
   --paper:#EEF2F5; --surface:#FFFFFF; --ink:#13202B; --muted:#56636F; --line:#D3DBE2; --soft:#E3E9EE;
   --accent:#B3261E; --accent-ink:#FFFFFF;
-  --twk:#B3261E; --tiu:#2C4DA0; --tkp:#0F7A5F; --ujian:#8A5A00;
+  --twk:#B3261E; --tiu:#2C4DA0; --tkp:#0F7A5F; --ujian:#8A5A00; --polri:#1C3A6E; --pu:#6B3FA0; --wk:#A8324A; --bing:#0E6E8C; --mtk:#5E6B12;
   --ok:#1C8A4C; --ok-soft:#DDF2E5; --bad:#C2362B; --bad-soft:#F8E0DD; --mid:#A86A12; --mid-soft:#F6EAD3;
   --display:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --body:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -27,13 +27,13 @@ img{max-width:100%}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --paper:#0E151B; --surface:#16212A; --ink:#E6EDF2; --muted:#98A6B2; --line:#2A3946; --soft:#1D2A35;
   --accent:#E5554B; --accent-ink:#1A0B0A;
-  --twk:#EE6A60; --tiu:#7C9BEA; --tkp:#3FBF98; --ujian:#E1A64A;
+  --twk:#EE6A60; --tiu:#7C9BEA; --tkp:#3FBF98; --ujian:#E1A64A; --polri:#7FA6EA; --pu:#B48CE8; --wk:#EE7A90; --bing:#4FC3E0; --mtk:#B8C850;
   --ok:#4CC27F; --ok-soft:#163626; --bad:#EE6A60; --bad-soft:#3A1C1A; --mid:#E1A64A; --mid-soft:#3A2C14;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --paper:#0E151B; --surface:#16212A; --ink:#E6EDF2; --muted:#98A6B2; --line:#2A3946; --soft:#1D2A35;
   --accent:#E5554B; --accent-ink:#1A0B0A;
-  --twk:#EE6A60; --tiu:#7C9BEA; --tkp:#3FBF98; --ujian:#E1A64A;
+  --twk:#EE6A60; --tiu:#7C9BEA; --tkp:#3FBF98; --ujian:#E1A64A; --polri:#7FA6EA; --pu:#B48CE8; --wk:#EE7A90; --bing:#4FC3E0; --mtk:#B8C850;
   --ok:#4CC27F; --ok-soft:#163626; --bad:#EE6A60; --bad-soft:#3A1C1A; --mid:#E1A64A; --mid-soft:#3A2C14;
   color-scheme:dark}
 *{box-sizing:border-box}
@@ -87,6 +87,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--tiu);outline-of
 .modes .btn[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 #rankBody.plain .medal{background:var(--soft);color:var(--ink)}
 .credit{border-top:1px solid var(--line);padding-top:14px;text-align:center;font-size:13px;color:var(--muted);letter-spacing:.02em}
+.cats4{grid-template-columns:repeat(2,minmax(0,1fr))}
 .cat.wide{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px 24px}
 .cat.wide .txt{display:flex;flex-direction:column;gap:6px;flex:1 1 320px;min-width:0}
 .cat.wide .meta{border-top:0;padding-top:0;margin-top:0;flex-wrap:wrap}
@@ -201,7 +202,7 @@ tr:nth-child(3) .medal{background:#B9774A;color:#1A0F07}
     <form class="namecard" id="nameForm" novalidate>
       <span class="eyebrow">Sebelum mulai</span>
       <h2>Masukkan nama Anda</h2>
-      <p>Nama ini tampil di ranking nilai untuk setiap kategori TWK, TIU, dan TKP.</p>
+      <p>Nama ini tampil di ranking nilai setiap menu latihan CPNS dan Polri.</p>
       <div class="field">
         <label for="nameInput">Nama peserta</label>
         <input id="nameInput" maxlength="40" autocomplete="name" placeholder="contoh: Siti Rahmawati">
@@ -217,23 +218,23 @@ tr:nth-child(3) .medal{background:#B9774A;color:#1A0F07}
       <div class="hello">
         <span class="eyebrow">Seleksi Kompetensi Dasar</span>
         <h2 id="helloTitle">Pilih materi latihan</h2>
-        <p>Setiap latihan berisi 100 soal yang diambil acak dari bank soal, sehingga soalnya berbeda setiap kali mulai. Penjelasan muncul setelah Anda menjawab.</p>
+        <p>Setiap latihan berisi 50 soal yang diambil acak dari bank soal, sehingga soalnya berbeda setiap kali mulai. Penjelasan muncul setelah Anda menjawab.</p>
       </div>
       <div class="cats">
         <button class="cat" type="button" data-cat="TWK" style="--c:var(--twk)">
           <span class="code">TWK</span><span class="nm">Tes Wawasan Kebangsaan</span>
           <span class="ds">Pancasila, UUD 1945, sejarah, NKRI, Bhinneka Tunggal Ika, integritas.</span>
-          <span class="meta"><span>100 dari 300 soal</span><span>Benar 5 · Salah 0</span></span>
+          <span class="meta"><span>50 dari 300 soal</span><span>Benar 5 · Salah 0</span></span>
         </button>
         <button class="cat" type="button" data-cat="TIU" style="--c:var(--tiu)">
           <span class="code">TIU</span><span class="nm">Tes Intelegensia Umum</span>
           <span class="ds">Verbal (sinonim, antonim, analogi, silogisme) dan numerik (deret, hitungan, soal cerita).</span>
-          <span class="meta"><span>100 soal acak</span><span>Benar 5 · Salah 0</span></span>
+          <span class="meta"><span>50 soal acak</span><span>Benar 5 · Salah 0</span></span>
         </button>
         <button class="cat" type="button" data-cat="TKP" style="--c:var(--tkp)">
           <span class="code">TKP</span><span class="nm">Tes Karakteristik Pribadi</span>
           <span class="ds">Pelayanan publik, jejaring kerja, sosial budaya, TIK, profesionalisme, anti radikalisme.</span>
-          <span class="meta"><span>100 dari 300 soal</span><span>Poin 5 · 4 · 3 · 1</span></span>
+          <span class="meta"><span>50 dari 300 soal</span><span>Poin 5 · 4 · 3 · 1</span></span>
         </button>
         <button class="cat wide" type="button" data-cat="UJIAN" style="--c:var(--ujian)">
           <span class="code">UJIAN</span>
@@ -241,11 +242,56 @@ tr:nth-child(3) .medal{background:#B9774A;color:#1A0F07}
           <span class="ds">100 soal acak gabungan: 30 TWK, 35 TIU, 35 TKP. Seperti ujian sungguhan, tidak ada pembahasan selama mengerjakan dan jawaban masih bisa diganti. Setelah selesai, kunci dan penjelasan bisa dilihat lewat Tinjau jawaban.</span></span>
           <span class="meta"><span>100 soal</span><span>90 menit</span><span>Nilai maks. 500</span></span>
         </button>
+        <button class="cat wide" type="button" id="btnPolri" style="--c:var(--polri)">
+          <span class="code">POLRI</span>
+          <span class="txt"><span class="nm">Tes Akademik Polri</span>
+          <span class="ds">Latihan tes akademik penerimaan anggota Polri: Pengetahuan Umum, Wawasan Kebangsaan, Bahasa Inggris, dan Matematika.</span></span>
+          <span class="meta"><span>4 menu</span><span>50 soal per menu</span><span>Nilai maks. 100</span></span>
+        </button>
       </div>
       <div class="menu-actions">
         <button class="btn primary" type="button" id="btnRank">Lihat ranking nilai</button>
       </div>
-      <p class="note">Menu TWK, TIU, dan TKP tidak dibatasi waktu, tetapi lama pengerjaan dicatat. Menu UJIAN dibatasi 90 menit; bila waktu habis, jawaban otomatis dikumpulkan. Nilai maksimal tiap menu 500 (100 soal × 5). Pada SKD sesungguhnya jumlah soal dan ambang batas ditetapkan oleh panitia seleksi setiap tahun.</p>
+      <p class="note">Menu TWK, TIU, dan TKP tidak dibatasi waktu, tetapi lama pengerjaan dicatat. Menu UJIAN dibatasi 90 menit; bila waktu habis, jawaban otomatis dikumpulkan. Nilai maksimal TWK, TIU, dan TKP masing-masing 250 (50 soal × 5), sedangkan UJIAN 500 (100 soal × 5). Pada SKD sesungguhnya jumlah soal dan ambang batas ditetapkan oleh panitia seleksi setiap tahun.</p>
+      <footer class="credit">Copyright © Designed &amp; Developed by ASM 2026</footer>
+    </div>
+  </section>
+
+  <!-- 2b. Menu Tes Akademik Polri -->
+  <section id="scrPolri" hidden>
+    <div class="wrap" style="gap:20px">
+      <div class="qhead"><div class="left"><button class="btn small" type="button" id="btnPolriBack">← Menu CPNS</button></div></div>
+      <div class="hello">
+        <span class="eyebrow">Seleksi Penerimaan Polri</span>
+        <h2>Tes Akademik Polri</h2>
+        <p>Pilih materi tes akademik. Setiap latihan berisi 50 soal yang diambil acak dari bank soal, dan penjelasan muncul setelah Anda menjawab.</p>
+      </div>
+      <div class="cats cats4">
+        <button class="cat" type="button" data-cat="PU" style="--c:var(--pu)">
+          <span class="code">PU</span><span class="nm">Pengetahuan Umum</span>
+          <span class="ds">Kepolisian dan UU Polri, hukum pidana dasar, geografi, sains, budaya, teknologi, dan isu umum.</span>
+          <span class="meta"><span>50 dari 100 soal</span><span>Benar 2 · Salah 0</span></span>
+        </button>
+        <button class="cat" type="button" data-cat="WK" style="--c:var(--wk)">
+          <span class="code">WK</span><span class="nm">Wawasan Kebangsaan</span>
+          <span class="ds">Pancasila, UUD 1945, NKRI, Bhinneka Tunggal Ika, wawasan nusantara, kewarganegaraan, dan sejarah.</span>
+          <span class="meta"><span>50 dari 100 soal</span><span>Benar 2 · Salah 0</span></span>
+        </button>
+        <button class="cat" type="button" data-cat="BING" style="--c:var(--bing)">
+          <span class="code">B.ING</span><span class="nm">Bahasa Inggris</span>
+          <span class="ds">Vocabulary, grammar, error recognition, reading, dan dialog sehari-hari.</span>
+          <span class="meta"><span>50 dari 100 soal</span><span>Benar 2 · Salah 0</span></span>
+        </button>
+        <button class="cat" type="button" data-cat="MTK" style="--c:var(--mtk)">
+          <span class="code">MTK</span><span class="nm">Matematika</span>
+          <span class="ds">Aritmetika, aljabar, persamaan, barisan dan deret, statistika, peluang, bangun ruang, pangkat, dan logaritma.</span>
+          <span class="meta"><span>50 soal acak</span><span>Benar 2 · Salah 0</span></span>
+        </button>
+      </div>
+      <div class="menu-actions">
+        <button class="btn primary" type="button" id="btnRankPolri">Lihat ranking nilai</button>
+      </div>
+      <p class="note">Setiap menu tidak dibatasi waktu, tetapi lama pengerjaan dicatat. Nilai maksimal 100 (50 soal × 2). Materi dan bobot tes akademik sesungguhnya ditetapkan panitia seleksi Polri setiap tahun, jadi selalu cek pengumuman resmi di penerimaan.polri.go.id.</p>
       <footer class="credit">Copyright © Designed &amp; Developed by ASM 2026</footer>
     </div>
   </section>
@@ -264,7 +310,7 @@ tr:nth-child(3) .medal{background:#B9774A;color:#1A0F07}
       <div class="progress"><i id="qProg"></i></div>
       <div class="qgrid">
         <article class="qpane" id="qPane" aria-live="polite">
-          <div class="qnum"><span class="n" id="qNo">1</span><span class="of">dari 100 soal</span><span class="pt" id="qKind" hidden></span></div>
+          <div class="qnum"><span class="n" id="qNo">1</span><span class="of" id="qOf">dari 50 soal</span><span class="pt" id="qKind" hidden></span></div>
           <div class="qtext" id="qText"></div>
           <div class="opts" id="qOpts"></div>
           <div class="explain" id="qExplain" hidden></div>
@@ -297,7 +343,7 @@ tr:nth-child(3) .medal{background:#B9774A;color:#1A0F07}
   <section id="scrResult" hidden>
     <div class="result" id="resultBox">
       <div><span class="eyebrow" id="rCat">Hasil TWK</span><h2 id="rName" style="font-size:24px;margin-top:4px"></h2></div>
-      <div class="score"><span class="big" id="rScore">0</span><span class="max">/ 500</span></div>
+      <div class="score"><span class="big" id="rScore">0</span><span class="max" id="rMax">/ 500</span></div>
       <div class="bar" id="rBar"></div>
       <div class="stats">
         <div class="stat ok"><span>Benar</span><b id="rOk">0</b></div>
@@ -327,6 +373,10 @@ tr:nth-child(3) .medal{background:#B9774A;color:#1A0F07}
         <button class="tab" role="tab" type="button" data-cat="TIU" style="--c:var(--tiu)">TIU</button>
         <button class="tab" role="tab" type="button" data-cat="TKP" style="--c:var(--tkp)">TKP</button>
         <button class="tab" role="tab" type="button" data-cat="UJIAN" style="--c:var(--ujian)">UJIAN</button>
+        <button class="tab" role="tab" type="button" data-cat="PU" style="--c:var(--pu)">POLRI·PU</button>
+        <button class="tab" role="tab" type="button" data-cat="WK" style="--c:var(--wk)">POLRI·WK</button>
+        <button class="tab" role="tab" type="button" data-cat="BING" style="--c:var(--bing)">POLRI·B.ING</button>
+        <button class="tab" role="tab" type="button" data-cat="MTK" style="--c:var(--mtk)">POLRI·MTK</button>
       </div>
       <div class="modes" role="group" aria-label="Tampilan nilai">
         <button class="btn small" type="button" data-mode="top" aria-pressed="true">10 Besar</button>
@@ -1190,24 +1240,363 @@ const GEN = [
       if(ds.length===3) return ["Hasil dari "+a+"/"+b+" × "+c+"/"+d+" + "+e+"/"+f+" adalah ...",[ans,...ds],"Kalikan dahulu: "+a+"/"+b+" × "+c+"/"+d+" = "+fr(a*c,b*d)+". Lalu jumlahkan dengan "+e+"/"+f+" memakai penyebut yang sama: hasilnya "+ans+"."]}
     return GEN[0]()}
 ];
-function buildTIU(){
-  const out=shuffle(TIU_STATIC).slice(0,45);
+function buildTIU(n){n=n||100;
+  const out=shuffle(TIU_STATIC).slice(0,Math.round(n*0.45));
   const g=shuffle(GEN.map((_,i)=>i));let i=0;
-  while(out.length<100){out.push(GEN[g[i%g.length]]());i++}
+  while(out.length<n){out.push(GEN[g[i%g.length]]());i++}
+  return out;
+}
+
+/* ================= BANK SOAL TES AKADEMIK POLRI ================= */
+const PU = [
+["Undang-undang yang mengatur tentang Kepolisian Negara Republik Indonesia adalah ...", ["UU Nomor 2 Tahun 2002", "UU Nomor 3 Tahun 2002", "UU Nomor 34 Tahun 2004", "UU Nomor 28 Tahun 1997"], "UU 2/2002 menggantikan UU 28/1997. UU 34/2004 mengatur TNI, dan UU 3/2002 mengatur pertahanan negara."],
+["Hari Bhayangkara sebagai hari lahir Kepolisian Negara Republik Indonesia diperingati setiap tanggal ...", ["1 Juli", "5 Oktober", "1 April", "17 Agustus"], "Tanggal 1 Juli 1946 Kepolisian Negara mulai berada langsung di bawah Perdana Menteri. Tanggal 5 Oktober adalah Hari TNI."],
+["Kepala Kepolisian Negara Republik Indonesia yang pertama adalah ...", ["R.S. Soekanto Tjokrodiatmodjo", "Hoegeng Imam Santoso", "Soetjipto Joedodihardjo", "Awaloedin Djamin"], "Raden Said Soekanto Tjokrodiatmodjo menjabat Kapolri pertama sejak 1945 dan dikenal sebagai Bapak Kepolisian Indonesia."],
+["Kapolri yang dikenal luas sebagai teladan polisi jujur dan sederhana adalah ...", ["Hoegeng Imam Santoso", "R.S. Soekanto", "Sutanto", "Bambang Hendarso Danuri"], "Jenderal Hoegeng (Kapolri 1968–1971) sering dijadikan simbol integritas kepolisian."],
+["Semboyan yang tercantum pada lambang Polri adalah ...", ["Rastra Sewakottama", "Tri Dharma Eka Karma", "Jalesveva Jayamahe", "Swa Bhuwana Paksa"], "Rastra Sewakottama berarti abdi utama nusa dan bangsa. Jalesveva Jayamahe semboyan TNI AL, Swa Bhuwana Paksa semboyan TNI AU."],
+["Pedoman hidup bagi anggota Polri disebut ...", ["Tribrata", "Catur Prasetya", "Sapta Marga", "Sumpah Prajurit"], "Tribrata adalah pedoman hidup, Catur Prasetya pedoman kerja. Sapta Marga dan Sumpah Prajurit milik TNI."],
+["Pedoman kerja bagi anggota Polri disebut ...", ["Catur Prasetya", "Tribrata", "Sapta Marga", "Panca Prasetya"], "Catur Prasetya berisi empat janji kerja, antara lain meniadakan segala bentuk gangguan keamanan dan menjamin kepastian berdasarkan hukum."],
+["Menurut Pasal 8 UU 2/2002, Polri berada di bawah ...", ["Presiden", "Menteri Dalam Negeri", "Menteri Pertahanan", "Panglima TNI"], "Polri berada di bawah Presiden dan dipimpin oleh Kapolri yang bertanggung jawab kepada Presiden."],
+["Menurut UU 2/2002, Kapolri diangkat dan diberhentikan oleh ...", ["Presiden dengan persetujuan DPR", "Presiden tanpa persetujuan lembaga lain", "DPR atas usul Kompolnas", "Menteri Koordinator Bidang Politik dan Keamanan"], "Pasal 11 UU 2/2002. Usul calon Kapolri disertai pertimbangan Komisi Kepolisian Nasional."],
+["Yang bukan tugas pokok Polri menurut Pasal 13 UU 2/2002 adalah ...", ["Mempertahankan kedaulatan negara dari ancaman militer", "Memelihara keamanan dan ketertiban masyarakat", "Menegakkan hukum", "Memberikan perlindungan, pengayoman, dan pelayanan kepada masyarakat"], "Mempertahankan kedaulatan negara dari ancaman militer adalah tugas TNI."],
+["Pemisahan Polri dari ABRI secara kelembagaan dimulai pada tanggal ...", ["1 April 1999", "1 Juli 1946", "5 Oktober 1945", "18 Agustus 2000"], "Pemisahan dimulai 1 April 1999, kemudian dipertegas dengan Tap MPR VI/MPR/2000 dan VII/MPR/2000."],
+["Ketetapan MPR yang mengatur pemisahan TNI dan Polri adalah ...", ["Tap MPR Nomor VI/MPR/2000", "Tap MPR Nomor XVIII/MPR/1998", "Tap MPR Nomor II/MPR/1978", "Tap MPRS Nomor XXV/MPRS/1966"], "Tap MPR VI/MPR/2000 tentang Pemisahan TNI dan Polri, dan Tap MPR VII/MPR/2000 tentang Peran TNI dan Peran Polri."],
+["Lembaga yang membantu presiden menetapkan arah kebijakan Polri dan memberikan pertimbangan pengangkatan Kapolri adalah ...", ["Komisi Kepolisian Nasional (Kompolnas)", "Ombudsman Republik Indonesia", "Komnas HAM", "Dewan Pertimbangan Presiden"], "Kompolnas dibentuk berdasarkan Pasal 37 UU 2/2002."],
+["Pangkat terendah pada golongan bintara Polri adalah ...", ["Brigadir Polisi Dua (Bripda)", "Bhayangkara Dua (Bharada)", "Ajun Inspektur Polisi Dua (Aipda)", "Inspektur Polisi Dua (Ipda)"], "Bharada adalah pangkat tamtama, Aipda pangkat bintara yang lebih tinggi, dan Ipda perwira pertama."],
+["Pangkat terendah pada golongan perwira pertama Polri adalah ...", ["Inspektur Polisi Dua (Ipda)", "Ajun Inspektur Polisi Satu (Aiptu)", "Ajun Komisaris Polisi (AKP)", "Komisaris Polisi (Kompol)"], "Perwira pertama: Ipda, Iptu, AKP. Perwira menengah: Kompol, AKBP, Kombes."],
+["Urutan pangkat bintara Polri dari yang terendah adalah ...", ["Bripda, Briptu, Brigpol, Bripka, Aipda, Aiptu", "Briptu, Bripda, Brigpol, Bripka, Aiptu, Aipda", "Bripda, Brigpol, Briptu, Bripka, Aipda, Aiptu", "Bharada, Bharatu, Bharaka, Bripda, Briptu, Brigpol"], "Bharada, Bharatu, dan Bharaka adalah pangkat tamtama."],
+["Pangkat Komisaris Besar Polisi (Kombes) termasuk golongan ...", ["Perwira menengah", "Perwira pertama", "Perwira tinggi", "Bintara tinggi"], "Perwira menengah terdiri atas Kompol, AKBP, dan Kombes."],
+["Pangkat Jenderal Polisi ditandai dengan tanda pangkat ...", ["Empat bintang", "Tiga bintang", "Dua bintang", "Satu bintang"], "Brigjen satu bintang, Irjen dua bintang, Komjen tiga bintang, Jenderal empat bintang."],
+["Pangkat Inspektur Jenderal Polisi (Irjen) bertanda ...", ["Dua bintang", "Satu bintang", "Tiga bintang", "Tiga melati"], "Tiga melati adalah tanda pangkat Komisaris Besar Polisi."],
+["Lembaga pendidikan pembentukan perwira Polri yang berada di Semarang adalah ...", ["Akademi Kepolisian (Akpol)", "Sekolah Tinggi Ilmu Kepolisian (STIK)", "Sekolah Staf dan Pimpinan (Sespim)", "Sekolah Pembentukan Perwira (Setukpa)"], "STIK berada di Jakarta, Sespim di Lembang, dan Setukpa di Sukabumi."],
+["Satuan khusus Polri yang menangani penanggulangan terorisme adalah ...", ["Densus 88 Antiteror", "Korps Brimob", "Bareskrim", "Baharkam"], "Detasemen Khusus 88 Antiteror dibentuk tahun 2003."],
+["Satuan kerja Polri yang bertugas membina dan menyelenggarakan penyelidikan serta penyidikan tindak pidana di tingkat pusat adalah ...", ["Badan Reserse Kriminal (Bareskrim)", "Badan Pemelihara Keamanan (Baharkam)", "Divisi Propam", "Korps Lalu Lintas"], "Bareskrim Polri menangani fungsi reserse di tingkat Mabes."],
+["Unit Polri yang menangani pelanggaran disiplin dan kode etik anggota Polri adalah ...", ["Divisi Profesi dan Pengamanan (Propam)", "Bareskrim", "Divisi Humas", "Inspektorat Pengawasan Umum"], "Propam menegakkan disiplin dan kode etik profesi Polri."],
+["Anggota Polri yang bertugas membina keamanan dan ketertiban masyarakat di tingkat desa atau kelurahan disebut ...", ["Bhabinkamtibmas", "Babinsa", "Satpol PP", "Linmas"], "Babinsa adalah Bintara Pembina Desa dari TNI AD. Satpol PP dan Linmas berada di bawah pemerintah daerah."],
+["Unit pelayanan terpadu di kantor polisi yang menerima laporan dan pengaduan masyarakat disebut ...", ["SPKT", "SKCK", "Satpas", "Samsat"], "SPKT adalah Sentra Pelayanan Kepolisian Terpadu. Satpas melayani SIM, Samsat melayani pajak dan STNK kendaraan."],
+["Nomor telepon darurat untuk menghubungi polisi di Indonesia adalah ...", ["110", "112", "113", "118"], "113 untuk pemadam kebakaran, 118/119 untuk ambulans. 112 adalah nomor darurat terpadu di beberapa daerah."],
+["Surat yang diterbitkan Polri berisi catatan tentang ada atau tidaknya catatan kejahatan seseorang disebut ...", ["SKCK", "SIM", "STNK", "BPKB"], "SKCK adalah Surat Keterangan Catatan Kepolisian, sering menjadi syarat melamar kerja."],
+["Undang-undang yang mengatur lalu lintas dan angkutan jalan adalah ...", ["UU Nomor 22 Tahun 2009", "UU Nomor 14 Tahun 1992", "UU Nomor 38 Tahun 2004", "UU Nomor 2 Tahun 2002"], "UU 22/2009 menggantikan UU 14/1992. UU 38/2004 mengatur jalan."],
+["SIM yang wajib dimiliki pengemudi sepeda motor adalah SIM ...", ["C", "A", "B I", "D"], "SIM A untuk mobil penumpang dan barang perseorangan sampai 3.500 kg, SIM B I untuk kendaraan di atas 3.500 kg, SIM D untuk penyandang disabilitas."],
+["Masa berlaku Surat Izin Mengemudi adalah ...", ["5 tahun dan dapat diperpanjang", "3 tahun dan dapat diperpanjang", "Seumur hidup", "10 tahun dan dapat diperpanjang"], "Masa berlaku SIM lima tahun sejak diterbitkan."],
+["Konsep transformasi Polri yang disingkat PRESISI merupakan singkatan dari ...", ["Prediktif, Responsibilitas, Transparansi Berkeadilan", "Profesional, Responsif, Sinergis, Integritas", "Presisi, Responsif, Sigap, Inovatif", "Profesional, Religius, Santun, Ikhlas"], "Konsep Polri PRESISI dicanangkan pada 2021."],
+["Kitab Undang-Undang Hukum Pidana nasional yang berlaku sejak 2 Januari 2026 adalah ...", ["UU Nomor 1 Tahun 2023", "UU Nomor 1 Tahun 1946", "UU Nomor 8 Tahun 1981", "UU Nomor 20 Tahun 2025"], "UU 1/2023 menggantikan KUHP warisan Belanda. UU 20/2025 adalah KUHAP baru."],
+["Asas yang menyatakan setiap orang yang disangka atau didakwa wajib dianggap tidak bersalah sampai ada putusan pengadilan berkekuatan hukum tetap adalah ...", ["Asas praduga tak bersalah", "Asas legalitas", "Asas oportunitas", "Asas equality before the law"], "Asas legalitas berarti tidak ada pidana tanpa aturan yang lebih dahulu ada."],
+["Asas bahwa suatu perbuatan tidak dapat dipidana kecuali berdasarkan peraturan perundang-undangan yang telah ada sebelumnya disebut ...", ["Asas legalitas", "Asas praduga tak bersalah", "Asas nebis in idem", "Asas teritorial"], "Nebis in idem berarti seseorang tidak dapat dituntut dua kali atas perkara yang sama yang telah diputus."],
+["Undang-undang yang mengatur tentang Narkotika adalah ...", ["UU Nomor 35 Tahun 2009", "UU Nomor 5 Tahun 1997", "UU Nomor 36 Tahun 2009", "UU Nomor 22 Tahun 1997"], "UU 5/1997 mengatur psikotropika, UU 22/1997 adalah UU narkotika lama, dan UU 36/2009 tentang kesehatan sudah diganti."],
+["Lembaga negara yang bertugas mencegah dan memberantas penyalahgunaan dan peredaran gelap narkotika adalah ...", ["Badan Narkotika Nasional (BNN)", "Badan Pengawas Obat dan Makanan (BPOM)", "Kementerian Kesehatan", "Bareskrim Polri saja"], "BNN dibentuk berdasarkan UU 35/2009. Polri juga menyidik tindak pidana narkotika."],
+["Undang-undang yang mengatur Tindak Pidana Kekerasan Seksual adalah ...", ["UU Nomor 12 Tahun 2022", "UU Nomor 23 Tahun 2004", "UU Nomor 35 Tahun 2014", "UU Nomor 21 Tahun 2007"], "UU 23/2004 mengatur penghapusan KDRT, UU 35/2014 perlindungan anak, dan UU 21/2007 pemberantasan perdagangan orang."],
+["Undang-undang tentang Penghapusan Kekerasan dalam Rumah Tangga adalah ...", ["UU Nomor 23 Tahun 2004", "UU Nomor 12 Tahun 2022", "UU Nomor 1 Tahun 1974", "UU Nomor 23 Tahun 2002"], "UU 1/1974 mengatur perkawinan, UU 23/2002 perlindungan anak."],
+["Menurut UU Perlindungan Anak, yang disebut anak adalah seseorang yang belum berusia ...", ["18 tahun, termasuk anak yang masih dalam kandungan", "17 tahun", "21 tahun", "16 tahun, kecuali sudah menikah"], "Definisi ini terdapat dalam Pasal 1 angka 1 UU 23/2002 tentang Perlindungan Anak."],
+["Undang-undang yang mengatur pemberantasan tindak pidana terorisme yang berlaku saat ini adalah ...", ["UU Nomor 5 Tahun 2018 tentang perubahan atas UU Nomor 15 Tahun 2003", "UU Nomor 9 Tahun 2013 saja", "UU Nomor 2 Tahun 2002", "UU Nomor 17 Tahun 2011"], "UU 9/2013 mengatur pendanaan terorisme, UU 17/2011 intelijen negara."],
+["Lembaga yang mengoordinasikan penanggulangan terorisme secara nasional adalah ...", ["Badan Nasional Penanggulangan Terorisme (BNPT)", "Badan Intelijen Negara (BIN)", "Densus 88 Antiteror", "Kementerian Pertahanan"], "BNPT mengoordinasikan program pencegahan, deradikalisasi, dan penanggulangan terorisme."],
+["Penyidik menurut hukum acara pidana adalah ...", ["Pejabat yang diberi wewenang oleh undang-undang untuk melakukan penyidikan, terutama penyidik Polri", "Jaksa penuntut umum", "Hakim pemeriksa perkara", "Advokat yang mendampingi tersangka"], "Selain penyidik Polri, KUHAP mengenal penyidik pegawai negeri sipil dan penyidik tertentu seperti penyidik Kejaksaan dan KPK. Jaksa menuntut, hakim mengadili."],
+["Gunung tertinggi di Indonesia adalah ...", ["Puncak Jaya", "Gunung Kerinci", "Gunung Rinjani", "Gunung Semeru"], "Puncak Jaya di Papua tingginya sekitar 4.884 meter. Kerinci adalah gunung api tertinggi."],
+["Danau terluas di Indonesia adalah ...", ["Danau Toba", "Danau Singkarak", "Danau Poso", "Danau Sentani"], "Danau Toba di Sumatra Utara merupakan danau vulkanik terbesar di Asia Tenggara."],
+["Sungai terpanjang di Indonesia adalah ...", ["Sungai Kapuas", "Sungai Mahakam", "Sungai Musi", "Sungai Bengawan Solo"], "Sungai Kapuas di Kalimantan Barat panjangnya sekitar 1.100 km."],
+["Gunung Rinjani berada di Provinsi ...", ["Nusa Tenggara Barat", "Nusa Tenggara Timur", "Bali", "Sulawesi Selatan"], "Gunung Rinjani terletak di Pulau Lombok, NTB."],
+["Ibu kota Provinsi Nusa Tenggara Barat adalah ...", ["Mataram", "Bima", "Kupang", "Sumbawa Besar"], "Kupang adalah ibu kota NTT. Bima dan Sumbawa Besar berada di Pulau Sumbawa."],
+["Selat yang memisahkan Pulau Lombok dan Pulau Sumbawa adalah ...", ["Selat Alas", "Selat Lombok", "Selat Sape", "Selat Bali"], "Selat Lombok memisahkan Bali dan Lombok, Selat Sape memisahkan Sumbawa dan Komodo."],
+["Tari Saman berasal dari daerah ...", ["Aceh", "Sumatra Barat", "Bali", "Sulawesi Selatan"], "Tari Saman dari Gayo, Aceh, ditetapkan UNESCO sebagai warisan budaya takbenda."],
+["Rumah adat Tongkonan berasal dari ...", ["Toraja, Sulawesi Selatan", "Minangkabau, Sumatra Barat", "Batak, Sumatra Utara", "Dayak, Kalimantan"], "Rumah Gadang berasal dari Minangkabau, Rumah Bolon dari Batak, dan Rumah Betang dari Dayak."],
+["Senjata tradisional rencong berasal dari ...", ["Aceh", "Jawa Barat", "Bali", "Kalimantan"], "Kujang berasal dari Jawa Barat dan mandau dari Kalimantan."],
+["Markas besar Perserikatan Bangsa-Bangsa berada di kota ...", ["New York", "Jenewa", "Wina", "Den Haag"], "Jenewa dan Wina menjadi lokasi kantor PBB lainnya, sedangkan Den Haag tempat Mahkamah Internasional."],
+["Sekretariat ASEAN berkedudukan di kota ...", ["Jakarta", "Bangkok", "Kuala Lumpur", "Singapura"], "Sekretariat ASEAN berada di Jakarta sejak 1976."],
+["Mata uang negara Vietnam adalah ...", ["Dong", "Baht", "Riel", "Kip"], "Baht mata uang Thailand, riel Kamboja, dan kip Laos."],
+["Ibu kota negara Australia adalah ...", ["Canberra", "Sydney", "Melbourne", "Perth"], "Canberra dipilih sebagai ibu kota sebagai jalan tengah antara Sydney dan Melbourne."],
+["Piala Thomas adalah kejuaraan beregu bulu tangkis untuk ...", ["Putra", "Putri", "Campuran", "Junior"], "Piala Uber untuk beregu putri dan Piala Sudirman untuk beregu campuran."],
+["Organ tubuh yang berfungsi menyaring darah dan menghasilkan urine adalah ...", ["Ginjal", "Hati", "Paru-paru", "Limpa"], "Hati menetralkan racun dan menghasilkan empedu."],
+["Kekurangan vitamin C dapat menyebabkan penyakit ...", ["Sariawan (skorbut)", "Rabun senja", "Rakitis", "Beri-beri"], "Rabun senja akibat kurang vitamin A, rakitis kurang vitamin D, beri-beri kurang vitamin B1."],
+["Proses tumbuhan hijau mengubah karbon dioksida dan air menjadi glukosa dengan bantuan cahaya matahari disebut ...", ["Fotosintesis", "Respirasi", "Transpirasi", "Fermentasi"], "Respirasi menghasilkan energi dari glukosa, transpirasi adalah penguapan air melalui daun."],
+["Satuan gaya dalam Sistem Internasional adalah ...", ["Newton", "Joule", "Watt", "Pascal"], "Joule satuan energi, watt satuan daya, pascal satuan tekanan."],
+["Planet terbesar dalam tata surya adalah ...", ["Jupiter", "Saturnus", "Neptunus", "Bumi"], "Jupiter memiliki diameter sekitar sebelas kali diameter Bumi."],
+["Rumus kimia garam dapur adalah ...", ["NaCl", "H₂O", "CO₂", "NaOH"], "NaOH adalah natrium hidroksida (soda api)."],
+["Alat untuk mengukur tekanan darah disebut ...", ["Tensimeter (sfigmomanometer)", "Termometer", "Stetoskop", "Barometer"], "Stetoskop untuk mendengarkan suara tubuh, barometer untuk tekanan udara."],
+["Lembaga negara yang mengatur dan mengawasi sektor jasa keuangan seperti perbankan dan asuransi adalah ...", ["Otoritas Jasa Keuangan (OJK)", "Bank Indonesia", "Lembaga Penjamin Simpanan", "Kementerian Keuangan"], "Bank Indonesia mengatur kebijakan moneter, LPS menjamin simpanan nasabah bank."],
+["Kenaikan harga barang dan jasa secara umum dan terus-menerus dalam jangka waktu tertentu disebut ...", ["Inflasi", "Deflasi", "Resesi", "Devaluasi"], "Devaluasi adalah penurunan nilai mata uang yang ditetapkan pemerintah."],
+["Modus penipuan daring yang memancing korban memberikan data pribadi atau kata sandi melalui tautan palsu disebut ...", ["Phishing", "Hacking", "Spamming", "Cracking"], "Phishing meniru pihak tepercaya, seperti bank atau instansi, untuk mencuri data."],
+["Penipuan dengan mengirim berkas aplikasi berekstensi .apk melalui pesan singkat yang berpura-pura sebagai undangan atau tagihan bertujuan ...", ["Mengambil alih akses ponsel dan mencuri data, termasuk data perbankan", "Mempercepat kinerja ponsel", "Memperbarui sistem operasi ponsel", "Menghapus virus di ponsel"], "Masyarakat perlu diingatkan agar tidak memasang aplikasi dari sumber tidak resmi."],
+["Lembaga yang menjamin simpanan nasabah di bank hingga batas tertentu adalah ...", ["Lembaga Penjamin Simpanan (LPS)", "Otoritas Jasa Keuangan (OJK)", "Bank Indonesia", "Badan Pemeriksa Keuangan"], "LPS menjamin simpanan nasabah bila bank dicabut izin usahanya."],
+["Pencucian uang adalah upaya ...", ["Menyamarkan asal-usul harta yang diperoleh dari tindak pidana", "Membersihkan uang kertas yang kotor", "Menukar uang rusak di bank", "Menyimpan uang di luar negeri secara sah"], "Pencucian uang diatur dalam UU 8/2010. Lembaga yang menganalisis transaksi mencurigakan adalah PPATK."],
+["Lembaga yang menerima dan menganalisis laporan transaksi keuangan mencurigakan adalah ...", ["PPATK", "OJK", "BPK", "KPK"], "Pusat Pelaporan dan Analisis Transaksi Keuangan (PPATK) dibentuk berdasarkan undang-undang pencucian uang."],
+["Perdagangan orang (human trafficking) diatur dalam ...", ["UU Nomor 21 Tahun 2007", "UU Nomor 39 Tahun 1999", "UU Nomor 18 Tahun 2017", "UU Nomor 13 Tahun 2003"], "UU 39/1999 tentang HAM, UU 18/2017 tentang pelindungan pekerja migran, UU 13/2003 tentang ketenagakerjaan."],
+["Pelaku tindak pidana yang tertangkap ketika sedang melakukan atau sesaat setelah melakukan tindak pidana disebut ...", ["Tertangkap tangan", "Daftar pencarian orang", "Tersangka", "Terpidana"], "Dalam keadaan tertangkap tangan, setiap orang dapat menangkap pelaku lalu menyerahkannya kepada penyidik."],
+["Seseorang yang telah dijatuhi pidana berdasarkan putusan pengadilan yang berkekuatan hukum tetap disebut ...", ["Terpidana", "Terdakwa", "Tersangka", "Saksi"], "Tersangka pada tahap penyidikan, terdakwa pada tahap persidangan, terpidana setelah putusan berkekuatan hukum tetap."],
+["Pihak yang menuntut terdakwa di persidangan perkara pidana adalah ...", ["Jaksa penuntut umum", "Penyidik Polri", "Hakim", "Panitera"], "Penyidik menyidik, jaksa menuntut, hakim mengadili."],
+["Upaya hukum terhadap putusan pengadilan negeri dalam perkara pidana diajukan ke pengadilan tinggi disebut ...", ["Banding", "Kasasi", "Peninjauan kembali", "Grasi"], "Kasasi diajukan ke Mahkamah Agung, peninjauan kembali adalah upaya hukum luar biasa, grasi adalah pengampunan dari presiden."],
+["Indonesia terletak di antara dua samudra, yaitu ...", ["Samudra Hindia dan Samudra Pasifik", "Samudra Atlantik dan Samudra Pasifik", "Samudra Hindia dan Samudra Atlantik", "Samudra Arktik dan Samudra Pasifik"], "Letak ini membuat Indonesia berada di posisi silang yang strategis."],
+["Garis khayal yang membagi bumi menjadi belahan utara dan selatan adalah ...", ["Khatulistiwa (ekuator)", "Garis bujur 0°", "Garis balik utara", "Garis lintang 23,5°"], "Kota yang dilalui garis khatulistiwa di Indonesia antara lain Pontianak."],
+["Kota di Indonesia yang dilalui garis khatulistiwa dan memiliki Tugu Khatulistiwa adalah ...", ["Pontianak", "Palangka Raya", "Samarinda", "Manado"], "Tugu Khatulistiwa di Pontianak, Kalimantan Barat."],
+["Pembagian waktu di Indonesia terdiri atas WIB, WITA, dan WIT. Provinsi NTB menggunakan ...", ["WITA (UTC+8)", "WIB (UTC+7)", "WIT (UTC+9)", "WITA (UTC+9)"], "WITA (UTC+8) mencakup Bali, NTB, NTT, Kalimantan Selatan, Kalimantan Timur, Kalimantan Utara, dan seluruh Sulawesi."],
+["Pulau Komodo yang menjadi habitat asli komodo berada di provinsi ...", ["Nusa Tenggara Timur", "Nusa Tenggara Barat", "Bali", "Maluku"], "Taman Nasional Komodo berada di Kabupaten Manggarai Barat, NTT."],
+["Candi Borobudur merupakan peninggalan agama ...", ["Buddha", "Hindu", "Islam", "Konghucu"], "Candi Prambanan merupakan peninggalan agama Hindu."],
+["Kerajaan Hindu tertua di Indonesia adalah ...", ["Kutai", "Tarumanegara", "Majapahit", "Sriwijaya"], "Kerajaan Kutai di Kalimantan Timur meninggalkan prasasti Yupa dari abad ke-4."],
+["Kerajaan maritim bercorak Buddha yang berpusat di Sumatra dan berjaya pada abad ke-7 adalah ...", ["Sriwijaya", "Majapahit", "Mataram Kuno", "Samudra Pasai"], "Samudra Pasai adalah kerajaan Islam pertama di Indonesia."],
+["Hari Pendidikan Nasional diperingati setiap 2 Mei untuk mengenang hari lahir ...", ["Ki Hajar Dewantara", "R.A. Kartini", "Dewi Sartika", "K.H. Ahmad Dahlan"], "Ki Hajar Dewantara lahir 2 Mei 1889."],
+["Lembaga yang bertugas menanggulangi bencana di tingkat nasional adalah ...", ["BNPB", "Basarnas", "BMKG", "BPBD"], "BPBD di tingkat daerah, Basarnas untuk pencarian dan pertolongan, BMKG untuk meteorologi dan geofisika."],
+["Lembaga yang memberikan informasi peringatan dini gempa bumi dan tsunami di Indonesia adalah ...", ["BMKG", "BNPB", "LAPAN", "BRIN"], "BMKG adalah Badan Meteorologi, Klimatologi, dan Geofisika."],
+["Lembaga yang melaksanakan operasi pencarian dan pertolongan korban kecelakaan dan bencana adalah ...", ["Badan Nasional Pencarian dan Pertolongan (Basarnas)", "BNPB", "Palang Merah Indonesia", "Korps Brimob"], "Basarnas kini juga dikenal sebagai Badan SAR Nasional."],
+["Perangkat keras komputer yang berfungsi sebagai otak pemrosesan data adalah ...", ["CPU", "RAM", "Monitor", "Hard disk"], "RAM adalah memori sementara, hard disk tempat penyimpanan permanen."],
+["Ancaman siber berupa program jahat yang mengunci data korban lalu meminta tebusan disebut ...", ["Ransomware", "Spyware", "Adware", "Firewall"], "Firewall justru perangkat keamanan untuk menyaring lalu lintas jaringan."],
+["Tindakan memberi atau menjanjikan sesuatu kepada pejabat agar berbuat atau tidak berbuat sesuatu yang bertentangan dengan kewajibannya disebut ...", ["Suap", "Gratifikasi yang dilaporkan", "Hibah", "Sumbangan"], "Suap dan gratifikasi yang tidak dilaporkan termasuk tindak pidana korupsi."],
+["Anggota Polri dilarang terlibat dalam kegiatan politik praktis. Hal ini menunjukkan prinsip ...", ["Netralitas Polri", "Profesionalisme penyidik", "Desentralisasi kepolisian", "Supremasi sipil"], "Pasal 28 UU 2/2002 menyatakan Polri bersikap netral dalam kehidupan politik dan tidak melibatkan diri pada kegiatan politik praktis."],
+["Dalam pemilu, anggota Polri ...", ["Tidak menggunakan hak memilih dan dipilih", "Menggunakan hak memilih tetapi tidak boleh dipilih", "Boleh memilih dan dipilih", "Boleh dipilih bila mengundurkan diri sementara"], "Pasal 28 ayat (2) UU 2/2002. Anggota Polri dapat menduduki jabatan di luar kepolisian setelah mengundurkan diri atau pensiun."],
+["Menurut UU 2/2002, usia pensiun maksimum anggota Polri adalah ...", ["58 tahun, dan 60 tahun bagi yang memiliki keahlian khusus yang sangat dibutuhkan", "55 tahun tanpa pengecualian", "60 tahun untuk semua anggota", "65 tahun bagi perwira tinggi"], "Pasal 30 ayat (2) UU 2/2002."],
+["Kesatuan Polri yang menangani tugas di perairan dan udara adalah ...", ["Korps Polisi Perairan dan Udara (Korpolairud)", "Korps Brimob", "Korlantas", "Densus 88"], "Polairud berada di bawah Baharkam Polri."],
+["Fungsi kepolisian yang menangani pelayanan registrasi dan identifikasi kendaraan bermotor serta penerbitan SIM adalah ...", ["Lalu lintas", "Reserse", "Intelijen", "Samapta"], "Fungsi lalu lintas berada di bawah Korlantas Polri dan Satlantas di Polres."],
+["Bentuk pemolisian yang menekankan kemitraan antara polisi dan masyarakat untuk mencegah dan menyelesaikan masalah keamanan disebut ...", ["Pemolisian masyarakat (Polmas)", "Operasi represif", "Patroli bersenjata", "Penyidikan terpadu"], "Polmas mendorong masyarakat ikut menjaga keamanan lingkungannya bersama polisi."],
+["Unsur yang wajib ada dalam laporan polisi agar dapat ditindaklanjuti adalah ...", ["Keterangan tentang peristiwa, waktu, tempat, dan pihak yang terlibat", "Tanda tangan kepala desa", "Bukti pembayaran biaya laporan", "Persetujuan pihak terlapor"], "Melapor ke polisi tidak dipungut biaya."],
+["Yang termasuk alat bukti sah dalam hukum acara pidana adalah, kecuali ...", ["Pendapat pribadi penyidik", "Keterangan saksi", "Bukti elektronik", "Pengamatan hakim"], "Menurut Pasal 235 ayat (1) KUHAP baru (UU 20/2025), alat bukti adalah keterangan saksi, keterangan ahli, surat, keterangan terdakwa, barang bukti, bukti elektronik, pengamatan hakim, dan segala sesuatu yang dapat digunakan untuk pembuktian sepanjang diperoleh secara tidak melawan hukum."],
+["Organisasi kepolisian kriminal internasional yang menjadi wadah kerja sama antarkepolisian dunia adalah ...", ["Interpol", "Europol", "Aseanapol", "UNODC"], "Aseanapol adalah forum kepala kepolisian ASEAN; UNODC adalah badan PBB urusan narkoba dan kejahatan."],
+["Sikap yang paling tepat bagi seorang calon anggota Polri ketika ditawari bantuan agar lulus seleksi dengan membayar sejumlah uang adalah ...", ["Menolak dan melaporkannya ke saluran pengaduan resmi panitia seleksi", "Membayar agar peluang lulus lebih besar", "Membayar setengahnya dulu sebagai jaminan", "Diam saja dan tidak menanggapi"], "Seleksi Polri tidak dipungut biaya. Praktik calo merupakan penipuan atau suap dan harus dilaporkan."]
+];
+const WKP = [
+["Pengajuan permintaan DPR kepada Mahkamah Konstitusi dalam proses pemberhentian presiden harus didukung sekurang-kurangnya ...", ["2/3 anggota DPR yang hadir dalam sidang paripurna yang dihadiri sekurang-kurangnya 2/3 jumlah anggota", "1/2 anggota DPR yang hadir dalam sidang paripurna", "3/4 anggota DPR dari seluruh jumlah anggota", "2/3 anggota MPR yang hadir dalam sidang paripurna"], "Pasal 7B ayat (3) UUD 1945 mensyaratkan dukungan 2/3 dari anggota yang hadir dalam sidang paripurna yang kuorumnya 2/3 jumlah anggota DPR."],
+["Isi Perjanjian Linggarjati (1946) antara lain Belanda mengakui secara de facto wilayah RI yang meliputi ...", ["Jawa, Sumatra, dan Madura", "Jawa dan Bali", "Sumatra dan Kalimantan", "Seluruh bekas Hindia Belanda"], "Linggarjati mengakui kekuasaan de facto RI atas Jawa, Sumatra, dan Madura."],
+["Hasil pengawasan DPD atas pelaksanaan undang-undang mengenai otonomi daerah disampaikan kepada ...", ["DPR sebagai bahan pertimbangan untuk ditindaklanjuti", "Presiden untuk ditindaklanjuti", "MPR dalam sidang tahunan", "Mahkamah Konstitusi untuk diuji"], "Pasal 22D ayat (3) UUD 1945. DPD tidak menindaklanjuti sendiri hasil pengawasannya."],
+["Upaya menjaga persatuan di sekolah yang siswanya berasal dari berbagai suku dan agama paling baik dilakukan dengan ...", ["Membiasakan kerja kelompok lintas latar belakang dan saling menghargai perayaan budaya", "Mengelompokkan siswa berdasarkan suku agar nyaman", "Melarang siswa menggunakan bahasa daerah sama sekali", "Mengutamakan budaya kelompok mayoritas"], "Interaksi positif lintas latar belakang menumbuhkan toleransi dan rasa kebangsaan."],
+["Menurut Pasal 31 ayat (4) UUD 1945, negara memprioritaskan anggaran pendidikan sekurang-kurangnya ...", ["20% dari APBN dan APBD", "10% dari APBN", "25% dari APBN dan APBD", "15% dari APBD"], "Pasal 31 ayat (4) mewajibkan anggaran pendidikan sekurang-kurangnya dua puluh persen dari APBN dan APBD."],
+["Perubahan (amandemen) UUD 1945 telah dilakukan sebanyak ...", ["Empat kali, pada 1999 sampai 2002", "Tiga kali, pada 1999 sampai 2001", "Lima kali, pada 1999 sampai 2003", "Dua kali, pada 1999 dan 2000"], "MPR melakukan perubahan pertama (1999), kedua (2000), ketiga (2001), dan keempat (2002)."],
+["Pedoman Penghayatan dan Pengamalan Pancasila (P4) ditetapkan melalui ...", ["Tap MPR Nomor II/MPR/1978", "Tap MPR Nomor XVIII/MPR/1998", "Tap MPRS Nomor XXV/MPRS/1966", "Tap MPR Nomor IV/MPR/1983"], "P4 ditetapkan dengan Tap MPR II/MPR/1978 dan dicabut melalui Tap MPR XVIII/MPR/1998."],
+["Pengakuan kedaulatan Indonesia oleh Belanda sebagai hasil Konferensi Meja Bundar terjadi pada ...", ["27 Desember 1949", "17 Agustus 1950", "2 November 1949", "19 Desember 1948"], "KMB di Den Haag ditutup 2 November 1949, dan penyerahan kedaulatan kepada RIS dilakukan pada 27 Desember 1949."],
+["Menurut Pasal 17 ayat (4) UUD 1945, pembentukan, pengubahan, dan pembubaran kementerian negara diatur dalam ...", ["Undang-undang", "Peraturan presiden", "Ketetapan MPR", "Keputusan presiden"], "Karena itu pembentukan kementerian mengacu pada undang-undang tentang kementerian negara."],
+["Bentuk tanggung jawab negara dalam mewujudkan sila kelima Pancasila di bidang ekonomi tercermin dalam ...", ["Pasal 33 dan 34 UUD 1945", "Pasal 29 UUD 1945", "Pasal 30 UUD 1945", "Pasal 36 UUD 1945"], "Pasal 33 dan 34 mengatur perekonomian nasional dan kesejahteraan sosial."],
+["Tiap-tiap warga negara berhak dan wajib ikut serta dalam usaha pertahanan dan keamanan negara. Ketentuan ini terdapat dalam UUD 1945 ...", ["Pasal 30 ayat (1)", "Pasal 27 ayat (3)", "Pasal 30 ayat (2)", "Pasal 28 ayat (1)"], "Pasal 30 ayat (1) mengatur hak dan kewajiban dalam usaha pertahanan dan keamanan; Pasal 27 ayat (3) mengatur upaya pembelaan negara."],
+["PPKI dibentuk oleh pemerintah pendudukan Jepang pada tanggal ...", ["7 Agustus 1945", "28 Mei 1945", "17 Agustus 1945", "22 Juni 1945"], "PPKI dibentuk 7 Agustus 1945 setelah BPUPKI dibubarkan."],
+["Presiden menyatakan perang, membuat perdamaian, dan perjanjian dengan negara lain dengan persetujuan ...", ["DPR", "MPR", "DPD", "Mahkamah Konstitusi"], "Pasal 11 ayat (1) UUD 1945 mensyaratkan persetujuan DPR."],
+["Menurut Pasal 7 UUD 1945, presiden dan wakil presiden memegang jabatan selama ...", ["Lima tahun, dan sesudahnya dapat dipilih kembali dalam jabatan yang sama hanya untuk satu kali masa jabatan", "Lima tahun dan dapat dipilih kembali tanpa batas", "Empat tahun dan dapat dipilih kembali dua kali", "Enam tahun untuk satu kali masa jabatan"], "Pembatasan dua periode ditegaskan melalui perubahan pertama UUD 1945 tahun 1999."],
+["Peristiwa Rengasdengklok terjadi pada tanggal ...", ["16 Agustus 1945", "15 Agustus 1945", "17 Agustus 1945", "14 Agustus 1945"], "Golongan muda membawa Soekarno dan Hatta ke Rengasdengklok pada 16 Agustus 1945 agar segera memproklamasikan kemerdekaan tanpa pengaruh Jepang."],
+["Hak setiap orang untuk berkomunikasi dan memperoleh informasi untuk mengembangkan pribadi dan lingkungan sosialnya dijamin dalam UUD 1945 ...", ["Pasal 28F", "Pasal 28E", "Pasal 28C", "Pasal 28G"], "Pasal 28F menjadi dasar konstitusional keterbukaan informasi."],
+["Ketentuan bahwa NKRI adalah negara kepulauan berciri Nusantara terdapat dalam UUD 1945 ...", ["Pasal 25A", "Pasal 1 ayat (1)", "Pasal 18 ayat (1)", "Pasal 33 ayat (3)"], "Pasal 25A berada dalam Bab IXA tentang Wilayah Negara, hasil perubahan kedua."],
+["Lembaga yang berwenang menguji undang-undang terhadap Undang-Undang Dasar adalah ...", ["Mahkamah Konstitusi", "Mahkamah Agung", "Komisi Yudisial", "DPR"], "Pasal 24C ayat (1): MK berwenang mengadili pada tingkat pertama dan terakhir, antara lain menguji UU terhadap UUD. MA menguji peraturan di bawah UU terhadap UU."],
+["Menurut Pasal 30 ayat (4) UUD 1945, Kepolisian Negara Republik Indonesia sebagai alat negara bertugas ...", ["Menjaga keamanan dan ketertiban masyarakat, melindungi, mengayomi, melayani, serta menegakkan hukum", "Mempertahankan keutuhan dan kedaulatan negara", "Menjaga perbatasan wilayah laut", "Melaksanakan operasi militer selain perang"], "Pasal 30 ayat (3) mengatur TNI sebagai alat negara untuk mempertahankan, melindungi, dan memelihara keutuhan serta kedaulatan negara; ayat (4) mengatur Polri."],
+["Ikrar ketiga dalam Sumpah Pemuda berbunyi ...", ["Menjunjung bahasa persatuan, bahasa Indonesia", "Berbangsa yang satu, bangsa Indonesia", "Bertumpah darah yang satu, tanah Indonesia", "Berbahasa yang satu, bahasa Indonesia"], "Ikrar ketiga menggunakan kata menjunjung, bukan berbahasa satu. Artinya bahasa daerah tetap dihormati, sementara bahasa Indonesia dijunjung sebagai bahasa persatuan."],
+["Tiga Serangkai pendiri Indische Partij adalah ...", ["Douwes Dekker, Tjipto Mangoenkoesoemo, dan Suwardi Suryaningrat", "Soekarno, Hatta, dan Sjahrir", "H.O.S. Tjokroaminoto, Agus Salim, dan Abdul Muis", "Soetomo, Wahidin Sudirohusodo, dan Gunawan Mangunkusumo"], "Indische Partij (1912) adalah partai politik pertama yang secara tegas menuntut kemerdekaan."],
+["Tiap-tiap warga negara berhak atas pekerjaan dan penghidupan yang layak bagi kemanusiaan. Ketentuan ini terdapat dalam UUD 1945 ...", ["Pasal 27 ayat (2)", "Pasal 28D ayat (2)", "Pasal 34 ayat (1)", "Pasal 33 ayat (1)"], "Pasal 27 ayat (2). Pasal 28D ayat (2) mengatur hak bekerja serta imbalan dan perlakuan yang adil dalam hubungan kerja."],
+["Lambang Negara ialah Garuda Pancasila dengan semboyan Bhinneka Tunggal Ika. Ketentuan ini terdapat dalam UUD 1945 ...", ["Pasal 36A", "Pasal 35", "Pasal 36", "Pasal 36C"], "Pasal 36A ditambahkan melalui perubahan kedua UUD 1945 tahun 2000."],
+["Dalam sistem pemerintahan presidensial Indonesia, menteri-menteri bertanggung jawab kepada ...", ["Presiden", "DPR", "MPR", "Rakyat melalui pemilu"], "Menteri diangkat dan diberhentikan oleh presiden (Pasal 17 ayat 2 UUD 1945), sehingga bertanggung jawab kepada presiden."],
+["Hak DPR untuk meminta keterangan kepada pemerintah mengenai kebijakan penting yang berdampak luas disebut hak ...", ["Interpelasi", "Angket", "Menyatakan pendapat", "Imunitas"], "Interpelasi adalah hak meminta keterangan. Angket adalah hak melakukan penyelidikan."],
+["Apabila DPR tidak menyetujui rancangan APBN yang diusulkan presiden, maka ...", ["Pemerintah menjalankan APBN tahun yang lalu", "Presiden menetapkan APBN dengan Perppu", "MPR mengambil alih pembahasan", "APBN ditetapkan oleh DPD"], "Pasal 23 ayat (3) UUD 1945 mengatur pemerintah menjalankan APBN tahun lalu."],
+["Salah satu kesepakatan dasar MPR dalam melakukan perubahan UUD 1945 adalah ...", ["Mempertegas sistem pemerintahan presidensial", "Mengubah Pembukaan UUD 1945", "Mengubah bentuk negara menjadi federal", "Mempertahankan Penjelasan sebagai bagian UUD"], "Kesepakatan dasar: tidak mengubah Pembukaan, tetap mempertahankan NKRI, mempertegas sistem presidensial, Penjelasan ditiadakan dan hal normatifnya dimasukkan ke pasal, serta perubahan dilakukan dengan cara adendum."],
+["Penolakan terhadap ideologi liberalisme murni oleh bangsa Indonesia terutama karena ideologi tersebut ...", ["Terlalu menekankan kebebasan individu sehingga dapat mengabaikan kepentingan bersama", "Menolak keberadaan negara", "Menghapus hak milik pribadi", "Menolak kebebasan beragama"], "Pancasila menyeimbangkan kepentingan individu dan kepentingan bersama."],
+["Di Zona Ekonomi Eksklusif selebar 200 mil laut, Indonesia memiliki ...", ["Hak berdaulat atas eksplorasi dan eksploitasi sumber daya alam", "Kedaulatan penuh seperti di laut teritorial", "Hak menutup jalur pelayaran internasional", "Kewenangan yang sama dengan wilayah darat"], "Di ZEE, negara pantai memiliki hak berdaulat atas sumber daya, sementara kapal asing tetap bebas berlayar."],
+["Hak warga negara yang membedakannya dengan orang asing dan diatur dalam UUD 1945 Pasal 28D ayat (4) adalah ...", ["Hak atas status kewarganegaraan", "Hak untuk hidup", "Hak beragama", "Hak atas pendidikan"], "Pasal 28D ayat (4): Setiap orang berhak atas status kewarganegaraan."],
+["Perilaku yang mencerminkan sila kedua Pancasila ketika terjadi bencana di daerah lain adalah ...", ["Ikut membantu korban tanpa memandang suku, agama, atau asal daerahnya", "Membantu hanya korban yang sesuku", "Menunggu instruksi pemerintah sebelum peduli", "Menyebarkan foto korban tanpa izin untuk menarik simpati"], "Kemanusiaan yang adil dan beradab menuntut kepedulian tanpa membeda-bedakan."],
+["Asas kewarganegaraan yang menentukan kewarganegaraan seseorang berdasarkan tempat kelahirannya disebut ...", ["Ius soli", "Ius sanguinis", "Naturalisasi", "Bipatride"], "Ius sanguinis berdasarkan keturunan. Bipatride adalah kondisi berkewarganegaraan ganda."],
+["Dalam memberikan grasi dan rehabilitasi, presiden memperhatikan pertimbangan ...", ["Mahkamah Agung", "DPR", "Mahkamah Konstitusi", "Komisi Yudisial"], "Pasal 14 ayat (1) UUD 1945. Grasi dan rehabilitasi bersifat yudisial, sehingga pertimbangannya dari MA."],
+["Bumi, air, dan kekayaan alam yang terkandung di dalamnya dikuasai oleh negara dan dipergunakan untuk sebesar-besar kemakmuran rakyat. Ini bunyi UUD 1945 ...", ["Pasal 33 ayat (3)", "Pasal 33 ayat (1)", "Pasal 34 ayat (1)", "Pasal 27 ayat (2)"], "Pasal 33 ayat (3) menjadi dasar penguasaan negara atas sumber daya alam untuk kemakmuran rakyat."],
+["Organisasi mahasiswa Indonesia di Belanda yang mengeluarkan Manifesto Politik 1925 adalah ...", ["Perhimpunan Indonesia", "Partai Nasional Indonesia", "Jong Java", "Indische Partij"], "Perhimpunan Indonesia (semula Indische Vereeniging) menegaskan prinsip persatuan, kesetaraan, dan kemerdekaan."],
+["Lembaga yang memeriksa, mengadili, dan memutus pendapat DPR bahwa presiden diduga melakukan pelanggaran hukum adalah ...", ["Mahkamah Konstitusi", "Mahkamah Agung", "MPR", "Komisi Yudisial"], "Sebelum DPR mengusulkan pemberhentian kepada MPR, pendapat DPR wajib diputus lebih dulu oleh MK (Pasal 7B)."],
+["Penetapan 1 Juni sebagai Hari Lahir Pancasila sekaligus hari libur nasional dilakukan melalui ...", ["Keputusan Presiden Nomor 24 Tahun 2016", "Ketetapan MPR Nomor XVIII/MPR/1998", "Undang-Undang Nomor 12 Tahun 2011", "Peraturan Presiden Nomor 7 Tahun 2018"], "Keppres 24/2016 ditetapkan Presiden Joko Widodo. Perpres 7/2018 adalah dasar pembentukan BPIP."],
+["Wawasan Nusantara memandang wilayah Indonesia sebagai satu kesatuan. Implikasinya dalam bidang politik adalah ...", ["Seluruh kepulauan Nusantara merupakan satu kesatuan politik dengan satu falsafah dan ideologi, yaitu Pancasila", "Setiap pulau berhak menentukan ideologinya sendiri", "Daerah boleh membuat perjanjian internasional sendiri", "Kepentingan daerah selalu didahulukan dari kepentingan nasional"], "Perwujudan kepulauan Nusantara sebagai satu kesatuan politik, ekonomi, sosial budaya, serta pertahanan dan keamanan."],
+["Sidang pertama BPUPKI yang membahas dasar negara berlangsung pada ...", ["29 Mei – 1 Juni 1945", "10 – 17 Juli 1945", "18 – 22 Agustus 1945", "1 – 22 Juni 1945"], "Dalam sidang pertama, Muhammad Yamin, Soepomo, dan Soekarno menyampaikan gagasan tentang dasar negara."],
+["Pemilihan presiden dan wakil presiden secara langsung oleh rakyat untuk pertama kalinya dilaksanakan pada tahun ...", ["2004", "1999", "2009", "2002"], "Pemilu langsung pertama tahun 2004 menghasilkan pasangan Susilo Bambang Yudhoyono dan Jusuf Kalla."],
+["Undang-undang yang mengatur Bendera, Bahasa, dan Lambang Negara serta Lagu Kebangsaan adalah ...", ["UU Nomor 24 Tahun 2009", "UU Nomor 12 Tahun 2011", "UU Nomor 23 Tahun 2014", "UU Nomor 39 Tahun 1999"], "UU 24/2009 mengatur tata cara penggunaan bendera, bahasa, lambang negara, dan lagu kebangsaan."],
+["Peraturan yang ditetapkan presiden untuk menjalankan undang-undang sebagaimana mestinya disebut ...", ["Peraturan pemerintah", "Peraturan presiden", "Peraturan pemerintah pengganti undang-undang", "Keputusan presiden"], "Pasal 5 ayat (2) UUD 1945: Presiden menetapkan peraturan pemerintah untuk menjalankan undang-undang sebagaimana mestinya."],
+["Menurut Pasal 37 ayat (5) UUD 1945, ketentuan yang tidak dapat dilakukan perubahan adalah ...", ["Bentuk Negara Kesatuan Republik Indonesia", "Jumlah pasal dalam UUD", "Masa jabatan presiden", "Susunan MPR"], "Pasal 37 ayat (5) menyatakan khusus mengenai bentuk NKRI tidak dapat dilakukan perubahan."],
+["Deklarasi Djuanda 13 Desember 1957 penting karena ...", ["Menyatakan laut di antara pulau-pulau Indonesia sebagai bagian wilayah NKRI", "Menetapkan Pancasila sebagai asas tunggal", "Mengakhiri sistem parlementer", "Membentuk ASEAN"], "Deklarasi Djuanda melahirkan konsep negara kepulauan dan kini diperingati sebagai Hari Nusantara."],
+["Pernyataan kemerdekaan yang didorong oleh motivasi spiritual (atas berkat rahmat Allah Yang Maha Kuasa) terdapat dalam Pembukaan UUD 1945 alinea ...", ["Ketiga", "Pertama", "Kedua", "Keempat"], "Alinea ketiga memuat motivasi spiritual sekaligus pernyataan kemerdekaan. Alinea pertama memuat dalil hak kemerdekaan, alinea kedua perjuangan pergerakan, alinea keempat tujuan negara dan dasar negara."],
+["Rancangan undang-undang yang tidak mendapat persetujuan bersama DPR dan presiden ...", ["Tidak boleh diajukan lagi dalam persidangan DPR masa itu", "Dapat langsung disahkan presiden", "Diputuskan oleh Mahkamah Konstitusi", "Wajib diajukan kembali pada sidang berikutnya"], "Pasal 20 ayat (3) UUD 1945."],
+["Lembaga negara berikut yang dibentuk sebagai hasil perubahan UUD 1945 adalah ...", ["Mahkamah Konstitusi dan Komisi Yudisial", "Mahkamah Agung dan BPK", "DPR dan MPR", "Presiden dan wakil presiden"], "Lembaga baru hasil perubahan: DPD, MK, dan KY. DPA dihapus."],
+["Lembaga negara yang berwenang mengubah dan menetapkan Undang-Undang Dasar adalah ...", ["MPR", "DPR", "Presiden bersama DPR", "Mahkamah Konstitusi"], "Pasal 3 ayat (1) UUD 1945: MPR berwenang mengubah dan menetapkan Undang-Undang Dasar."],
+["Menurut Pembukaan UUD 1945, kemerdekaan kebangsaan Indonesia disusun dalam suatu ...", ["Undang-Undang Dasar Negara Indonesia", "Piagam Kemerdekaan Indonesia", "Ketetapan MPR", "Dekrit Presiden"], "Alinea keempat: maka disusunlah kemerdekaan kebangsaan Indonesia itu dalam suatu Undang-Undang Dasar Negara Indonesia."],
+["Lembaga yang berwenang memutus sengketa kewenangan lembaga negara yang kewenangannya diberikan oleh UUD adalah ...", ["Mahkamah Konstitusi", "Mahkamah Agung", "MPR", "Presiden"], "Pasal 24C ayat (1) UUD 1945 memberi MK kewenangan memutus sengketa kewenangan lembaga negara, selain menguji UU, membubarkan partai politik, dan memutus perselisihan hasil pemilu."],
+["Tokoh yang memberi nama Piagam Jakarta pada rancangan pembukaan hasil Panitia Sembilan adalah ...", ["Muhammad Yamin", "Soekarno", "Mohammad Hatta", "Achmad Soebardjo"], "Muhammad Yamin menyebut naskah itu Piagam Jakarta (Jakarta Charter)."],
+["Hak setiap anak atas kelangsungan hidup, tumbuh, dan berkembang serta perlindungan dari kekerasan dan diskriminasi dijamin dalam UUD 1945 ...", ["Pasal 28B ayat (2)", "Pasal 28B ayat (1)", "Pasal 28A", "Pasal 34 ayat (1)"], "Pasal 28B ayat (1) mengatur hak membentuk keluarga, sedangkan ayat (2) mengatur hak anak."],
+["Menurut Pasal 22E ayat (5) UUD 1945, pemilihan umum diselenggarakan oleh suatu komisi pemilihan umum yang bersifat ...", ["Nasional, tetap, dan mandiri", "Nasional, sementara, dan independen", "Daerah, tetap, dan mandiri", "Nasional, tetap, dan di bawah pemerintah"], "Sifat nasional, tetap, dan mandiri menjadi dasar kedudukan KPU."],
+["Hari Bela Negara diperingati setiap tanggal 19 Desember untuk mengenang ...", ["Pembentukan Pemerintahan Darurat Republik Indonesia", "Pertempuran Surabaya", "Serangan Umum 1 Maret", "Peristiwa Rengasdengklok"], "Tanggal 19 Desember 1948 adalah awal Agresi Militer II sekaligus hari dibentuknya PDRI yang menjaga keberlangsungan negara."],
+["Ketentuan bahwa gubernur, bupati, dan wali kota dipilih secara demokratis terdapat dalam UUD 1945 ...", ["Pasal 18 ayat (4)", "Pasal 18 ayat (3)", "Pasal 22E ayat (2)", "Pasal 18A ayat (1)"], "Pasal 18 ayat (4) hanya menyebut dipilih secara demokratis, sehingga mekanisme pemilihannya diatur undang-undang."],
+["Pancasila sebagai pandangan hidup bangsa berarti Pancasila ...", ["Menjadi petunjuk arah bagi seluruh kegiatan hidup masyarakat Indonesia", "Hanya menjadi dasar penyusunan peraturan negara", "Hanya berlaku bagi penyelenggara negara", "Menggantikan ajaran agama dalam kehidupan pribadi"], "Sebagai pandangan hidup, Pancasila menjadi pedoman sikap dan perilaku sehari-hari, berdampingan dengan ajaran agama."],
+["Menurut Pasal 37 ayat (1) UUD 1945, usul perubahan pasal-pasal UUD dapat diagendakan dalam sidang MPR apabila diajukan oleh sekurang-kurangnya ...", ["1/3 jumlah anggota MPR", "1/2 jumlah anggota MPR", "2/3 jumlah anggota MPR", "1/4 jumlah anggota MPR"], "Ketentuan ini membuat perubahan UUD tidak mudah dilakukan."],
+["Menurut Pasal 20A ayat (1) UUD 1945, DPR memiliki fungsi ...", ["Legislasi, anggaran, dan pengawasan", "Legislasi, yudikatif, dan pengawasan", "Anggaran, pengawasan, dan pemerintahan", "Legislasi, konsultatif, dan representasi"], "Tiga fungsi DPR adalah legislasi, anggaran, dan pengawasan; hak interpelasi, angket, dan menyatakan pendapat menunjang fungsi pengawasan."],
+["Pemilu pertama di Indonesia pada tahun 1955 diselenggarakan untuk memilih ...", ["Anggota DPR dan anggota Konstituante", "Presiden dan wakil presiden", "Anggota DPR dan DPD", "Anggota MPR dan DPRD"], "Pemilu 1955 berlangsung dua tahap: memilih anggota DPR (29 September) dan anggota Konstituante (15 Desember)."],
+["Pancasila sebagai ideologi negara memiliki dimensi realitas, idealitas, dan fleksibilitas. Dimensi fleksibilitas berarti ...", ["Pancasila mampu menyesuaikan diri dengan perkembangan zaman tanpa kehilangan nilai dasarnya", "Pancasila bersumber dari nilai-nilai yang hidup dalam masyarakat", "Pancasila memuat cita-cita yang ingin dicapai", "Pancasila dapat diganti bila tidak sesuai zaman"], "Dimensi realitas berarti bersumber dari nilai masyarakat, idealitas berarti memuat cita-cita, fleksibilitas berarti terbuka terhadap perkembangan."],
+["Pernyataan yang paling tepat tentang hubungan antarsila Pancasila adalah ...", ["Kelima sila merupakan satu kesatuan yang utuh dan saling menjiwai", "Setiap sila dapat diamalkan secara terpisah sesuai kebutuhan", "Sila pertama dapat ditafsirkan tanpa memperhatikan sila lainnya", "Sila kelima adalah sila terpenting karena menyangkut kesejahteraan"], "Pancasila dipahami sebagai satu kesatuan nilai yang tidak dapat dipisah-pisahkan."],
+["Jumlah provinsi di Indonesia saat ini setelah pemekaran wilayah Papua adalah ...", ["38", "34", "37", "36"], "Empat provinsi baru di Papua: Papua Selatan, Papua Tengah, Papua Pegunungan (2022), dan Papua Barat Daya (2022)."],
+["Sikap chauvinisme berbeda dengan nasionalisme Pancasila karena chauvinisme ...", ["Mengagungkan bangsa sendiri secara berlebihan dan merendahkan bangsa lain", "Mencintai bangsa sendiri sambil menghormati bangsa lain", "Lebih mengutamakan kepentingan daerah", "Menolak segala bentuk perubahan"], "Nasionalisme Pancasila mencintai bangsa sendiri tanpa merendahkan bangsa lain."],
+["Kewenangan presiden menyatakan keadaan bahaya diatur dalam UUD 1945 ...", ["Pasal 12", "Pasal 11", "Pasal 14", "Pasal 22"], "Pasal 12: Presiden menyatakan keadaan bahaya; syarat dan akibatnya ditetapkan dengan undang-undang."],
+["Rumusan sila pertama dalam Piagam Jakarta yang kemudian diubah pada 18 Agustus 1945 adalah ...", ["Ketuhanan, dengan kewajiban menjalankan syariat Islam bagi pemeluk-pemeluknya", "Ketuhanan yang berkebudayaan", "Ketuhanan Yang Maha Esa", "Peri Ketuhanan"], "Tujuh kata setelah kata Ketuhanan dihapus demi persatuan, sehingga rumusannya menjadi Ketuhanan Yang Maha Esa."],
+["Ketentuan bahwa anggota DPR dipilih melalui pemilihan umum terdapat dalam UUD 1945 ...", ["Pasal 19 ayat (1)", "Pasal 20 ayat (1)", "Pasal 22E ayat (2)", "Pasal 2 ayat (1)"], "Pasal 19 ayat (1). Pasal 22E ayat (2) menyebut pemilu diselenggarakan untuk memilih DPR, DPD, presiden dan wakil presiden, serta DPRD."],
+["Negara menjamin kemerdekaan tiap-tiap penduduk untuk memeluk agamanya masing-masing dan beribadat menurut agamanya. Ketentuan ini terdapat dalam UUD 1945 ...", ["Pasal 29 ayat (2)", "Pasal 29 ayat (1)", "Pasal 28 ayat (1)", "Pasal 31 ayat (2)"], "Pasal 29 ayat (1) menyatakan negara berdasar atas Ketuhanan Yang Maha Esa, sedangkan ayat (2) menjamin kemerdekaan memeluk agama dan beribadat."],
+["Sidang kedua BPUPKI pada 10–17 Juli 1945 terutama membahas ...", ["Rancangan undang-undang dasar, bentuk negara, dan wilayah negara", "Usulan rumusan dasar negara dari Yamin, Soepomo, dan Soekarno", "Pengesahan UUD 1945 dan pemilihan presiden", "Pembentukan kementerian dan komite nasional"], "Sidang pertama (29 Mei–1 Juni 1945) membahas dasar negara. Sidang kedua membahas rancangan UUD, bentuk negara, dan wilayah. Pengesahan UUD dilakukan PPKI pada 18 Agustus 1945."],
+["Menurut Pasal 37 ayat (4) UUD 1945, putusan untuk mengubah pasal-pasal UUD dilakukan dengan persetujuan sekurang-kurangnya ...", ["50% ditambah satu anggota dari seluruh anggota MPR", "2/3 anggota MPR yang hadir", "3/4 dari seluruh anggota MPR", "1/2 anggota MPR yang hadir"], "Sidangnya harus dihadiri sekurang-kurangnya 2/3 anggota MPR (ayat 3), dan putusannya memerlukan 50% + 1 dari seluruh anggota (ayat 4)."],
+["Pernyataan yang paling tepat tentang hubungan Pembukaan UUD 1945 dengan Proklamasi 17 Agustus 1945 adalah ...", ["Pembukaan UUD 1945 memuat penjabaran lebih rinci dari amanat Proklamasi", "Pembukaan UUD 1945 menggantikan teks Proklamasi", "Proklamasi merupakan penjelasan dari Pembukaan UUD 1945", "Keduanya tidak berhubungan karena dibuat pada tanggal berbeda"], "Proklamasi adalah pernyataan kemerdekaan; Pembukaan UUD 1945 menjabarkan alasan, cita-cita, tujuan, dan dasar negara yang merdeka itu."],
+["Hak berikut yang tidak termasuk hak yang tidak dapat dikurangi dalam keadaan apa pun menurut Pasal 28I ayat (1) UUD 1945 adalah ...", ["Hak berserikat dan berkumpul", "Hak untuk hidup", "Hak untuk tidak disiksa", "Hak untuk tidak dituntut atas dasar hukum yang berlaku surut"], "Pasal 28I ayat (1) menyebut hak hidup, tidak disiksa, kemerdekaan pikiran dan hati nurani, beragama, tidak diperbudak, diakui sebagai pribadi di hadapan hukum, dan tidak dituntut atas hukum yang berlaku surut."],
+["Pasal 28J UUD 1945 pada intinya mengatur ...", ["Kewajiban menghormati hak orang lain dan pembatasan HAM yang ditetapkan dengan undang-undang", "Hak untuk hidup", "Hak atas pendidikan", "Hak beragama"], "Pasal 28J menegaskan bahwa pelaksanaan HAM tunduk pada pembatasan yang ditetapkan undang-undang demi menghormati hak orang lain dan ketertiban umum."],
+["Cara perubahan UUD 1945 yang dilakukan MPR pada 1999–2002 disebut adendum, artinya ...", ["Naskah asli tetap dipertahankan dan perubahan dilekatkan pada naskah asli", "Naskah lama diganti seluruhnya dengan naskah baru", "Perubahan dilakukan melalui undang-undang", "Perubahan dilakukan melalui ketetapan presiden"], "Dengan adendum, naskah asli tetap ada dan perubahannya menjadi bagian yang tidak terpisahkan."],
+["Menurut UU 12/2006, asas kewarganegaraan Indonesia pada dasarnya adalah ...", ["Ius sanguinis, dengan ius soli terbatas dan kewarganegaraan ganda terbatas bagi anak", "Ius soli murni", "Ius sanguinis murni tanpa pengecualian", "Kewarganegaraan ganda bagi semua warga negara"], "Anak hasil perkawinan campuran dapat berkewarganegaraan ganda terbatas sampai usia 18 tahun, lalu wajib memilih."],
+["Budi Utomo yang didirikan tahun 1908 merupakan gagasan dr. Wahidin Sudirohusodo dan didirikan oleh dr. Soetomo bersama pelajar ...", ["STOVIA", "OSVIA", "Technische Hoogeschool", "HIS"], "STOVIA adalah sekolah dokter bumiputra di Batavia."],
+["Ketentuan bahwa presiden berhak mengajukan rancangan undang-undang kepada DPR terdapat dalam UUD 1945 ...", ["Pasal 5 ayat (1)", "Pasal 5 ayat (2)", "Pasal 20 ayat (1)", "Pasal 21"], "Pasal 5 ayat (1). Pasal 5 ayat (2) mengatur peraturan pemerintah, Pasal 20 ayat (1) kekuasaan DPR membentuk UU, dan Pasal 21 hak usul RUU oleh anggota DPR."],
+["Bendera Negara dikibarkan setengah tiang sebagai tanda ...", ["Berkabung", "Peringatan hari besar keagamaan", "Peringatan hari pahlawan", "Penyambutan tamu negara"], "Pengibaran setengah tiang dilakukan sebagai tanda berkabung, misalnya ketika presiden atau wakil presiden wafat."],
+["Sidang PPKI tanggal 19 Agustus 1945 menetapkan, antara lain ...", ["Pembagian wilayah Indonesia menjadi delapan provinsi dan pembentukan dua belas kementerian", "Pengesahan UUD 1945 dan pemilihan presiden", "Pembentukan Komite Nasional Indonesia Pusat dan Badan Keamanan Rakyat", "Pembentukan Tentara Keamanan Rakyat"], "Sidang 18 Agustus mengesahkan UUD dan memilih presiden, sidang 19 Agustus membagi wilayah dan membentuk kementerian, sidang 22 Agustus membentuk KNI, PNI, dan BKR."],
+["Sikap yang paling tepat dalam menghadapi masuknya budaya asing di era globalisasi adalah ...", ["Menerima secara selektif budaya yang sesuai dengan nilai Pancasila", "Menolak seluruh budaya asing demi menjaga budaya nasional", "Menerima seluruh budaya asing agar tidak tertinggal", "Membiarkan masyarakat menentukan sendiri tanpa penyaringan"], "Nasionalisme yang terbuka tidak menolak kemajuan, tetapi menyaringnya dengan nilai Pancasila."],
+["Ketentuan bahwa presiden tidak dapat membekukan dan/atau membubarkan DPR terdapat dalam UUD 1945 ...", ["Pasal 7C", "Pasal 7A", "Pasal 7B", "Pasal 20"], "Pasal 7C menegaskan ciri presidensial: presiden dan DPR sama-sama tidak dapat saling menjatuhkan secara politik."],
+["Lembaga negara yang anggotanya dipilih dari setiap provinsi melalui pemilu dan dapat mengajukan RUU yang berkaitan dengan otonomi daerah adalah ...", ["Dewan Perwakilan Daerah (DPD)", "Dewan Perwakilan Rakyat (DPR)", "DPRD Provinsi", "Majelis Permusyawaratan Rakyat (MPR)"], "Pasal 22C ayat (1) mengatur anggota DPD dipilih dari setiap provinsi melalui pemilu, dan Pasal 22D ayat (1) memberi DPD kewenangan mengajukan RUU terkait otonomi daerah kepada DPR."],
+["Hak berikut yang merupakan hak anggota DPR secara perorangan, bukan hak DPR sebagai lembaga, adalah ...", ["Hak imunitas", "Hak interpelasi", "Hak angket", "Hak menyatakan pendapat"], "Pasal 20A ayat (2) mengatur hak DPR sebagai lembaga (interpelasi, angket, menyatakan pendapat). Ayat (3) mengatur hak anggota: mengajukan pertanyaan, menyampaikan usul dan pendapat, serta hak imunitas."],
+["Fenomena warga yang lebih bangga menggunakan produk luar negeri dan meremehkan produk lokal merupakan tantangan terhadap ...", ["Nasionalisme dan kemandirian ekonomi bangsa", "Kebebasan beragama", "Sistem pemerintahan presidensial", "Asas desentralisasi"], "Mencintai produk dalam negeri adalah wujud nasionalisme dan mendukung kemandirian ekonomi."],
+["Menurut Pasal 22E UUD 1945, pemilihan umum dilaksanakan secara ...", ["Langsung, umum, bebas, rahasia, jujur, dan adil setiap lima tahun sekali", "Langsung, umum, bebas, dan rahasia setiap empat tahun sekali", "Bertingkat melalui perwakilan setiap lima tahun", "Terbuka dan musyawarah setiap lima tahun"], "Asas pemilu luber jurdil dan periode lima tahunan diatur dalam Pasal 22E ayat (1)."],
+["Ketentuan bahwa negara memiliki suatu bank sentral yang independensinya diatur dengan undang-undang terdapat dalam UUD 1945 ...", ["Pasal 23D", "Pasal 23B", "Pasal 23C", "Pasal 33 ayat (4)"], "Pasal 23D tidak menyebut nama bank sentral; nama dan kewenangannya diatur dalam undang-undang tentang Bank Indonesia."],
+["Negara menghormati dan memelihara bahasa daerah sebagai kekayaan budaya nasional. Ketentuan ini terdapat dalam UUD 1945 ...", ["Pasal 32 ayat (2)", "Pasal 36", "Pasal 32 ayat (1)", "Pasal 18B ayat (2)"], "Pasal 32 ayat (2). Pasal 36 menetapkan Bahasa Indonesia sebagai bahasa negara."],
+["Ketua Panitia Persiapan Kemerdekaan Indonesia (PPKI) adalah ...", ["Ir. Soekarno", "Drs. Mohammad Hatta", "dr. Radjiman Wedyodiningrat", "Ki Hajar Dewantara"], "PPKI dibentuk 7 Agustus 1945 dengan Soekarno sebagai ketua dan Hatta sebagai wakil ketua."],
+["Apabila terjadi kekosongan wakil presiden, menurut Pasal 8 ayat (2) UUD 1945 MPR menyelenggarakan sidang untuk memilih wakil presiden selambat-lambatnya ...", ["60 hari, dari dua calon yang diusulkan presiden", "30 hari, dari dua calon yang diusulkan DPR", "60 hari, dari tiga calon yang diusulkan partai politik", "90 hari, melalui pemilu ulang"], "MPR memilih wakil presiden dari dua calon usulan presiden dalam waktu enam puluh hari."],
+["Anggota Badan Pemeriksa Keuangan dipilih oleh ...", ["DPR dengan memperhatikan pertimbangan DPD, dan diresmikan oleh presiden", "Presiden dengan persetujuan DPR", "MPR atas usul DPR dan DPD", "DPD dengan memperhatikan pertimbangan DPR"], "Pasal 23F ayat (1) UUD 1945."],
+["Tokoh berikut yang bukan anggota Panitia Sembilan perumus Piagam Jakarta adalah ...", ["Soepomo", "A.A. Maramis", "K.H. Wahid Hasjim", "Achmad Soebardjo"], "Panitia Sembilan beranggotakan Soekarno, Mohammad Hatta, A.A. Maramis, Abikoesno Tjokrosoejoso, Abdul Kahar Muzakir, H. Agus Salim, Achmad Soebardjo, K.H. Wahid Hasjim, dan Muhammad Yamin. Soepomo adalah anggota BPUPKI, tetapi tidak termasuk Panitia Sembilan."],
+["Makna semboyan Bhinneka Tunggal Ika dalam konteks pemerintahan daerah adalah ...", ["Keragaman daerah tetap dihormati dalam bingkai Negara Kesatuan Republik Indonesia", "Setiap daerah bebas menentukan bentuk negaranya", "Seluruh daerah wajib menyeragamkan budayanya", "Daerah dengan penduduk terbanyak menentukan kebijakan nasional"], "Otonomi daerah mengakomodasi keragaman, tetapi tetap dalam kerangka NKRI."],
+["Piagam Jakarta ditandatangani oleh Panitia Sembilan pada tanggal ...", ["22 Juni 1945", "1 Juni 1945", "18 Agustus 1945", "10 Juli 1945"], "Piagam Jakarta disepakati pada 22 Juni 1945 sebagai rancangan pembukaan undang-undang dasar."],
+["Menurut Pasal 22C ayat (2) UUD 1945, jumlah seluruh anggota DPD ...", ["Tidak lebih dari sepertiga jumlah anggota DPR", "Sama dengan jumlah anggota DPR", "Tidak lebih dari setengah jumlah anggota DPR", "Ditetapkan sama untuk setiap kabupaten"], "Anggota DPD dari setiap provinsi jumlahnya sama, dan totalnya tidak lebih dari sepertiga jumlah anggota DPR."],
+["Fakir miskin dan anak-anak yang terlantar dipelihara oleh negara. Ketentuan ini terdapat dalam UUD 1945 ...", ["Pasal 34 ayat (1)", "Pasal 33 ayat (1)", "Pasal 28H ayat (1)", "Pasal 27 ayat (2)"], "Pasal 34 ayat (1) menjadi dasar kebijakan perlindungan sosial oleh negara."],
+["Menurut Pasal 3 ayat (2) UUD 1945, lembaga yang melantik presiden dan/atau wakil presiden adalah ...", ["MPR", "DPR", "Mahkamah Agung", "Mahkamah Konstitusi"], "Pasal 3 ayat (2): MPR melantik Presiden dan/atau Wakil Presiden. Pimpinan MA hanya menjadi saksi bila sumpah dilakukan di hadapan pimpinan MPR."],
+["Ideologi komunisme bertentangan dengan Pancasila terutama karena ...", ["Menolak nilai ketuhanan dan meniadakan hak milik pribadi", "Mengakui kebebasan individu secara berlebihan", "Mengutamakan musyawarah", "Menghormati keberagaman budaya"], "Tap MPRS XXV/MPRS/1966 melarang penyebaran ajaran komunisme, marxisme, dan leninisme."],
+["Menurut Pasal 34 ayat (3) UUD 1945, negara bertanggung jawab atas penyediaan ...", ["Fasilitas pelayanan kesehatan dan fasilitas pelayanan umum yang layak", "Lapangan pekerjaan bagi seluruh warga negara", "Perumahan gratis bagi seluruh rakyat", "Pendidikan tinggi tanpa biaya"], "Pasal 34 ayat (3) UUD 1945."],
+["Pengakuan negara terhadap satuan pemerintahan daerah yang bersifat khusus atau istimewa, seperti Aceh dan Daerah Istimewa Yogyakarta, diatur dalam UUD 1945 ...", ["Pasal 18B ayat (1)", "Pasal 18B ayat (2)", "Pasal 18A ayat (1)", "Pasal 18 ayat (5)"], "Pasal 18B ayat (1). Ayat (2) mengatur masyarakat hukum adat."],
+["Menurut Pasal 1 ayat (1) UUD 1945, bentuk negara Indonesia adalah ...", ["Negara kesatuan yang berbentuk republik", "Negara federal yang berbentuk republik", "Negara kesatuan yang berbentuk kerajaan", "Negara serikat"], "Pasal 1 ayat (1): Negara Indonesia ialah Negara Kesatuan yang berbentuk Republik."],
+["Menurut UUD 1945 dan UU Pertahanan Negara, keikutsertaan warga negara dalam upaya bela negara dapat dilakukan melalui, kecuali ...", ["Keanggotaan wajib dalam organisasi kemasyarakatan", "Pendidikan kewarganegaraan", "Pengabdian sebagai prajurit TNI secara sukarela atau wajib", "Pengabdian sesuai dengan profesi"], "UU 3/2002 tentang Pertahanan Negara menyebut pendidikan kewarganegaraan, pelatihan dasar kemiliteran, pengabdian sebagai prajurit TNI, dan pengabdian sesuai profesi."]
+];
+const BING = [
+["The word ARREST is closest in meaning to ...", ["Detain", "Release", "Accuse", "Protect"], "Arrest berarti menangkap atau menahan; sinonimnya detain. Release justru melepaskan."],
+["The word EVIDENCE is closest in meaning to ...", ["Proof", "Witness", "Crime", "Judge"], "Evidence berarti bukti (proof). Witness adalah saksi."],
+["The word SUSPECT in 'The police questioned the suspect' means ...", ["A person thought to have committed a crime", "A person who saw the crime", "A person who reports a crime", "A person who defends the accused"], "Suspect berarti tersangka. Orang yang melihat kejahatan disebut witness."],
+["The word VICTIM means ...", ["A person harmed by a crime or accident", "A person who commits a crime", "A police officer on duty", "A lawyer in court"], "Victim berarti korban."],
+["The word PATROL is closest in meaning to ...", ["Guard an area by moving around it regularly", "Arrest a criminal", "Write a report", "Direct traffic only"], "Patrol berarti berpatroli, yaitu berkeliling secara rutin untuk menjaga keamanan."],
+["The word HONEST is closest in meaning to ...", ["Truthful", "Brave", "Polite", "Clever"], "Honest berarti jujur (truthful)."],
+["The word ACCURATE is closest in meaning to ...", ["Correct", "Quick", "Careful", "Clear"], "Accurate berarti tepat atau benar (correct)."],
+["The word ASSIST is closest in meaning to ...", ["Help", "Ask", "Arrange", "Attend"], "Assist berarti membantu."],
+["The word ENSURE is closest in meaning to ...", ["Make certain", "Insure a car", "Enjoy", "Explain"], "Ensure berarti memastikan. Insure berarti mengasuransikan."],
+["The word REQUIRE is closest in meaning to ...", ["Need", "Request politely", "Repeat", "Refuse"], "Require berarti membutuhkan atau mewajibkan."],
+["The word PREVENT is closest in meaning to ...", ["Stop something from happening", "Predict", "Present", "Permit"], "Prevent berarti mencegah. Permit justru mengizinkan."],
+["The word BRAVE is closest in meaning to ...", ["Courageous", "Careful", "Calm", "Cruel"], "Brave berarti berani (courageous)."],
+["The word ENORMOUS is closest in meaning to ...", ["Huge", "Tiny", "Normal", "Famous"], "Enormous berarti sangat besar."],
+["The word RAPID is closest in meaning to ...", ["Fast", "Slow", "Rough", "Steady"], "Rapid berarti cepat."],
+["The word OBEY is closest in meaning to ...", ["Follow", "Ignore", "Order", "Oppose"], "Obey berarti mematuhi."],
+["The word ABANDON is closest in meaning to ...", ["Leave behind", "Keep", "Adopt", "Collect"], "Abandon berarti meninggalkan atau menelantarkan."],
+["The word INVESTIGATE is closest in meaning to ...", ["Examine carefully", "Invest money", "Invite", "Ignore"], "Investigate berarti menyelidiki."],
+["The word WITNESS in 'She was a witness to the accident' means ...", ["A person who saw the event", "A person who caused the event", "A person injured in the event", "A person who reported it to the press"], "Witness berarti saksi mata."],
+["The word PUNISH is closest in meaning to ...", ["Penalize", "Reward", "Forgive", "Praise"], "Punish berarti menghukum."],
+["The word CROWD means ...", ["A large group of people", "A small family", "An empty place", "A police unit"], "Crowd berarti kerumunan orang."],
+["The opposite of GUILTY is ...", ["Innocent", "Accused", "Wrong", "Criminal"], "Guilty berarti bersalah; lawannya innocent (tidak bersalah)."],
+["The opposite of LEGAL is ...", ["Illegal", "Lawful", "Official", "Formal"], "Lawful justru sinonim legal."],
+["The opposite of ACCEPT is ...", ["Reject", "Receive", "Agree", "Allow"], "Accept berarti menerima; lawannya reject (menolak)."],
+["The opposite of ANCIENT is ...", ["Modern", "Old", "Historic", "Antique"], "Ancient berarti kuno; lawannya modern."],
+["The opposite of INCREASE is ...", ["Decrease", "Improve", "Expand", "Raise"], "Increase berarti naik atau bertambah; lawannya decrease."],
+["The opposite of SAFE is ...", ["Dangerous", "Secure", "Calm", "Protected"], "Safe berarti aman; lawannya dangerous (berbahaya)."],
+["The opposite of DEPART is ...", ["Arrive", "Leave", "Travel", "Escape"], "Depart berarti berangkat; lawannya arrive (tiba)."],
+["The opposite of TEMPORARY is ...", ["Permanent", "Short", "Brief", "Quick"], "Temporary berarti sementara; lawannya permanent."],
+["The opposite of HUMBLE is ...", ["Arrogant", "Modest", "Polite", "Simple"], "Humble berarti rendah hati; lawannya arrogant (sombong)."],
+["The opposite of FRAGILE is ...", ["Sturdy", "Weak", "Delicate", "Thin"], "Fragile berarti rapuh; lawannya sturdy (kokoh)."],
+["The police officer ... the area every night last month.", ["patrolled", "patrols", "is patrolling", "has patrolled"], "Last month menunjukkan masa lampau, sehingga memakai simple past: patrolled."],
+["She ... in this police station since 2020.", ["has worked", "works", "worked", "is working"], "Since 2020 menunjukkan kegiatan yang dimulai di masa lalu dan masih berlangsung: present perfect."],
+["Look! The suspect ... away from the building.", ["is running", "runs", "ran", "has run"], "Look! menandakan kejadian yang sedang berlangsung: present continuous."],
+["When the alarm rang, the guards ... their dinner.", ["were having", "had", "have", "are having"], "Kegiatan yang sedang berlangsung di masa lampau ketika kejadian lain terjadi memakai past continuous."],
+["By the time the police arrived, the thief ... .", ["had escaped", "escaped", "has escaped", "escapes"], "Kejadian yang sudah selesai sebelum kejadian lampau lain memakai past perfect."],
+["Every morning, the officers ... a briefing at seven o'clock.", ["have", "has", "having", "are have"], "Kebiasaan memakai simple present; subjek jamak (the officers) memakai have."],
+["Next week, we ... a training on traffic safety.", ["will attend", "attended", "have attended", "attend yesterday"], "Next week menunjukkan masa depan: will attend."],
+["The report ... by the investigator yesterday.", ["was written", "wrote", "is writing", "has written"], "Kalimat pasif simple past: was + past participle."],
+["The new police station ... next year.", ["will be built", "will build", "is built", "was built"], "Kalimat pasif masa depan: will be + past participle."],
+["All visitors ... to show their identity cards at the gate.", ["are required", "require", "are requiring", "required by"], "Kalimat pasif simple present: are required."],
+["The criminals ... by the police last night.", ["were arrested", "arrested", "are arrested", "have arrested"], "Kalimat pasif simple past dengan subjek jamak: were arrested."],
+["If I study hard, I ... the selection test.", ["will pass", "would pass", "would have passed", "passed"], "Conditional tipe 1 (kemungkinan nyata): if + simple present, will + verb."],
+["If I were a police officer, I ... people in need.", ["would help", "will help", "would have helped", "help"], "Conditional tipe 2 (pengandaian masa kini): if + were/past, would + verb."],
+["If he had followed the rules, he ... punished.", ["would not have been", "will not be", "would not be", "is not"], "Conditional tipe 3 (pengandaian masa lampau): if + past perfect, would have + past participle."],
+["Drivers ... wear a seat belt. It is the law.", ["must", "may", "might", "could"], "Must menyatakan kewajiban."],
+["You ... smoke in this room. It is forbidden.", ["must not", "need not", "don't have to", "may"], "Must not menyatakan larangan. Don't have to berarti tidak perlu."],
+["He is good at ... difficult problems.", ["solving", "solve", "to solve", "solved"], "Setelah preposisi (at) digunakan gerund (verb-ing)."],
+["The officer decided ... the case further.", ["to investigate", "investigating", "investigate", "investigated"], "Decide diikuti to-infinitive."],
+["She enjoys ... in the morning before work.", ["jogging", "to jog", "jog", "jogged"], "Enjoy diikuti gerund."],
+["The meeting will start ... 8 a.m.", ["at", "on", "in", "by the"], "At digunakan untuk jam tertentu."],
+["The ceremony is held ... July 1st every year.", ["on", "in", "at", "for"], "On digunakan untuk tanggal dan hari."],
+["Indonesia declared its independence ... 1945.", ["in", "on", "at", "for"], "In digunakan untuk tahun, bulan, dan musim."],
+["The man ... car was stolen reported it to the police.", ["whose", "who", "whom", "which"], "Whose menyatakan kepemilikan (mobil milik pria itu)."],
+["The officer ... helped me was very kind.", ["who", "which", "whose", "whom"], "Who digunakan untuk orang sebagai subjek klausa."],
+["This is the motorcycle ... was found near the river.", ["which", "who", "whom", "whose"], "Which digunakan untuk benda."],
+["Mount Rinjani is ... than Mount Tambora.", ["higher", "high", "highest", "more high"], "Perbandingan dua benda dengan kata sifat pendek memakai -er + than."],
+["This is the ... building in the city.", ["tallest", "taller", "most tall", "tall"], "Superlatif kata sifat pendek memakai the + -est."],
+["This test is ... than the previous one.", ["more difficult", "difficulter", "most difficult", "difficult"], "Kata sifat panjang memakai more ... than."],
+["You are a new member, ... you?", ["aren't", "are", "don't", "isn't"], "Question tag untuk kalimat positif dengan to be are adalah aren't."],
+["He didn't come to the briefing, ... he?", ["did", "didn't", "does", "was"], "Question tag untuk kalimat negatif simple past adalah did."],
+["Neither the captain nor the officers ... aware of the plan.", ["were", "was", "is", "has been"], "Dengan neither ... nor, kata kerja mengikuti subjek terdekat (the officers, jamak)."],
+["Each of the participants ... a number.", ["has", "have", "are having", "were having"], "Each of diikuti kata kerja tunggal."],
+["She said, 'I am tired.' In reported speech: She said that she ... tired.", ["was", "is", "has been", "will be"], "Dalam kalimat tidak langsung, simple present berubah menjadi simple past."],
+["He asked me, 'Where do you live?' In reported speech: He asked me where ... .", ["I lived", "did I live", "do I live", "I live there"], "Pertanyaan tidak langsung memakai susunan kalimat berita dan tense mundur."],
+["The officer told the driver ... his license.", ["to show", "show", "showing", "shows"], "Perintah tidak langsung memakai told + objek + to-infinitive."],
+["I wish I ... more time to prepare for the test.", ["had", "have", "will have", "am having"], "Wish untuk masa kini memakai bentuk past."],
+["Despite ... tired, he continued his duty.", ["being", "he was", "to be", "be"], "Despite diikuti kata benda atau gerund."],
+["... it was raining heavily, the officers kept guarding the area.", ["Although", "Despite", "Because of", "Due to"], "Although diikuti klausa lengkap. Despite dan because of diikuti kata benda."],
+["The road was closed ... the flood.", ["because of", "because", "although", "so"], "Because of diikuti kata benda (the flood)."],
+["Find the incorrect part: 'She have (A) been working (B) here for (C) three years (D).'", ["A", "B", "C", "D"], "Subjek she memakai has, bukan have."],
+["Find the incorrect part: 'The police (A) was (B) called to the scene (C) immediately (D).'", ["B", "A", "C", "D"], "Kata police selalu dianggap jamak, sehingga memakai were."],
+["Find the incorrect part: 'He did not (A) went (B) to the office (C) yesterday (D).'", ["B", "A", "C", "D"], "Setelah did not digunakan verb bentuk dasar: go."],
+["Find the incorrect part: 'There is (A) many people (B) waiting (C) outside (D).'", ["A", "B", "C", "D"], "Many people jamak, sehingga memakai there are."],
+["Find the incorrect part: 'She is more taller (A) than (B) her brother (C) now (D).'", ["A", "B", "C", "D"], "Taller sudah bentuk perbandingan; tidak perlu more."],
+["Find the incorrect part: 'I am interesting (A) in (B) joining (C) the police force (D).'", ["A", "B", "C", "D"], "Untuk perasaan seseorang dipakai interested, bukan interesting."],
+["Find the incorrect part: 'The informations (A) about the case (B) are (C) confidential (D).'", ["A", "B", "C", "D"], "Information adalah kata benda tak terhitung; tidak memakai -s, dan kata kerjanya is."],
+["Find the incorrect part: 'She go (A) to the office (B) every (C) morning (D).'", ["A", "B", "C", "D"], "Subjek she dalam simple present memakai goes."],
+["Find the incorrect part: 'If I will see (A) the suspect, I will (B) report (C) it to the police (D).'", ["A", "B", "C", "D"], "Klausa if pada conditional tipe 1 memakai simple present: If I see."],
+["Find the incorrect part: 'Every students (A) must (B) bring (C) their identity cards (D).'", ["A", "B", "C", "D"], "Every diikuti kata benda tunggal: every student."],
+["Read: 'Officer Rina starts her shift at 6 a.m. She patrols the market area until noon, then writes reports at the station.'\nWhat does Officer Rina do after noon?", ["She writes reports at the station", "She patrols the market", "She starts her shift", "She goes home"], "Kalimat kedua menyebutkan bahwa setelah siang ia menulis laporan di kantor."],
+["Read: 'Many accidents happen because drivers use their phones while driving. The police urge drivers to stop before using their phones.'\nThe main idea of the text is ...", ["Using a phone while driving causes accidents", "Police officers use phones at work", "Drivers should buy new phones", "Accidents happen only at night"], "Gagasan utama: penggunaan ponsel saat mengemudi menyebabkan kecelakaan."],
+["Read: 'The festival was cancelled due to heavy rain. The committee announced that it would be held next Saturday instead.'\nWhy was the festival cancelled?", ["Because of heavy rain", "Because the committee was sick", "Because nobody came", "Because it was Saturday"], "Due to heavy rain berarti karena hujan deras."],
+["Read: 'Ahmad found a wallet on the street. He took it to the nearest police station so it could be returned to its owner.'\nWhat can we learn about Ahmad?", ["He is honest", "He is careless", "He is rich", "He is a police officer"], "Mengembalikan dompet melalui kantor polisi menunjukkan kejujuran."],
+["Read: 'The suspect was seen wearing a black jacket and carrying a red bag. Witnesses said he ran toward the bus terminal.'\nWhere did the suspect run?", ["Toward the bus terminal", "Toward the police station", "Into a shop", "Toward the market"], "Saksi mengatakan ia berlari ke arah terminal bus."],
+["Read: 'Lake Toba, located in North Sumatra, is the largest volcanic lake in Southeast Asia. It was formed by a massive eruption thousands of years ago.'\nThe word 'formed' is closest in meaning to ...", ["Created", "Destroyed", "Found", "Visited"], "Formed berarti terbentuk atau tercipta."],
+["Read: 'To apply for the program, candidates must be at least 18 years old, physically healthy, and have no criminal record.'\nWhich is NOT a requirement?", ["Having a driver's license", "Being at least 18 years old", "Being physically healthy", "Having no criminal record"], "SIM tidak disebutkan sebagai syarat."],
+["Read: 'Komodo dragons are the largest lizards in the world. They live on several islands in East Nusa Tenggara, including Komodo and Rinca.'\nWhere do Komodo dragons live?", ["On several islands in East Nusa Tenggara", "Throughout Indonesia", "Only in zoos", "In West Nusa Tenggara"], "Teks menyebut beberapa pulau di Nusa Tenggara Timur."],
+["Read: 'Before the flood came, the village head asked residents to move to higher ground. Thanks to his warning, no one was injured.'\nWhat was the result of the warning?", ["No one was injured", "The village was destroyed", "The flood stopped", "The residents refused to move"], "Thanks to his warning, no one was injured."],
+["Read: 'Cybercrime is increasing. Criminals often send fake messages asking for passwords. Never share your password with anyone.'\nThe writer's purpose is to ...", ["Warn readers about online fraud", "Explain how to create a password", "Advertise a phone", "Describe a police operation"], "Teks memperingatkan pembaca tentang kejahatan siber."],
+["Read: 'The ceremony began at 7 a.m. with the national anthem, followed by a speech from the chief of police.'\nWhat happened first?", ["The national anthem", "The speech", "The march", "The award"], "Upacara dimulai dengan lagu kebangsaan, lalu sambutan."],
+["Read: 'Although he failed the first test, Budi kept practicing every day. A year later, he passed with excellent results.'\nWhich word best describes Budi?", ["Persistent", "Lazy", "Lucky", "Careless"], "Ia terus berlatih setelah gagal, sehingga persistent (gigih)."],
+["Read: 'Traffic was heavy this morning because a truck broke down on the main road.'\nThe phrase 'broke down' means ...", ["Stopped working", "Crashed into a car", "Moved slowly", "Was repaired"], "Break down untuk kendaraan berarti mogok."],
+["Read: 'Citizens can report crimes by calling 110, which is free and available 24 hours a day.'\nWhich statement is true?", ["The service can be used at any time", "Callers must pay a fee", "The service is only open in the morning", "Only police officers can call 110"], "Available 24 hours a day berarti dapat digunakan kapan saja."],
+["Read: 'The museum is open from Tuesday to Sunday. It is closed on Mondays and public holidays.'\nWhen is the museum closed?", ["On Mondays and public holidays", "On Sundays", "On Tuesdays", "Every weekend"], "Teks menyebut museum tutup pada hari Senin dan hari libur nasional."],
+["A: 'Thank you for helping me find my bag.'\nB: '...'", ["You're welcome.", "Never mind the bag.", "Good luck.", "Congratulations."], "Respons yang tepat untuk ucapan terima kasih adalah You're welcome."],
+["A: 'Excuse me, could you tell me the way to the police station?'\nB: '...'", ["Sure. Go straight and turn left at the traffic light.", "I am fine, thank you.", "Yes, I am a student.", "No, thank you."], "Penanya meminta petunjuk arah."],
+["A: 'I passed the selection test!'\nB: '...'", ["Congratulations! I'm proud of you.", "I'm sorry to hear that.", "Never mind.", "Get well soon."], "Ungkapan selamat untuk kabar gembira."],
+["A: 'My father is in the hospital.'\nB: '...'", ["I'm sorry to hear that. I hope he gets well soon.", "Congratulations!", "That's great news.", "You're welcome."], "Ungkapan simpati untuk kabar sedih."],
+["A: 'Would you mind closing the door?'\nB: '...'", ["Not at all.", "Yes, I would close it.", "No, I wouldn't mind not.", "Of course not, I mind."], "Jawaban Not at all berarti tidak keberatan dan bersedia melakukannya."],
+["Officer: 'May I see your driver's license, please?'\nDriver: '...'", ["Here you are, sir.", "No problem, I don't know.", "I see it.", "You may go."], "Ungkapan saat menyerahkan sesuatu: Here you are."]
+];
+
+/* ================= MATEMATIKA POLRI (dibangkitkan acak) ================= */
+const SUP={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+const sup=n=>String(n).split('').map(d=>SUP[d]).join('');
+const coef=(a,v)=>(a===1?'':a)+v;
+const GEN_MTK=[
+  function spldv(){let x,y,a1,b1,a2,b2;do{x=rnd(1,12);y=rnd(1,12);a1=rnd(1,5);b1=rnd(1,5);a2=rnd(1,5);b2=rnd(1,5)}while(a1*b2===a2*b1);
+    const c1=a1*x+b1*y,c2=a2*x+b2*y,ans=x+y;
+    return ["Diketahui "+coef(a1,'x')+" + "+coef(b1,'y')+" = "+c1+" dan "+coef(a2,'x')+" + "+coef(b2,'y')+" = "+c2+". Nilai x + y adalah ...", numOpts(ans,[2*x+y,x+2*y,ans+2,ans-1]), "Dengan eliminasi atau substitusi diperoleh x = "+x+" dan y = "+y+", sehingga x + y = "+ans+"."]},
+  function kuadrat(){let p,q;do{p=rnd(1,9);q=rnd(1,9)}while(p===q);if(p>q)[p,q]=[q,p];
+    return ["Akar-akar persamaan x² − "+(p+q)+"x + "+(p*q)+" = 0 adalah ...", [p+" dan "+q, "−"+p+" dan −"+q, p+" dan −"+q, (p+q)+" dan "+(p*q)], "Faktorkan: (x − "+p+")(x − "+q+") = 0, sehingga x = "+p+" atau x = "+q+". Jumlah akar "+(p+q)+" dan hasil kali akar "+(p*q)+" sesuai koefisien persamaan."]},
+  function sukuN(){const a=rnd(2,20),b=rnd(2,9),n=pick([10,12,15,20,25]),ans=a+(n-1)*b;
+    return ["Suku pertama sebuah barisan aritmetika adalah "+a+" dan bedanya "+b+". Suku ke-"+n+" barisan tersebut adalah ...", numOpts(ans,[a+n*b,a*(n-1)+b,ans-b,ans+1]), "Uₙ = a + (n − 1)b = "+a+" + "+(n-1)+" × "+b+" = "+ans+"."]},
+  function jumlahDeret(){const a=rnd(1,15),b=rnd(2,7),n=pick([8,10,12,20]),un=a+(n-1)*b,ans=n*(a+un)/2;
+    return ["Jumlah "+n+" suku pertama deret aritmetika "+a+" + "+(a+b)+" + "+(a+2*b)+" + ... adalah ...", numOpts(ans,[un,n*un,ans+b*n/2,ans-a]), "Suku ke-"+n+" = "+a+" + "+(n-1)+" × "+b+" = "+un+". Sₙ = n/2 × (a + Uₙ) = "+n+"/2 × ("+a+" + "+un+") = "+ans+"."]},
+  function median(){const d=[];for(let i=0;i<7;i++)d.push(rnd(55,95));const so=[...d].sort((x,y)=>x-y),ans=so[3],mean=Math.round(d.reduce((x,y)=>x+y,0)/7);
+    return ["Median dari data nilai berikut: "+d.join(", ")+" adalah ...", numOpts(ans,[d[3],mean,so[2],so[4],so[6]-so[0]]), "Urutkan data: "+so.join(", ")+". Data ke-4 (tengah) adalah "+ans+"."]},
+  function volumeTabung(){const r=pick([7,14]),t=rnd(5,20),V=22*r*r*t/7;
+    return ["Volume tabung dengan jari-jari alas "+r+" cm dan tinggi "+t+" cm adalah ... cm³ (π = 22/7)", numOpts(V,[2*22*r*t/7,Math.round(V/3),2*V,22*r*t/7]), "V = π × r² × t = 22/7 × "+r+" × "+r+" × "+t+" = "+fmt(V)+" cm³."]},
+  function pangkat(){let a,m,n,k,e;do{a=pick([2,3,5]);m=rnd(2,6);n=rnd(1,5);k=rnd(1,m+n-1);e=m+n-k}while(a**e>5000||e<1);const ans=a**e;
+    return ["Hasil dari "+a+sup(m)+" × "+a+sup(n)+" : "+a+sup(k)+" adalah ...", numOpts(ans,[a**(m*n-k)>0&&a**(m*n-k)<1e6?a**(m*n-k):ans*a,a**(e+1),a**Math.max(1,e-1),ans*2]), "Gunakan sifat pangkat: a^m × a^n : a^k = a^(m + n − k) = "+a+sup(e)+" = "+fmt(ans)+"."]},
+  function logaritma(){let b,e1,e2;do{b=pick([2,3,5,10]);e1=rnd(1,4);e2=rnd(1,4)}while(b**e1>1000||b**e2>1000);const x=b**e1,y=b**e2,ans=e1+e2;
+    return ["Nilai dari "+sup(b)+"log "+x+" + "+sup(b)+"log "+y+" adalah ...", numOpts(ans,[e1*e2,ans+1,ans+2,x+y>40?ans+3:x+y]), sup(b)+"log "+x+" = "+e1+" dan "+sup(b)+"log "+y+" = "+e2+", sehingga jumlahnya "+ans+". Bisa juga dengan sifat ᵃlog x + ᵃlog y = ᵃlog (x × y) = "+sup(b)+"log "+(x*y)+"."]}
+];
+function buildMTK(n){
+  const pool=[...GEN,...GEN_MTK],out=[];
+  while(out.length<n){shuffle(pool).forEach(g=>{if(out.length<n)out.push(g())})}
   return out;
 }
 
 /* ================= STATE ================= */
-const CATS={TWK:{color:'var(--twk)',pts:[5,0,0,0]},TIU:{color:'var(--tiu)',pts:[5,0,0,0]},TKP:{color:'var(--tkp)',pts:[5,4,3,1]},UJIAN:{color:'var(--ujian)'}};
+const CATS={TWK:{color:'var(--twk)',pts:[5,0,0,0],n:50,label:'TWK',group:'cpns'},TIU:{color:'var(--tiu)',pts:[5,0,0,0],n:50,label:'TIU',group:'cpns'},TKP:{color:'var(--tkp)',pts:[5,4,3,1],n:50,label:'TKP',group:'cpns'},UJIAN:{color:'var(--ujian)',n:100,label:'UJIAN',group:'cpns'},
+  PU:{color:'var(--pu)',pts:[2,0,0,0],n:50,label:'Pengetahuan Umum',chip:'POLRI · PU',group:'polri'},WK:{color:'var(--wk)',pts:[2,0,0,0],n:50,label:'Wawasan Kebangsaan',chip:'POLRI · WK',group:'polri'},
+  BING:{color:'var(--bing)',pts:[2,0,0,0],n:50,label:'Bahasa Inggris',chip:'POLRI · B.ING',group:'polri'},MTK:{color:'var(--mtk)',pts:[2,0,0,0],n:50,label:'Matematika',chip:'POLRI · MTK',group:'polri'}};
 const LIMIT=90*60; /* 90 menit untuk semua menu */
 const MIX={TWK:30,TIU:35,TKP:35}; /* komposisi menu Ujian */
-const S={name:'',cat:'TWK',exam:false,items:[],ans:[],idx:0,start:0,end:0,finished:false,timeout:false,timer:null,rankCat:'TWK',saved:false};
+const S={name:'',cat:'TWK',group:'cpns',exam:false,items:[],ans:[],idx:0,start:0,end:0,finished:false,timeout:false,timer:null,rankCat:'TWK',saved:false};
 let DB=null, USER=null, ALL=[], dbState='loading';
 /* Tempel URL Web App Google Apps Script (berakhiran /exec) di antara tanda kutip di bawah ini */
 const API_URL='https://script.google.com/macros/s/AKfycbyOIrXVqNFg06wNFQOG9s_X0rAxiR3xRMynJpzonptjeFS7462zHcdoYozW5HDkwhx9/exec';
 const LOCAL_KEY='cpns_scores_local';
 
-function show(id){['scrName','scrMenu','scrQuiz','scrResult','scrRank'].forEach(s=>$(s).hidden=(s!==id));window.scrollTo(0,0)}
+function show(id){['scrName','scrMenu','scrPolri','scrQuiz','scrResult','scrRank'].forEach(s=>$(s).hidden=(s!==id));window.scrollTo(0,0)}
 function setWho(){$('who').hidden=!S.name;$('whoName').textContent=S.name}
 
 /* ================= NAMA ================= */
@@ -1218,27 +1607,33 @@ $('nameForm').addEventListener('submit',e=>{e.preventDefault();
 $('btnGanti').addEventListener('click',()=>{stopTimer();S.name='';S.items=[];S.ans=[];S.finished=false;
   try{localStorage.removeItem('cpns_name')}catch(e){}
   setWho();$('nameInput').value='';$('nameErr').textContent='';show('scrName');$('nameInput').focus()});
-function toMenu(){stopTimer();$('helloTitle').textContent='Halo, '+S.name+'. Pilih materi latihan';show('scrMenu')}
+function toMenu(){stopTimer();S.group='cpns';$('helloTitle').textContent='Halo, '+S.name+'. Pilih materi latihan';show('scrMenu')}
+function showPolri(){stopTimer();S.group='polri';show('scrPolri')}
+function goHome(){S.group==='polri'?showPolri():toMenu()}
+$('btnPolri').addEventListener('click',showPolri);
+$('btnPolriBack').addEventListener('click',toMenu);
+$('btnRankPolri').addEventListener('click',()=>openRank(CATS[S.rankCat]&&CATS[S.rankCat].group==='polri'?S.rankCat:'PU'));
 
 /* ================= KUIS ================= */
-document.querySelectorAll('.cat').forEach(b=>b.addEventListener('click',()=>startQuiz(b.dataset.cat)));
+document.querySelectorAll('.cat[data-cat]').forEach(b=>b.addEventListener('click',()=>startQuiz(b.dataset.cat)));
 function mkItems(bank,kind){const pts=CATS[kind].pts;
-  return bank.map(([q,o,e])=>({q,e,kind,opts:shuffle(o.map((t,i)=>({t,p:pts[i],best:i===0})))}))}
+  return bank.map(([q,o,e])=>{const op=o.map((t,i)=>({t,p:pts[i],best:i===0}));const fixed=o.every(t=>/^[A-D]$/.test(t));
+    return {q,e,kind,opts:fixed?op.sort((x,y)=>x.t.localeCompare(y.t)):shuffle(op)}})}
 function startQuiz(cat){
-  S.cat=cat;S.exam=cat==='UJIAN';
+  S.cat=cat;S.exam=cat==='UJIAN';S.group=CATS[cat].group;const N=CATS[cat].n;
   if(S.exam){
     S.items=shuffle([
       ...mkItems(shuffle(TWK).slice(0,MIX.TWK),'TWK'),
-      ...mkItems(shuffle(buildTIU()).slice(0,MIX.TIU),'TIU'),
+      ...mkItems(shuffle(buildTIU(100)).slice(0,MIX.TIU),'TIU'),
       ...mkItems(shuffle(TKP).slice(0,MIX.TKP),'TKP')]);
   } else {
-    const bank=cat==='TWK'?TWK:cat==='TKP'?TKP:buildTIU();
-    S.items=mkItems(shuffle(bank).slice(0,100),cat);
+    const bank={TWK:()=>TWK,TKP:()=>TKP,TIU:()=>buildTIU(N),PU:()=>PU,WK:()=>WKP,BING:()=>BING,MTK:()=>buildMTK(N)}[cat]();
+    S.items=mkItems(shuffle(bank).slice(0,N),cat);
   }
   S.ans=new Array(S.items.length).fill(null);S.idx=0;S.start=Date.now();S.end=0;S.finished=false;S.timeout=false;S.saved=false;
   document.documentElement.style.setProperty('--c',CATS[cat].color);
   $('scrQuiz').style.setProperty('--c',CATS[cat].color);$('scrResult').style.setProperty('--c',CATS[cat].color);
-  $('qChip').textContent=cat;$('confirmBox').hidden=true;
+  $('qChip').textContent=CATS[cat].chip||cat;$('qOf').textContent='dari '+S.items.length+' soal';$('confirmBox').hidden=true;
   buildBoard();renderLegend();renderQ();startTimer();show('scrQuiz');
 }
 function startTimer(){stopTimer();
@@ -1250,9 +1645,10 @@ function startTimer(){stopTimer();
   tick();S.timer=setInterval(tick,1000)}
 function stopTimer(){if(S.timer){clearInterval(S.timer);S.timer=null}}
 function cls(i){const a=S.ans[i];if(a==null)return '';if(S.exam&&!S.finished)return 'ans';
-  const it=S.items[i],p=it.opts[a].p;return p===5?'ok':(it.kind==='TKP'&&p>=3?'mid':'bad')}
+  const it=S.items[i],o=it.opts[a];return o.best?'ok':(it.kind==='TKP'&&o.p>=3?'mid':'bad')}
 function buildBoard(){const tb=$('board');tb.textContent='';
-  for(let r=0;r<10;r++){const tr=document.createElement('tr');
+  const rows=Math.ceil(S.items.length/10);
+  for(let r=0;r<rows;r++){const tr=document.createElement('tr');
     for(let c=0;c<10;c++){const i=r*10+c;const td=document.createElement('td');const b=document.createElement('button');
       b.type='button';b.className='cell';b.id='cell'+i;b.textContent=i+1;b.setAttribute('aria-label','Soal '+(i+1));
       b.addEventListener('click',()=>{S.idx=i;renderQ()});td.appendChild(b);tr.appendChild(td)}
@@ -1285,7 +1681,7 @@ function renderQ(){
     if(a==null){kind='bad';title='Tidak dijawab. Jawaban '+(it.kind==='TKP'?'terbaik':'benar')+': '+'ABCD'[best]+'.'}
     else{const o=it.opts[a];
       if(it.kind==='TKP'){kind=o.p===5?'ok':o.p>=3?'mid':'bad';title=o.p===5?'Jawaban terbaik. Poin 5.':'Poin Anda '+o.p+'. Jawaban terbaik: '+'ABCD'[best]+'.'}
-      else{kind=o.best?'ok':'bad';title=o.best?'Benar! +5':'Kurang tepat. Jawaban benar: '+'ABCD'[best]+'.'}}
+      else{kind=o.best?'ok':'bad';title=o.best?'Benar! +'+o.p:'Kurang tepat. Jawaban benar: '+'ABCD'[best]+'.'}}
     ex.className='explain '+kind;const h=document.createElement('h3');h.textContent=title;const p=document.createElement('p');p.textContent=it.e;ex.append(h,p)}
   else{ex.hidden=true}
   renderLegend();
@@ -1301,7 +1697,7 @@ $('btnNext').addEventListener('click',()=>{
 document.addEventListener('keydown',e=>{if($('scrQuiz').hidden||e.target.tagName==='INPUT')return;
   const m={a:0,b:1,c:2,d:3,'1':0,'2':1,'3':2,'4':3}[e.key.toLowerCase()];
   if(m!=null){answer(m)}else if(e.key==='ArrowRight'){$('btnNext').click()}else if(e.key==='ArrowLeft'){$('btnPrev').click()}});
-$('btnExit').addEventListener('click',toMenu);
+$('btnExit').addEventListener('click',goHome);
 $('btnFinish').addEventListener('click',askFinish);
 function askFinish(){if(S.finished){showResult();return}
   const todo=S.ans.filter(x=>x==null).length;
@@ -1321,22 +1717,23 @@ function finish(timeout){if(S.finished)return;
   $('confirmBox').hidden=true;$('qTimer').textContent=S.timeout?'Waktu habis':'Selesai';$('qTimer').classList.remove('warn');
   const t=tally();showResult();if(!S.saved){S.saved=true;saveScore(t)}}
 function showResult(){const t=tally();
-  $('rCat').textContent='Hasil '+S.cat;$('rName').textContent=S.name;
+  $('rCat').textContent='Hasil '+(CATS[S.cat].group==='polri'?'Tes Akademik Polri · ':'')+CATS[S.cat].label;$('rName').textContent=S.name;
+  const L=S.items.length,maxS=S.items.reduce((m,it)=>m+Math.max(...it.opts.map(o=>o.p)),0);$('rMax').textContent='/ '+maxS;
   $('rScore').textContent=t.score;$('rOk').textContent=t.ok;$('rBad').textContent=t.bad;$('rEmpty').textContent=t.empty;$('rTime').textContent=mmss(t.dur);
-  const bar=$('rBar');bar.textContent='';[[t.ok,'var(--ok)'],[t.bad,'var(--bad)'],[t.empty,'var(--soft)']].forEach(([n,c])=>{const i=document.createElement('i');i.style.width=n+'%';i.style.background=c;bar.appendChild(i)});
+  const bar=$('rBar');bar.textContent='';[[t.ok,'var(--ok)'],[t.bad,'var(--bad)'],[t.empty,'var(--soft)']].forEach(([n,c])=>{const i=document.createElement('i');i.style.width=(n/L*100)+'%';i.style.background=c;bar.appendChild(i)});
   let note;
   if(S.exam){const sub={TWK:0,TIU:0,TKP:0},n={TWK:0,TIU:0,TKP:0};
     S.items.forEach((it,i)=>{n[it.kind]++;const a=S.ans[i];if(a!=null)sub[it.kind]+=it.opts[a].p});
     note='Rincian nilai: TWK '+sub.TWK+'/'+n.TWK*5+' · TIU '+sub.TIU+'/'+n.TIU*5+' · TKP '+sub.TKP+'/'+n.TKP*5+'. Soal TKP bernilai 1–5; jawaban benar TKP = pilihan terbaik (poin 5).'}
   else note=S.cat==='TKP'
     ?'TKP tidak mengenal jawaban salah mutlak: setiap pilihan bernilai 1 sampai 5. Benar = memilih jawaban terbaik (poin 5); salah = memilih pilihan lain (poin 1–4).'
-    :'Setiap jawaban benar bernilai 5, jawaban salah dan soal kosong bernilai 0.';
+    :'Setiap jawaban benar bernilai '+CATS[S.cat].pts[0]+', jawaban salah dan soal kosong bernilai 0. Nilai maksimal '+maxS+'.';
   if(S.timeout)note='Waktu 90 menit habis, jawaban dikumpulkan otomatis. '+note;
   $('rNote').textContent=note;
   show('scrResult')}
 $('btnReview').addEventListener('click',()=>{S.idx=0;renderQ();show('scrQuiz')});
 $('btnRetry').addEventListener('click',()=>startQuiz(S.cat));
-$('btnResMenu').addEventListener('click',toMenu);
+$('btnResMenu').addEventListener('click',goHome);
 $('btnResRank').addEventListener('click',()=>openRank(S.cat));
 
 /* ================= RANKING ================= */

@@ -4,7 +4,7 @@
  * lalu Deploy > New deployment > Web app (Execute as: Me, Who has access: Anyone).
  */
 const SHEET = 'Skor';
-const KATEGORI = ['TWK', 'TIU', 'TKP', 'UJIAN'];
+const KATEGORI = ['TWK', 'TIU', 'TKP', 'UJIAN', 'PU', 'WK', 'BING', 'MTK'];
 const HEADER = ['Waktu', 'Nama', 'Kategori', 'Nilai', 'Benar', 'Salah', 'Tidak dijawab', 'Durasi (detik)', 'ID'];
 
 function sheet_() {
@@ -56,8 +56,9 @@ function doPost(e) {
   const id = String(d.id || '');
   if (nama.length < 2) return json_({ ok: false, error: 'Nama tidak valid' });
   if (KATEGORI.indexOf(d.kat) < 0) return json_({ ok: false, error: 'Kategori tidak valid' });
+  const total = d.benar + d.salah + d.kosong;
   if (!int(d.nilai, 0, 500) || !int(d.benar, 0, 100) || !int(d.salah, 0, 100) || !int(d.kosong, 0, 100)
-      || d.benar + d.salah + d.kosong !== 100 || !int(d.durasi, 0, 86400)) {
+      || (total !== 50 && total !== 100) || !int(d.durasi, 0, 86400)) {
     return json_({ ok: false, error: 'Nilai tidak valid' });
   }
   if (!/^[a-z0-9]{6,40}$/.test(id)) return json_({ ok: false, error: 'ID tidak valid' });
